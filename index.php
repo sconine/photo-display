@@ -32,7 +32,7 @@ $result = $client->getObject(array(
 ));
 
 // The 'Body' value can be cast to a string
-if (isset($_SERVER['SCRIPT_NAME'])) {
+if (isset($_SERVER['HTTP_HOST'])) {
     echo $result['Body'];
 } else {
     echo 'Got the body, but did not stream to concole';
