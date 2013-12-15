@@ -28,12 +28,12 @@ foreach ($iterator as $object) {
 // Get an object using the getObject operation
 $result = $client->getObject(array(
     'Bucket' => $bucket,
-    'Key'    => 'Oct-2012/photo 2.JPG'
+    'Key'    => 'Oct-2012/DSCN2599.MOV'
 ));
 
-// The 'Body' value can be cast to a string
+
 if (isset($_SERVER['HTTP_HOST'])) {
-    header('Content-type: image/jpeg');
+    header('Content-type: image/mov');
     echo $result['Body'];
 } else {
     echo "Got the body, but did not stream to concole\n";
