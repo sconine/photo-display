@@ -33,7 +33,7 @@ $result = $client->getObject(array(
 
 
 if (isset($_SERVER['HTTP_HOST'])) {
-    header('Content-type: image/mov');
+    header('Content-type: video/quicktime');
     echo $result['Body'];
 } else {
     echo "Got the body, but did not stream to concole\n";
