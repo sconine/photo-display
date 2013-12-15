@@ -7,15 +7,11 @@ use Aws\Common\Aws;
 $aws = Aws::factory('/usr/www/html/photo-display/amz_config.json');
 $client = $aws->get('s3');
 
-//exit;
+$result = $client->listBuckets();
 
-$bucket = 'MyTestPHP';
-try {
-        $result = $client->createBucket(array('Bucket' => $bucket));
-} catch (Aws\S3\Exception\S3Exception $e) {
-    echo $e->getMessage();
+foreach ($result['Buckets'] as $bucket) {
+    // Each Bucket value will contain a Name and CreationDate
+    echo "{$bucket['Name']} - {$bucket['CreationDate']}\n";
 }
-
-var_dump($result);
 
 ?>
