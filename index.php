@@ -10,7 +10,7 @@ $client = $aws->get('s3');
 
 $bucket = 'MyTestPHP';
 try {
-        $result = $client->createBucket(['Bucket' => $bucket]);
+        $result = $client->createBucket(array('Bucket' => $bucket));
 } catch (Aws\S3\Exception\S3Exception $e) {
     echo $e->getMessage();
 }
