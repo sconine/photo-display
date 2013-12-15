@@ -14,4 +14,16 @@ foreach ($result['Buckets'] as $bucket) {
     echo "{$bucket['Name']} - {$bucket['CreationDate']}\n";
 }
 
+$bucket = 'SConine_Photos';
+
+$iterator = $client->getIterator('ListObjects', array(
+    'Bucket' => $bucket
+));
+
+foreach ($iterator as $object) {
+    echo $object['Key'] . "\n";
+}
+
+
+
 ?>
