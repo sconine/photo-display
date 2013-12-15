@@ -31,11 +31,7 @@ $result = $client->getObject(array(
     'Key'    => 'Dec-2005/IMG_6759.JPG'
 ));
 
-// The 'Body' value of the result is an EntityBody object
-echo get_class($result['Body']) . "\n";
-// > Guzzle\Http\EntityBody
-
 // The 'Body' value can be cast to a string
-//echo $result['Body'] . "\n";
+echo $result['Body'] . "\n";
 
 ?>
