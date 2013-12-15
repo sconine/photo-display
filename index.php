@@ -35,7 +35,7 @@ $result = $client->getObject(array(
 if (isset($_SERVER['HTTP_HOST'])) {
     echo $result['Body'];
 } else {
-    echo 'Got the body, but did not stream to concole';
+    echo "Got the body, but did not stream to concole\n";
 }
 
 
