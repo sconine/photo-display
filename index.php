@@ -33,6 +33,7 @@ $result = $client->getObject(array(
 
 // The 'Body' value can be cast to a string
 if (isset($_SERVER['HTTP_HOST'])) {
+    header('Content-type: image/jpeg');
     echo $result['Body'];
 } else {
     echo "Got the body, but did not stream to concole\n";
