@@ -17,7 +17,8 @@ foreach ($result['Buckets'] as $bucket) {
 $bucket = 'SConine_Photos';
 
 $iterator = $client->getIterator('ListObjects', array(
-    'Bucket' => $bucket
+    'Bucket' => $bucket,
+    'Prefix' => 'Dec-2005'
 ));
 
 foreach ($iterator as $object) {
