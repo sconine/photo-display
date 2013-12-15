@@ -1,0 +1,5 @@
+{
+	"require": {
+		"aws/aws-skd-php": "~2.4"
+	}
+}
