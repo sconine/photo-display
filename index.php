@@ -11,7 +11,7 @@ $result = $client->listBuckets();
 
 foreach ($result['Buckets'] as $bucket) {
     // Each Bucket value will contain a Name and CreationDate
-    echo "{$bucket['Name']} - {$bucket['CreationDate']}\n";
+    //echo "{$bucket['Name']} - {$bucket['CreationDate']}\n";
 }
 
 $bucket = 'SConine_Photos';
@@ -22,7 +22,7 @@ $iterator = $client->getIterator('ListObjects', array(
 ));
 
 foreach ($iterator as $object) {
-    echo $object['Key'] . "\n";
+    //echo $object['Key'] . "\n";
 }
 
 // Get an object using the getObject operation
@@ -32,6 +32,11 @@ $result = $client->getObject(array(
 ));
 
 // The 'Body' value can be cast to a string
-echo $result['Body'] . "\n";
+if (isset($_SERVER['SCRIPT_NAME'])) {
+    echo $result['Body'];
+} else {
+    echo 'Got the body, but did not stream to concole';
+}
+
 
 ?>
