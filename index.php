@@ -3,14 +3,18 @@ require 'vendor/autoload.php';
 
 use Aws\Common\Aws;
 
-// Create a service building using shared credentials for each service
-$aws = Aws::factory(array(
-    'key'    => 'your-aws-access-key-id',
-    'secret' => 'your-aws-secret-access-key'
-   // ,'region' => 'us-west-2' -> not needed for S3
-));
+// You'll need ot edit this with your config
+$aws = Aws::factory('/usr/www/html/photo-display/amz_config.json');
+$client = $aws->get('s3');
 
-$aws = Aws::factory('/path/to/my_config.json');
-$s3 = $aws->get('s3');
+
+$bucket = 'MyTestPHP';
+try {
+        $result = $client->createBucket(['Bucket' => $bucket,]);
+} catch (Aws\S3\Exception\S3Exception $e) {
+    echo $e->getMessage();
+}
+
+var_dump($result);
 
 ?>
