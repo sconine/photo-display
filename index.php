@@ -7,6 +7,7 @@ use Aws\Common\Aws;
 $aws = Aws::factory('/usr/www/html/photo-display/amz_config.json');
 $client = $aws->get('s3');
 
+exit;
 
 $bucket = 'MyTestPHP';
 try {
