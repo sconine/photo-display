@@ -28,7 +28,7 @@ foreach ($iterator as $object) {
 // Get an object using the getObject operation
 $result = $client->getObject(array(
     'Bucket' => $bucket,
-    'Key'    => 'Dec-2005/IMG_6759.JPG'
+    'Key'    => 'Oct-2012/photo 2.JPG'
 ));
 
 // The 'Body' value can be cast to a string
