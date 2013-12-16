@@ -1,0 +1,32 @@
+<html>
+<head><title>Remote</title>
+</head>
+<body>
+
+<script src="/socket.io/socket.io.js"> </script>
+<script>
+
+      var socket = io.connect('http://ec2-54-209-176-57.compute-1.amazonaws.com:8080');
+      socket.on('connect', function(data){
+        socket.emit('remote');
+      });
+</script>
+
+<script type="text/javascript">
+	function SendData(myData, socket) {
+	socket.emit(myData);
+	return false;
+	}
+
+</script>
+
+Hi There!
+<a href="#a" onclick="return SendData('blah', socket);" >Click Me</a>
+
+
+
+</html>
+
+
+
+
