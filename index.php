@@ -33,6 +33,7 @@ $result = $client->getObject(array(
 
 
 if (isset($_SERVER['HTTP_HOST'])) {
+    // This works sending to Chrome
     header('Content-type: video/quicktime');
     echo $result['Body'];
 } else {
