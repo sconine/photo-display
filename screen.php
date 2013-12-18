@@ -26,6 +26,11 @@ function change_media(cnt, duration) {
  request.done(function( data ) {
    $( "#my_media" ).html( data );
    
+   $.each( data, function( key, value ) {
+     alert( key + ": " + value );
+    });
+   
+   
 //   $.each(data, function(){
 //      $.each(this, function(){
 //        console.log(this.address);
