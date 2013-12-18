@@ -13,8 +13,9 @@
  
 <script>
 $( "#my_media" ).text( 'this is a test' );
-$( "media" ).delay( 5000 );
-$( "#my_media" ).text( 'this is a test2' ).delay( 5000 ).text( 'this is a test3' ).delay( 5000 ).text( 'this is a test4' );
+$( "media" ).delay( 50000 );
+$( "#my_media" ).text( 'this is a test2' ).delay( 50000 ).text( 'this is a test3' ).delay( 50000 ).text( 'this is a test4' );
+setTimeout(alert('timeed alert'), 500000)
 
 
 </script>
