@@ -13,8 +13,8 @@
  
 <script>
 $( "#my_media" ).text( 'this is a test' );
-setTimeout(alert('timeed alert'), 5000);
-setTimeout(function(){alert("Hello")},3000);
+setTimeout(function(){$( "#my_media" ).text( 'this is a test2' );},3000);
+setTimeout(function(){$( "#my_media" ).text( 'this is a test3' );},3000);
 
 </script>
  
