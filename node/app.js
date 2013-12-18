@@ -1,3 +1,7 @@
+// Early Experimentation, got this from a site that was building for RasberryPi
+// will credit if kept
+
+
 var express = require('express')
   , app = express()  
   , server = require('http').createServer(app)
