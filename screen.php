@@ -26,10 +26,10 @@ function change_media(cnt, duration) {
  request.done(function( data ) {
    $( "#my_media" ).html( data );
    
-   $.each(data, function(){
-      $.each(this, function(){
-        console.log(this.address);
-      });
+//   $.each(data, function(){
+//      $.each(this, function(){
+//        console.log(this.address);
+//      });
    
  });
  
