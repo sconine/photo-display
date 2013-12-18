@@ -8,23 +8,29 @@
 <body>
 <div id="my_media"></div>
 <div id="log"></div>
- 
 
 
 <script>
 
 // Function to change the media
 function change_media(cnt, duration) {
- $( "#my_media" ).text( 'Media #' + cnt );
- 
+
+ // Make a call to the server to get what we should show
  var request = $.ajax({
   url: "drive_screen.php",
   type: "GET",
+  datatype: 'json',
   data: { cnt: cnt, duration: duration },
  });
 
  request.done(function( msg ) {
-   $( "#log" ).html( msg );
+   $( "#my_media" ).html( msg );
+   
+   $.each(data, function(){
+      $.each(this, function(){
+        console.log(this.address);
+      });
+   
  });
  
  request.fail(function( jqXHR, textStatus ) {
