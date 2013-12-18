@@ -15,7 +15,7 @@
 
 function change_media(cnt) {
  $( "#my_media" ).text( 'Media #' + cnt );
- setTimeout(change_media(cnt++), 2000);
+ //setTimeout(change_media(cnt++), 2000);
 }
 
 change_media(0);
