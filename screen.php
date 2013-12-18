@@ -19,6 +19,7 @@
  
 <script>
 $( "p" ).click(function() {
+alert(this);
   var htmlString = $( this ).html();
   $( this ).text( htmlString );
 });
