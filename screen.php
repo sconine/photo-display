@@ -6,24 +6,45 @@
 <script src="//code.jquery.com/jquery-1.10.2.min.js"></script>
 </head>
 <body>
- 
- <div id="my_media"></div>
+<div id="my_media"></div>
+<div id="log"></div>
  
 
- 
+
 <script>
 
 // Function to change the media
 function change_media(cnt, duration) {
  $( "#my_media" ).text( 'Media #' + cnt );
+ 
+ var request = $.ajax({
+  url: "drive_screen.php",
+  type: "GET",
+  data: { name: "Steve", location: "USA" },
+ });
+
+ request.done(function( msg ) {
+   $( "#log" ).html( msg );
+ });
+ 
+ request.fail(function( jqXHR, textStatus ) {
+   alert( "Request failed: " + textStatus );
+ });
+ 
+ 
+ 
+
+ // last thing it does is set itself up to be called again
  cnt++;
  duration = duration + 50;
- setTimeout(function(){change_media(cnt, duration);}, duration);
+  setTimeout(function(){change_media(cnt, duration);}, duration);
+ return true;
 }
 
+
+// Start the whole thing running
 change_media(0, 50);
 
 </script>
- 
 </body>
 </html>
