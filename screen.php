@@ -9,24 +9,13 @@
  
  <div id="my_media"></div>
  
-<p>
-  <b>Click</b> to change the <span id="tag">html</span>
-</p>
-<p>
-  to a <span id="text">text</span> node.
-</p>
-<p>
-  This <button name="nada">button</button> does nothing.
-</p>
+
  
 <script>
-$( "p" ).click(function() {
-alert(this);
-  var htmlString = $( this ).html();
-  $( this ).text( htmlString );
-});
-
 $( "#my_media" ).text( 'this is a test' );
+$( "media" ).delay( 5000 );
+$( "#my_media" ).text( 'this is a test2' ).delay( 5000 ).text( 'this is a test3' ).delay( 5000 ).text( 'this is a test4' );
+
 
 </script>
  
