@@ -23,6 +23,7 @@ function change_media(cnt, duration) {
   data: { cnt: cnt, duration: duration },
  });
 
+ // Deal with Response
  request.done(function( data ) {
    $( "#my_media" ).html( data );
    var obj = jQuery.parseJSON( data );
@@ -34,6 +35,7 @@ function change_media(cnt, duration) {
    
  });
  
+ // Deal with Failure 
  request.fail(function( jqXHR, textStatus ) {
    alert( "Request failed: " + textStatus );
  });
