@@ -12,9 +12,13 @@
 
  
 <script>
-$( "#my_media" ).text( 'this is a test' );
-setTimeout(function(){$( "#my_media" ).text( 'this is a test2' );},3000);
-setTimeout(function(){$( "#my_media" ).text( 'this is a test3' );},3000);
+
+function change_media(cnt) {
+ $( "#my_media" ).text( 'Media #' + cnt );
+ setTimeout(change_media(cnt++), 2000);
+}
+
+change_media(0);
 
 </script>
  
