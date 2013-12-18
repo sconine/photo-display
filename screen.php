@@ -3,7 +3,7 @@
 ?>
 <html>
 <head><Title>Photo Display Screen</title>
-<script src="http://code.jquery.com/jquery-1.10.2.min.js"></script>
+<script src="//code.jquery.com/jquery-1.10.2.min.js"></script>
 <script src="screen.js"></script>
 </head>
 <body>
