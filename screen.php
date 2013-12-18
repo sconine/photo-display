@@ -23,8 +23,8 @@ function change_media(cnt, duration) {
   data: { cnt: cnt, duration: duration },
  });
 
- request.done(function( msg ) {
-   $( "#my_media" ).html( msg );
+ request.done(function( data ) {
+   $( "#my_media" ).html( data );
    
    $.each(data, function(){
       $.each(this, function(){
