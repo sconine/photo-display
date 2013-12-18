@@ -25,8 +25,9 @@ function change_media(cnt, duration) {
 
  request.done(function( data ) {
    $( "#my_media" ).html( data );
+   var obj = jQuery.parseJSON( data );
    
-   $.each( data, function( key, value ) {
+   $.each( obj, function( key, value ) {
      alert( key + ": " + value );
     });
    
