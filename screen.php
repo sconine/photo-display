@@ -20,7 +20,7 @@ function change_media(cnt, duration) {
  var request = $.ajax({
   url: "drive_screen.php",
   type: "GET",
-  data: { name: "Steve", location: "USA" },
+  data: { name: cnt, location: "USA" },
  });
 
  request.done(function( msg ) {
