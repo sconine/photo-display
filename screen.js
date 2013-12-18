@@ -1,8 +1,9 @@
 //JQuery Javascript to drive the screen
 
-
+alert('hi world');
 $( "#media" ).delay( 800 );
 $( "#media" ).html = 'Hi There';
+alert('again');
 
-
-//setTimeout(function(){$('.my-element').fadeIn();}, 5000);
+setTimeout(alert('more'), 5000);
+alert('and more');
