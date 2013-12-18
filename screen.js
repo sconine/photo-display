@@ -6,5 +6,5 @@ $( "my_media" ).html('Hi There');
 //setTimeout(alert('timeed alert'), 500000);
 //$( "media" ).text('Hi There World');
 
-alert($( "my_media" ).html);
+alert($( "my_media" ).html());
 
