@@ -7,5 +7,5 @@
 <script src="screen.js"></script>
 </head>
 <body>
-<div class="media">Media will go here</div>
+<div class="my_media">Media will go here</div>
 </body>
