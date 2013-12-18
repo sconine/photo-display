@@ -7,6 +7,8 @@
 </head>
 <body>
  
+ <div id="my_media"></div>
+ 
 <p>
   <b>Click</b> to change the <span id="tag">html</span>
 </p>
@@ -23,6 +25,9 @@ alert(this);
   var htmlString = $( this ).html();
   $( this ).text( htmlString );
 });
+
+$( "#my_media" ).text( 'this is a test' );
+
 </script>
  
 </body>
