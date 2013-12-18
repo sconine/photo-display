@@ -1,4 +1,7 @@
 <?php
+// This is currently a sample script that I'm using to understand communication
+// with S3 and Amazon in general
+
 require 'vendor/autoload.php';
 
 use Aws\Common\Aws;
