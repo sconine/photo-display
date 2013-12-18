@@ -1,5 +1,8 @@
 // Early Experimentation, got this from a site that was building for RasberryPi
 // will credit if kept
+//
+// This starts the server side node.js server that screens and remote could
+// communicate with if we go that route
 
 
 var express = require('express')
