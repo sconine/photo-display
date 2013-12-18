@@ -8,7 +8,7 @@
 //    Duration to Show Media
 //    If a caption should be shown
 
-$arr = array('a' => $_REQUEST['name'], 'b' => 2, 'c' => 3, 'd' => 4, 'e' => 5);
+$arr = array('cnt' => $_REQUEST['cnt'], 'duration' => $_REQUEST['duration']);
 
 echo json_encode($arr);
 
