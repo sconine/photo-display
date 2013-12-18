@@ -13,13 +13,15 @@
  
 <script>
 
-function change_media(cnt) {
+// Function to change the media
+function change_media(cnt, duration) {
  $( "#my_media" ).text( 'Media #' + cnt );
- //cnt++;
- setTimeout(function(){change_media(cnt++);}, 2000);
+ cnt++;
+ duration = duration + 50;
+ setTimeout(function(){change_media(cnt, duration);}, duration);
 }
 
-change_media(0);
+change_media(0, 50);
 
 </script>
  
