@@ -28,26 +28,22 @@ b) With the JSON data it will know the URL of the media to show next and display
   d) Script will check it's local storage space.  If there is less than say 100MB remaining, it will do a little clean-up be removing the most recently accessed files (thinking being these will not be called again soon). So that storage gets to 200MB.<br>
   e) Script looks at JSON response and does 1 of 3 things:  <br>
     1) It already has the file that is to be dispalyed on it's local storage.  All Set!  Enqueue localhost URL.<br>
-    2) If it does not have the file it will make a call to the "/find_media?media_id=someID" script to all the servers<br> that are local to it's network (so peer to peer essentially) to see if any local peers have the file.  If they do it will use their IP in the URL for enqueueing the media.  Doing this so that we cut down on internet/EC2 transfer volumes.  This call might also return space available on an instance, so that we can improve how we stripe data across all local machines we have.<br>
+    2) If it does not have the file it will make a call to the "/find_media?media_id=someID" script to all the servers<br> that are local to it's network (so peer to peer essentially) to see if any local peers have the file.  If they do it will use their IP in the URL for enqueueing the media.  Doing this so that we cut down on internet/EC2 transfer volumes.<br>
     3) If the file cannot be found locally, the script will call http://MyEC2instance.com/send_media.php?media_id=someID which will send the requested file down to be stored locally.<br>
-  f) Script puts information about the media in the local MySQL database so that local get_media script can read it and serve it to the screen<br><br>
+  f) Script puts information about the media in the local MySQL database so that local get_media script can read it and serve it to the screen<br>
+  ** If this script cannot make any network calls, local or over the internet it should revert to showing what it already has stored on it's local drive.<br><br>
     
-<b>find_media</b> - a node handled call that looks for media on the local hard drive.
-  a) This should return true/false, the IP to use in the URL and the space remaining on the local drive (in theory we could later use this information to better stripe data across all locally available peers).
+<b>find_media</b> - a node handled call that looks for media on the local hard drive.<br>
+  a) This should return true/false, the IP to use in the URL and the space remaining on the local drive (in theory we could later use this information to better stripe data across all locally available peers).<br><br>
   
-
 
   
 <h1>Files on <b>EC2 public instance</b></h1>
-<b>send_media_queue.php</b> on the EC2 instance this will read a SimpleDB (or Dynamo or something persistent in the cloud) table that keeps track of what images have been sent to which screen.  Based on requested configuration (need to flush that out) this script will return the next X hours (or X files) to display as a JSON document.
+<b>send_media_queue.php</b> A scripts that reads a SimpleDB (or Dynamo or something persistent in the cloud) table that keeps track of what images have been sent to which screen and what is being stored on S3.  Based on requested configuration (need to flush that out) this script will return the next X hours (or X files) to display as a JSON document.<br><br>
 
 
+<b>sync_media.php</b> A script that pulls the full media list off S3 and makes sure that the list in the SimpleDB is current.  Does adds and deletes only.  Once the sync is complete this job should also look to see if we need to re-randomize the list of media.  Randomization will happen by updating a column with a random number and then sorting on that column.  Only after all media has been displayed once will re-randomization happen (I hate it when randomizers "pick favorites" and this is a good way to avoid that).  This script will be scheduled to run once per day.<br><br>
 
-<b>sync_media.php</b> a script on the server that pulls the full media list off S3 and makes sure that the list in the SimpleDB is current.  Does adds and deletes only.  Once the sync is complete this job should also look to see if we need to re-randomize the list of media.  Randomization will happen by updating a column with a random number and then sorting on that column.  Only after all media has been displayed once will re-randomization happen (I hate it when randomizers "pick favorites" and this is a good way to avoid that).
-
-<b>find_peers.php</b>
+<b>find_peers.php</b> A script that registers new regions and computers (if it has not seen what is being passed in) and then returns JSON data that is the information for all the peers in the same "region".  Regions and computers will be stored in a SimpleDB table or some other cloud persistent storage.
   
   
-  
-  
-  need to keep flushing this out...
