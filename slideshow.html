@@ -1,8 +1,5 @@
-<?php
-// Script that browser that drives the "screens" initially loads
-?>
 <html>
-<head><Title>Photo Display Screen</title>
+<head><Title>Media Display Screen</title>
 <script src="//code.jquery.com/jquery-1.10.2.min.js"></script>
 </head>
 <body>
@@ -17,7 +14,7 @@ function change_media(cnt, duration) {
 
  // Make a call to the server to get what we should show
  var request = $.ajax({
-  url: "drive_screen.php",
+  url: "get_media",
   type: "GET",
   datatype: 'json',
   data: { cnt: cnt, duration: duration },
@@ -25,14 +22,38 @@ function change_media(cnt, duration) {
 
  // Deal with Response
  request.done(function( data ) {
-   $( "#my_media" ).html( data );
    var obj = jQuery.parseJSON( data );
+   var embed_html = '';
+   var media_url = false;
+   var media_type = false;
+
+   // start with a clean log element
+   $( "#log" ).html( "" );
+
    
    $.each( obj, function( key, value ) {
-     $( "#log" ).html( key + " = " + value );
-    });
+    if (key = 'media_url') {media_url = true;}
+    if (key = 'media_type') {media_type = true;}
+   });
    
+   if (media_url && media_type) {
+    if (obj['media_type'] == 'image') {
+     embed_html = '<img src="' +  obj['media_url'] + '"'>';
+    } else if (obj['media_type'] == 'quicktime_movie') {
+     // TODO: get the correct HTML to embedd quicktime movies in Chrome on Linux
+     embed_html = '<movie src="' +  obj['media_url'] + '"'>';
+    } else {
+     $( "#log" ).html( "Media type not handled: " + obj['media_type'] );
+    }
+    
+    
+   } else {
+     $( "#log" ).html( "Media type or url not found in: " + data );
+   }
    
+   $( "#my_media" ).html( data );
+
+  
  });
  
  // Deal with Failure 
