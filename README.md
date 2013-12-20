@@ -13,7 +13,7 @@ Prototype model idea is this:<br>
 
 
 <h1>Files on <b>localhost</b></h1>
-<b>slideshow.html</b> A basic HTML page with Javascript in it that:<br>
+<b>node/public/slideshow.html</b> A basic HTML page with Javascript in it that:<br>
 a) Makes a call to a URL like http://localhost:8080/get_media which will return JSON data that indicates what image/video to show next as well as how long to show that media before making a new call to the same URL<br>
 b) With the JSON data it will know the URL of the media to show next and display the media on the browser screen in a full-screen kiosk type mode.  URLs for the media it references will also be to the localhost, and might look something like this: http://localhost:8080/public/images/bucket/folder/image_name.jpg (though might be the IP of a host that is a peer on the same network)<br><br>
   
