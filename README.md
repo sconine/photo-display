@@ -17,7 +17,7 @@ Prototype model idea is this:<br>
 a) Makes a call to a URL like http://localhost:8080/get_media which will return JSON data that indicates what image/video to show next as well as how long to show that media before making a new call to the same URL<br>
 b) With the JSON data it will know the URL of the media to show next and display the media on the browser screen in a full-screen kiosk type mode.  URLs for the media it references will also be to the localhost, and might look something like this: http://localhost:8080/public/images/bucket/folder/image_name.jpg (though might be the IP of a host that is a peer on the same network)<br><br>
   
-<b>node/media-display.js</b> A node.js script that creates a node.js server on localhost:8080<br>
+<b>node/media_display.js</b> A node.js script that creates a node.js server on localhost:8080<br>
   a) For anything in the "/public/" folder it should just hand back static content<br>
   b) Requests for "/get_media" will return JSON data that specifies the next media to display.  This data will come from a queue table in MySQL - See below for how this will get populated.  The media that is specified in the JSON data should be confirmed as "on disk" of the localhost before it is sent to the client.<br><br>
   
