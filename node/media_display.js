@@ -1,10 +1,9 @@
-// Early Experimentation, got this from a site that was building for RasberryPi
-// will credit if kept
+// Using this as a resource: http://blog.donaldderek.com/2013/06/build-your-own-google-tv-using-raspberrypi-nodejs-and-socket-io/
 //
-// This starts the server side node.js server that screens and remote could
-// communicate with if we go that route
+// This starts the server side node.js server that screens and remote 
+// communicate with 
 
-
+// Setup node server 
 var express = require('express')
   , app = express()  
   , server = require('http').createServer(app)
@@ -16,11 +15,12 @@ var express = require('express')
 io.set('log level', 1);
 
 // all environments
-app.set('port', process.env.TEST_PORT || 8080);
+app.set('port', process.env.PHOTO_DISPLAY_PORT || 8080);
 app.use(express.favicon());
 app.use(express.logger('dev'));
 app.use(express.bodyParser());
 app.use(express.methodOverride());
+// Create the public folder for static content (thie is where Media will be served from)
 app.use(express.static(path.join(__dirname, 'public')));
 
 //Routes
