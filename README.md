@@ -1,7 +1,7 @@
 <h1>photo-display</h1>
 A system which will display photos and videos (media) on remote screens via a browser.  
 
-Idea is this:<br>
+Will work like this:<br>
 1) Put all your personal servers on a cloud storage solution list S3<br>
 2) Provision a SimpleDB database<br>
 3) Provision in mini server in the cloud: <b>EC2 public instance</b><br> 
