@@ -1,13 +1,17 @@
 <h1>photo-display</h1>
 A system which will display photos and videos (media) on remote screens via a browser.  
 
-Prototype model idea is this:<br>
+Idea is this:<br>
 1) Put all your personal servers on a cloud storage solution list S3<br>
-2) Provision in mini server in the cloud: <b>EC2 public instance</b><br>
-2) Buy a chrome box, RasberryPi (or some similar cheep, open source small computer with some local drive space): <b>localhost</b><br>
-3) Install node.js and chrome on it <br>
-4) Configure it so that when it starts:<br>
-&#160;&#160;&#160;a) It boots chrome up in Kiosk mode to a specific URL like: http://localhost:8080/slideshow.html<br>
+2) Provision a SimpleDB database<br>
+3) Provision in mini server in the cloud: <b>EC2 public instance</b><br> 
+4) Install LAMP stack on server (though MySQL not needed)<br>
+5) Put scripts in <b>php</b> folder on your server<br>
+6) Buy a chrome box, RasberryPi (or some similar cheep, open source small computer with some local drive space): <b>localhost</b><br>
+7) Install node.js and chrome on it <br>
+8) Put the script in <b>node</b> on this small computer<br>
+9) Configure it so that when it starts:<br>
+&#160;&#160;&#160;a) It boots chrome up in Kiosk mode to: http://localhost:8080/slideshow.html<br>
 &#160;&#160;&#160;b) Also boots up a node.js server like: >node media-display.js<br>
 
 
