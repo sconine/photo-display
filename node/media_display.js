@@ -24,45 +24,49 @@ app.use(express.methodOverride());
 app.use(express.static(path.join(__dirname, 'public')));
 
 //Routes
+// default page is the slideshow screen driver
 app.get('/', function (req, res) {
-	res.sendfile(__dirname + '/public/index.html');
+	res.sendfile(__dirname + '/public/slideshow.html');
 });
 
+// Stub for future remote control interface
 app.get('/remote', function (req, res) {
 	res.sendfile(__dirname + '/public/remote.html');
 });
 
+// start this thing up
 server.listen(app.get('port'), function(){
 	console.log('Express server listening on port ' + app.get('port'));
 });
 
-io.sockets.on('connection', function (socket) {
-    socket.emit('message', { message: 'welcome to the chat' });
-    socket.on('send', function (data) {
-        	//Emit to all
-		io.sockets.emit('message', data);
-	});
-});
-
-
-var ss;
+// The stuff below really only matters if we want to implement
+// status monitoring of screens and the abiliy to fairly real-time
+// remote control them
+var ss = {};
 io.sockets.on('connection', function (socket) {
 
  socket.on("screen", function(data){
    socket.type = "screen";
-   //Save the screen socket
-   ss = socket;
+   //Save the screen socket: Want this to support
+   // many screens.  data should send the Screen ID that is registering
+   // we'll need to do a little work on this, basica concept is to 
+   // maintain an array of screens identified by screen ID
+   ss[data] = socket;
    console.log("Screen ready...");
  });
 
  socket.on("remote", function(data){
    socket.type = "remote";
    console.log("Remote ready...");
-   if(ss != undefined){
-      console.log("Synced...");
-   }
+   
+   // This isn't really relevant to me as a remote can manage many screens
+   //if(ss[data] != undefined){
+   //   console.log("Synced...");
+   //}
  });
 
+ // My version of a hello world to make sure thsi thing is working
+ // like I think it does 
  socket.on("blah", function(data){
 	console.log("Got Blah");
  });
