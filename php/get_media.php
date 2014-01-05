@@ -6,7 +6,6 @@
 $datastring = file_get_contents('config.json');
 $config = json_decode($datastring, true);
 
-
 // Die if already running
 $my_name = $_SERVER['SCRIPT_NAME'];
 exec("ps -C $my_name -o pid=",$pids);
@@ -50,7 +49,7 @@ if(curl_errno($c)) {
   $known_peers = query_to_array($sql, &$link) 
   
   foreach ($my_peers as $i=>$peer) {
-    // do we know about this peer (yea loop within a loop... not expecting more than 10-20 peers)
+    // do we know about this peer (yea loop within a loop... not expecting more than 100 peers)
     $known_peer = false;
     foreach ($known_peers as $j=$k_peer) {
       if ($peer['region'] == $k_peer['region'] && $peer['screen_id'] == $k_peer['screen_id']){
@@ -75,14 +74,56 @@ if(curl_errno($c)) {
     }
   }
 }
+
+// Finally pull back peers in same region
+$sql = "SELECT private_ip, screen_id FROM my_peers WHERE region=" . sqlq($config['region'], 0);
+$local_peers = query_to_array($sql, &$link) 
 // End Self registration and awareness
 /////////////////////////////////////////////////
 
 /////////////////////////////////////////////////
 // Now retreive what we're suppose to show next
+// Build the my_peers table schema on the fly
+$sql = 'CREATE TABLE IF NOT EXISTS my_media ('
+  . 'display_order int NOT NULL AUTO_INCREMENT, '
+  . 'media_path varchar(1024) NOT NULL, '
+  . 'media_type varchar(128) NOT NULL, ' 
+  . 'media_host varchar(64) NULL, ' 
+  . 'displayed datetime NULL, '
+  . 'PRIMARY KEY (display_order));';
+$result = mysql_query($sql, $link);
+if (!$result) {die('Invalid query: ' . mysql_error() . "\n");}
 
+// This returns the next 'X' files that this screen will display
+$url = 'http://MyEC2instance.com/send_media_queue.php?'
+  . '&screen_id=' . $config['screen_id'] 
+  . '&region=' . $config['region'];
 
+$confirm_reg = array();
+$ch = curl_init();
+curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
+curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+curl_setopt($ch, CURLOPT_URL,$url);
+$result=curl_exec($ch);
+if(curl_errno($c)) {
+    echo 'error:' . curl_error($c);
+} else {
+  $my_media = json_decode($result, true);
+  
+  foreach ($my_media as $i=>$media) {
+    // see if we have this locally
+    $filepath = $config . $media['media_path'];
+    if (file_exists($filepath)) {
+      $confirm_reg[] = $media['media_path'];
+    } else {
+      // see if a peer has it
+      
+      
+    }
+    
+  }
 
+}
 
 
 //$sql = 'CREATE TABLE IF NOT EXISTS my_peers (region varchar(128) NOT NULL, Shown bit NOT NULL, PositionNum INT, LastPosition INT);';
