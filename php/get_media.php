@@ -23,9 +23,10 @@ mysql_select_db('my_database') or die('Could not select database');
 
 
 // Register yourself and learn about local peers
-$url = 'http://MyEC2instance.com/find_peers.php?ip='
+$url = 'http://MyEC2instance.com/find_peers.php?private_ip='
   . $_SERVER['SERVER_ADDR'] 
   . '&screen_id=' . $config['screen_id'] 
+  . '&public_ip=' . $config['public_ip'] 
   . '&region=' . $config['region'];
   
 $ch = curl_init();
@@ -40,25 +41,58 @@ if(curl_errno($c))
   $my_peers = json_decode($result, true);
   
   
+  // Build the table schema on the fly
+  $sql = 'CREATE TABLE IF NOT EXISTS my_peers (region varchar(128) NOT NULL, screen_id varchar(128) NOT NULL, private_ip varchar(32) NOT NULL, public_ip varchar(32) NOT NULL, PRIMARY KEY (region, screen_id));';
+  $result = mysql_query($sql, $link);
+  if (!$result) {die('Invalid query: ' . mysql_error() . "\n");}
   
+  $sql = "SELECT private_ip , screen_id , region, public_ip FROM my_peers";
+  $known_peers = query_to_array($sql, &$link) 
+  
+  foreach ($my_peers as $i=>$peer) {
+    // do we know about this peer (yea loop within a loop... not expecting more than 10-20 peers)
+    $known_peer = false;
+    foreach ($known_peers as $j=$k_peer) {
+      if ($peer['region'] == $k_peer['region'] && $peer['screen_id'] == $k_peer['screen_id']){
+        $known_peer = true;
+        
+        // Did other info change, if so update in the local database
+        if ($peer['private_ip'] != $k_peer['private_ip'] || $peer['public_ip'] != $k_peer['public_ip']) {
+            $sql = "UPDATE my_peers SET private_ip =" . sqlq($peer['private_ip'], 0) . ", public_ip =" . sqlq($peer['public_ip'], 0) . " WHERE screen_id = " . sqlq($peer['screen_id'], 0) . " AND region = " . sqlq($peer['region'], 0);
+            $usql = query_to_array($sql, &$link) ;
+        }
+      }
+      
+      // If a new peer add them to the local db
+      if (!$known_peer) {
+        $sql = "INSERT INTO my_peers (private_ip , screen_id , region, public_ip) VALUES (";
+        $sql .= sqlq($peer['private_ip'], 0) . ',';
+        $sql .= sqlq($peer['screen_id'], 0) . ',';
+        $sql .= sqlq($peer['region'], 0) . ',';
+        $sql .= sqlq($peer['public_ip'], 0) . ')';
+        $isql = query_to_array($sql, &$link) ;
+      }
+      
+      
+    }
+    
+  }
+  
+  $sql = "SELECT Word FROM tblWords;";
+  $result = mysql_query($sql, $link);
+  while ($row = mysql_fetch_assoc($result)) {
+      $words[] = $row['Word'];
+  }
+  mysql_free_result($result);
   
 }
 
 
 
 
+  $sql = 'CREATE TABLE IF NOT EXISTS my_peers (region varchar(128) NOT NULL, Shown bit NOT NULL, PositionNum INT, LastPosition INT);';
 
-// Build the table schema on the fly
-$sql = 'CREATE TABLE IF NOT EXISTS my_peers (Word varchar(32) NOT NULL, Shown bit NOT NULL, PositionNum INT, LastPosition INT);';
-$result = mysql_query($sql, $link);
-if (!$result) {die('Invalid query: ' . mysql_error() . "\n");}
 
-$sql = "SELECT Word FROM tblWords;";
-$result = mysql_query($sql, $link);
-while ($row = mysql_fetch_assoc($result)) {
-    $words[] = $row['Word'];
-}
-mysql_free_result($result);
 
 
 
@@ -77,4 +111,31 @@ echo json_encode($arr);
 // Close MySQL Connection
 mysql_close($link);
 
+
+
+
+// Query helper functions
+function sqlq($var, $var_type) {
+  if ($var_type == 1) {
+    if (is_numeric($var) && !empty($var)) {
+      return $var;
+    } 
+  } else {
+    if (!empty($var)) {
+      $var = str_replace("'", "''", $var);
+      return "'" . $var . "'";
+    }
+  }
+  return 'NULL';
+}
+
+function query_to_array($sql, &$link) {
+  var $to_ret = array();
+  $result = mysql_query($sql, $link);
+  while ($row = mysql_fetch_assoc($result)) {
+      $to_ret[] = $row;
+  }
+  mysql_free_result($result);
+  return $to_ret;
+}
 ?>
