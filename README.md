@@ -35,6 +35,7 @@ b) With the JSON data it will know the URL of the media to show next and display
     2) If it does not have the file it will make a call to the "/find_media?media_id=someID" script to all the servers<br> that are local to it's network (so peer to peer essentially) to see if any local peers have the file.  If they do it will use their IP in the URL for enqueueing the media.  Doing this so that we cut down on internet/EC2 transfer volumes.<br>
     3) If the file cannot be found locally, the script will call http://MyEC2instance.com/send_media.php?media_id=someID which will send the requested file down to be stored locally.<br>
   f) Script puts information about the media in the local MySQL database so that local get_media script can read it and serve it to the screen<br>
+  g) Script makes a curl call to a public URL like http://MyEC2instance.com/confirm_media_queue.php?screen_id=1&region=MainStreet and POSTS json data that confirms which media it successfully registered.  This way if something goes haywire we'll get a resend<br>
   ** If this script cannot make any network calls, local or over the internet it should revert to showing what it already has stored on it's local drive.<br><br>
     
 <b>find_media</b> - a node handled call that looks for media on the local hard drive.<br>
