@@ -1,5 +1,5 @@
 <?php
-// A php script that will talk to the main EC2 server, 
+// A php script that will run on a local photo display and talk to the main EC2 server, 
 // retreive media to the local network and enqueue media for display. 
 
 // Load my configuration
@@ -21,8 +21,14 @@ $link = mysql_connect('localhost', 'mysql_user', 'mysql_password') or die('Could
 echo 'Connected to MySQL';
 mysql_select_db('my_database') or die('Could not select database');
 
-
+/////////////////////////////////////////////////
 // Register yourself and learn about local peers
+// Build the my_peers table schema on the fly
+$sql = 'CREATE TABLE IF NOT EXISTS my_peers (region varchar(128) NOT NULL, screen_id varchar(128) NOT NULL, private_ip varchar(32) NOT NULL, public_ip varchar(32) NOT NULL, PRIMARY KEY (region, screen_id));';
+$result = mysql_query($sql, $link);
+if (!$result) {die('Invalid query: ' . mysql_error() . "\n");}
+
+// Call the central public registration server
 $url = 'http://MyEC2instance.com/find_peers.php?private_ip='
   . $_SERVER['SERVER_ADDR'] 
   . '&screen_id=' . $config['screen_id'] 
@@ -34,18 +40,12 @@ curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
 curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
 curl_setopt($ch, CURLOPT_URL,$url);
 $result=curl_exec($ch);
-if(curl_errno($c))
-{
+if(curl_errno($c)) {
     echo 'error:' . curl_error($c);
 } else {
   $my_peers = json_decode($result, true);
   
-  
-  // Build the table schema on the fly
-  $sql = 'CREATE TABLE IF NOT EXISTS my_peers (region varchar(128) NOT NULL, screen_id varchar(128) NOT NULL, private_ip varchar(32) NOT NULL, public_ip varchar(32) NOT NULL, PRIMARY KEY (region, screen_id));';
-  $result = mysql_query($sql, $link);
-  if (!$result) {die('Invalid query: ' . mysql_error() . "\n");}
-  
+  // Lookup peers we already know about in our local database
   $sql = "SELECT private_ip , screen_id , region, public_ip FROM my_peers";
   $known_peers = query_to_array($sql, &$link) 
   
@@ -72,25 +72,20 @@ if(curl_errno($c))
         $sql .= sqlq($peer['public_ip'], 0) . ')';
         $isql = query_to_array($sql, &$link) ;
       }
-      
-      
     }
-    
   }
-  
-  $sql = "SELECT Word FROM tblWords;";
-  $result = mysql_query($sql, $link);
-  while ($row = mysql_fetch_assoc($result)) {
-      $words[] = $row['Word'];
-  }
-  mysql_free_result($result);
-  
 }
+// End Self registration and awareness
+/////////////////////////////////////////////////
+
+/////////////////////////////////////////////////
+// Now retreive what we're suppose to show next
 
 
 
 
-  $sql = 'CREATE TABLE IF NOT EXISTS my_peers (region varchar(128) NOT NULL, Shown bit NOT NULL, PositionNum INT, LastPosition INT);';
+
+//$sql = 'CREATE TABLE IF NOT EXISTS my_peers (region varchar(128) NOT NULL, Shown bit NOT NULL, PositionNum INT, LastPosition INT);';
 
 
 
