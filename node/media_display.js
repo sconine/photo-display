@@ -4,6 +4,7 @@
 // communicate with 
 //
 // uses express node.js npm checkout API docs here: http://expressjs.com/api.html
+// uses express node-mysql npm checkout here: https://npmjs.org/package/mysql
 
 // Setup node server 
 var express = require('express')
@@ -25,6 +26,15 @@ app.use(express.methodOverride());
 // Create the public folder for static content (thie is where Media will be served from)
 app.use(express.static(path.join(__dirname, 'public')));
 
+// get a connection to the local MySQL instance
+var mysql      = require('mysql');
+var connection = mysql.createConnection({
+  host     : 'localhost',
+  user     : 'media',
+  password : '******',
+});
+connection.connect();
+
 //Routes
 // default page is the slideshow screen driver
 app.get('/', function (req, res) {
@@ -33,10 +43,20 @@ app.get('/', function (req, res) {
 
 
 
-// Stub for future remote control interface
+// get_media function
 app.get('/get_media', function (req, res) {
 	res.set('Content-Type', 'application/json');
-	res.json({ url: 'http://localhost:8080/public/images/my_image.jpg', media_type: 'image' });
+	
+	// Get the next item to display
+	connection.query('SELECT media_name, media_type, media_url FROM my_media WHERE displayed=0 ORDER BY display_order LIMIT 1', function(err, rows, fields) {
+	  if (err) { res.json({ media_type: 'text', media_url: err});}
+	  else {
+	  	//res.json({ media_url: 'http://localhost:8080/public/images/my_image.jpg', media_type: 'image' });
+	  	res.json({ media_name: rows[0].media_name, media_type: rows[0].media_type, media_url: rows[0].media_url });
+	  }	
+	});	
+	
+	
 	
 });
 
