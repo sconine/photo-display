@@ -28,7 +28,7 @@ b) With the JSON data it will know the URL of the media to show next and display
 <B>get_media.php</b> A php script that will talk to the main EC2 server, retreive media to the local network and enqueue media for display.  As follows:<br>
   a) Every 10 minutes a cron job kicks this script off, script makes sure it is not already running<br>
   b) Script makes a curl call to a public URL like http://MyEC2instance.com/find_peers.php?screen_id=1&region=MainStreet that returns the IP addresses of it's peers, this list is stored in a MySQL Table.<br>
-  c) Script makes a curl call to a public URL like http://MyEC2instance.com/send_media_queue.php?screen_id=1<br>
+  c) Script makes a curl call to a public URL like http://MyEC2instance.com/send_media_queue.php?screen_id=1&region=MainStreet<br>
   d) Script will check it's local storage space.  If there is less than say 100MB remaining, it will do a little clean-up be removing the most recently accessed files (thinking being these will not be called again soon). So that storage gets to 200MB.<br>
   e) Script looks at JSON response and does 1 of 3 things:  <br>
     1) It already has the file that is to be dispalyed on it's local storage.  All Set!  Enqueue localhost URL.<br>
