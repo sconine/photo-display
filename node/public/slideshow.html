@@ -14,7 +14,7 @@ function change_media(cnt, duration) {
 
  // Make a call to the server to get what we should show
  var request = $.ajax({
-  url: "http://localhost/get_media",
+  url: "http://localhost:8080/get_media",
   type: "GET",
   datatype: 'json',
   data: { cnt: cnt, duration: duration },
