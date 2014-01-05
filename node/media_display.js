@@ -2,6 +2,8 @@
 //
 // This starts the server side node.js server that screens and remote 
 // communicate with 
+//
+// uses express node.js npm checkout API docs here: http://expressjs.com/api.html
 
 // Setup node server 
 var express = require('express')
@@ -27,6 +29,15 @@ app.use(express.static(path.join(__dirname, 'public')));
 // default page is the slideshow screen driver
 app.get('/', function (req, res) {
 	res.sendfile(__dirname + '/public/slideshow.html');
+});
+
+
+
+// Stub for future remote control interface
+app.get('/get_media', function (req, res) {
+	res.set('Content-Type', 'application/json');
+	res.json({ url: 'http://localhost:8080/public/images/my_image.jpg', media_type: 'image' });
+	
 });
 
 // Stub for future remote control interface
