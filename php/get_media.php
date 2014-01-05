@@ -33,44 +33,34 @@ $url = 'http://MyEC2instance.com/find_peers.php?private_ip='
   . '&screen_id=' . $config['screen_id'] 
   . '&public_ip=' . $config['public_ip'] 
   . '&region=' . $config['region'];
-  
-$ch = curl_init();
-curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
-curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-curl_setopt($ch, CURLOPT_URL,$url);
-$result=curl_exec($ch);
-if(curl_errno($c)) {
-    echo 'error:' . curl_error($c);
-} else {
-  $my_peers = json_decode($result, true);
-  
-  // Lookup peers we already know about in our local database
-  $sql = "SELECT private_ip , screen_id , region, public_ip FROM my_peers";
-  $known_peers = query_to_array($sql, &$link) 
-  
-  foreach ($my_peers as $i=>$peer) {
-    // do we know about this peer (yea loop within a loop... not expecting more than 100 peers)
-    $known_peer = false;
-    foreach ($known_peers as $j=$k_peer) {
-      if ($peer['region'] == $k_peer['region'] && $peer['screen_id'] == $k_peer['screen_id']){
-        $known_peer = true;
-        
-        // Did other info change, if so update in the local database
-        if ($peer['private_ip'] != $k_peer['private_ip'] || $peer['public_ip'] != $k_peer['public_ip']) {
-            $sql = "UPDATE my_peers SET private_ip =" . sqlq($peer['private_ip'], 0) . ", public_ip =" . sqlq($peer['public_ip'], 0) . " WHERE screen_id = " . sqlq($peer['screen_id'], 0) . " AND region = " . sqlq($peer['region'], 0);
-            $usql = query_to_array($sql, &$link) ;
-        }
-      }
+$my_peers = curl_get_array($url);
+
+// Lookup peers we already know about in our local database
+$sql = "SELECT private_ip , screen_id , region, public_ip FROM my_peers";
+$known_peers = query_to_array($sql, &$link) 
+
+foreach ($my_peers as $i=>$peer) {
+  // do we know about this peer (yea loop within a loop... not expecting more than 100 peers)
+  $known_peer = false;
+  foreach ($known_peers as $j=$k_peer) {
+    if ($peer['region'] == $k_peer['region'] && $peer['screen_id'] == $k_peer['screen_id']){
+      $known_peer = true;
       
-      // If a new peer add them to the local db
-      if (!$known_peer) {
-        $sql = "INSERT INTO my_peers (private_ip , screen_id , region, public_ip) VALUES (";
-        $sql .= sqlq($peer['private_ip'], 0) . ',';
-        $sql .= sqlq($peer['screen_id'], 0) . ',';
-        $sql .= sqlq($peer['region'], 0) . ',';
-        $sql .= sqlq($peer['public_ip'], 0) . ')';
-        $isql = query_to_array($sql, &$link) ;
+      // Did other info change, if so update in the local database
+      if ($peer['private_ip'] != $k_peer['private_ip'] || $peer['public_ip'] != $k_peer['public_ip']) {
+          $sql = "UPDATE my_peers SET private_ip =" . sqlq($peer['private_ip'], 0) . ", public_ip =" . sqlq($peer['public_ip'], 0) . " WHERE screen_id = " . sqlq($peer['screen_id'], 0) . " AND region = " . sqlq($peer['region'], 0);
+          $usql = query_to_array($sql, &$link) ;
       }
+    }
+    
+    // If a new peer add them to the local db
+    if (!$known_peer) {
+      $sql = "INSERT INTO my_peers (private_ip , screen_id , region, public_ip) VALUES (";
+      $sql .= sqlq($peer['private_ip'], 0) . ',';
+      $sql .= sqlq($peer['screen_id'], 0) . ',';
+      $sql .= sqlq($peer['region'], 0) . ',';
+      $sql .= sqlq($peer['public_ip'], 0) . ')';
+      $isql = query_to_array($sql, &$link) ;
     }
   }
 }
@@ -100,30 +90,23 @@ $url = 'http://MyEC2instance.com/send_media_queue.php?'
   . '&region=' . $config['region'];
 
 $confirm_reg = array();
-$ch = curl_init();
-curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
-curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-curl_setopt($ch, CURLOPT_URL,$url);
-$result=curl_exec($ch);
-if(curl_errno($c)) {
-    echo 'error:' . curl_error($c);
-} else {
-  $my_media = json_decode($result, true);
-  
-  foreach ($my_media as $i=>$media) {
-    // see if we have this locally
-    $filepath = $config . $media['media_path'];
-    if (file_exists($filepath)) {
-      $confirm_reg[] = $media['media_path'];
-    } else {
-      // see if a peer has it
-      
+$my_media = curl_get_array($url);
+foreach ($my_media as $i=>$media) {
+  // see if we have this locally
+  $filepath = $config . $media['media_path'];
+  if (file_exists($filepath)) {
+    $confirm_reg[] = $media['media_path'];
+  } else {
+    // see if a local peer has it
+    foreach ($local_peers as $j => $peer) {
       
     }
     
+    
   }
-
+  
 }
+
 
 
 //$sql = 'CREATE TABLE IF NOT EXISTS my_peers (region varchar(128) NOT NULL, Shown bit NOT NULL, PositionNum INT, LastPosition INT);';
@@ -148,7 +131,20 @@ echo json_encode($arr);
 mysql_close($link);
 
 
-
+// CURL Functions
+function curl_get_array($url) {
+  $ch = curl_init();
+  curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
+  curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+  curl_setopt($ch, CURLOPT_URL,$url);
+  $result=curl_exec($ch);
+  if(curl_errno($c)) {
+    echo 'error:' . curl_error($c);
+  } else {
+    return json_decode($result, true);
+  }
+  return array();
+}
 
 // Query helper functions
 function sqlq($var, $var_type) {
