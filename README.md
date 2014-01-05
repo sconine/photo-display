@@ -23,7 +23,7 @@ b) With the JSON data it will know the URL of the media to show next and display
   
 <b>node/media_display.js</b> A node.js script that creates a node.js server on localhost:8080<br>
   a) For anything in the "/public/" folder it should just hand back static content<br>
-  b) Requests for "/get_media" will return JSON data that specifies the next media to display.  This data will come from a queue table in MySQL - See below for how this will get populated.  The media that is specified in the JSON data should be confirmed as "on disk" of the localhost before it is sent to the client.<br><br>
+  b) Requests for "/get_media" will return JSON data that specifies the next media to display.  This data will come from a queue table in MySQL - See below for how this will get populated.  The media that is specified in the JSON data should be confirmed by get_media.php as "on local network" of the localhost before it is sent to the client.<br><br>
   
 <B>get_media.php</b> A php script that will talk to the main EC2 server, retreive media to the local network and enqueue media for display.  As follows:<br>
   a) Every 10 minutes a cron job kicks this script off, script makes sure it is not already running<br>
