@@ -38,6 +38,10 @@ if(curl_errno($c))
     echo 'error:' . curl_error($c);
 } else {
   $my_peers = json_decode($result, true);
+  
+  
+  
+  
 }
 
 
@@ -45,7 +49,7 @@ if(curl_errno($c))
 
 
 // Build the table schema on the fly
-$sql = 'CREATE TABLE IF NOT EXISTS tblWords (Word varchar(32) NOT NULL, Shown bit NOT NULL, PositionNum INT, LastPosition INT);';
+$sql = 'CREATE TABLE IF NOT EXISTS my_peers (Word varchar(32) NOT NULL, Shown bit NOT NULL, PositionNum INT, LastPosition INT);';
 $result = mysql_query($sql, $link);
 if (!$result) {die('Invalid query: ' . mysql_error() . "\n");}
 
