@@ -49,11 +49,11 @@ app.get('/get_media', function (req, res) {
 	
 	// Get the next item to display
 	// you might need to run get_media.php first to build this table
-	connection.query('SELECT media_name, media_type, media_url FROM my_media WHERE displayed=0 ORDER BY display_order LIMIT 1', function(err, rows, fields) {
+	connection.query('SELECT media_location, media_type, media_host FROM my_media WHERE displayed=0 ORDER BY display_order LIMIT 1', function(err, rows, fields) {
 	  if (err) { res.json({ media_type: 'text', media_url: err});}
 	  else {
 	  	//res.json({ media_url: 'http://localhost:8080/public/images/my_image.jpg', media_type: 'image' });
-	  	res.json({ media_name: rows[0].media_name, media_type: rows[0].media_type, media_url: rows[0].media_url });
+	  	res.json({ media_location: rows[0].media_location, media_type: rows[0].media_type, media_host: rows[0].media_host });
 	  }	
 	});	
 	
