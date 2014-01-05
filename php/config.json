@@ -2,5 +2,5 @@
     "screen_id": "1",
     "region": "Boston",
     "public_ip": "99.99.99.99",
-    "media_folder": "/usr/www/html/node/public/images/"
+    "media_folder": "/usr/www/html/node/public/images"
 }
