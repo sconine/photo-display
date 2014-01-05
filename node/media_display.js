@@ -48,6 +48,7 @@ app.get('/get_media', function (req, res) {
 	res.set('Content-Type', 'application/json');
 	
 	// Get the next item to display
+	// you might need to run get_media.php first to build this table
 	connection.query('SELECT media_name, media_type, media_url FROM my_media WHERE displayed=0 ORDER BY display_order LIMIT 1', function(err, rows, fields) {
 	  if (err) { res.json({ media_type: 'text', media_url: err});}
 	  else {
