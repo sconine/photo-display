@@ -99,7 +99,9 @@ foreach ($my_media as $i=>$media) {
   } else {
     // see if a local peer has it
     foreach ($local_peers as $j => $peer) {
-      
+      $url = 'http://' . $peer['private_ip'] . ':8080/find_media?media_path=' . urlencode($media['media_path']);
+      $peer_media = curl_get_array($url);
+      //TODO: was working here
     }
     
     
