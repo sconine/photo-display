@@ -142,25 +142,24 @@ foreach ($my_media as $i=>$media) {
   }
 }
 
-
-
-//$sql = 'CREATE TABLE IF NOT EXISTS my_peers (region varchar(128) NOT NULL, Shown bit NOT NULL, PositionNum INT, LastPosition INT);';
-
-
-
-
-
-
-
-
-
-
-$arr = array('cnt' => $_REQUEST['cnt'], 'duration' => $_REQUEST['duration']);
-
-echo json_encode($arr);
-
-
-
+// Finally commit what we are going to show to the database and register it with the main host
+$post_data = "medialist=" & urlencode(json_encode($confirm_reg));
+$url = 'http://MyEC2instance.com/confirm_media_queue.php?'
+  . '&screen_id=' . $config['screen_id'] 
+  . '&region=' . $config['region'];
+$ch = curl_init();
+curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
+curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+curl_setopt($ch, CURLOPT_URL,$url);
+curl_setopt($ch, CURLOPT_POSTFIELDS,  $post_data);
+curl_setopt($ch, CURLOPT_HEADER, 0);
+curl_setopt($ch, CURLOPT_POST, 1);
+$result=curl_exec($ch);
+if(curl_errno($c)) {
+  echo 'error will not update local database:' . curl_error($c);
+} else {
+  $misql = query_to_array($isql, &$link) ;
+}
 
 // Close MySQL Connection
 mysql_close($link);
