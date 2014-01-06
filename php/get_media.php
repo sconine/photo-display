@@ -78,11 +78,34 @@ $sql = 'CREATE TABLE IF NOT EXISTS my_media ('
   . 'display_order int NOT NULL AUTO_INCREMENT, '
   . 'media_path varchar(1024) NOT NULL, '
   . 'media_type varchar(128) NOT NULL, ' 
+  . 'media_size int NOT NULL, ' 
   . 'media_host varchar(64) NULL, ' 
   . 'displayed datetime NULL, '
   . 'PRIMARY KEY (display_order));';
 $result = mysql_query($sql, $link);
 if (!$result) {die('Invalid query: ' . mysql_error() . "\n");}
+
+// Do a little disk space management (if < 100MB)
+if (disk_free_space($config['media_folder']) < (1024 * 1024 * 100)) {
+  //remove most recently displayed files
+  $sql = "SELECT display_order, media_path, media_size FROM my_media WHERE displayed is not null AND media_host = 'localhost' ORDER BY displayed desc limit 200";
+  $remove_files = query_to_array($sql, &$link);
+  
+  $tot_size = 0;
+  foreach ($remove_files as $i=>$row) {
+    if ($tot_size > 1024 * 1024 * 100) {
+      break;
+    } 
+    unlink($config['media_folder'] . $row['media_path']);
+    // not going to do this for now, as it will be interesting to keep 
+    // an ongoing log of what was shown when
+    // $sql = "DELETE FROM my_media WHERE display_order=" . sqlq($row['display_order']), 1);
+    // $dsql = query_to_array($sql, &$link);
+    $tot_size = $tot_size + $row['media_size'];
+  }
+  
+}
+
 
 // This returns the next 'X' files that this screen will display
 $url = 'http://' . $config['master_server'] . '/send_media_queue.php?'
@@ -135,9 +158,10 @@ foreach ($my_media as $i=>$media) {
   }
   
   if ($media_host != '') {
-    $isql .= "INSERT INTO my_media (media_path, media_type, media_host) VALUES ("
+    $isql .= "INSERT INTO my_media (media_path, media_type, media_size, media_host) VALUES ("
           . sqlq($media['media_path'], 0) . ','
           . sqlq($media['media_type'], 0) . ','
+          . sqlq($media['media_size'], 1) . ','
           . sqlq($media_host, 0) . '); ';
   }
 }
