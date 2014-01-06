@@ -32,9 +32,9 @@ app.use(express.static(path.join(__dirname, 'public')));
 // get a connection to the local MySQL instance
 var mysql      = require('mysql');
 var connection = mysql.createConnection({
-  host     : 'localhost',
-  user     : 'media',
-  password : '******',
+  host     : config.mysql.host,
+  user     : config.mysql.user,
+  password : config.mysql.password,
 });
 connection.connect();
 
