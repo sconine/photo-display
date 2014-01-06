@@ -28,7 +28,7 @@ $result = mysql_query($sql, $link);
 if (!$result) {die('Invalid query: ' . mysql_error() . "\n");}
 
 // Call the central public registration server
-$url = 'http://MyEC2instance.com/find_peers.php?private_ip='
+$url = 'http://' . $config['master_server'] . '/find_peers.php?private_ip='
   . $_SERVER['SERVER_ADDR'] 
   . '&screen_id=' . $config['screen_id'] 
   . '&public_ip=' . $config['public_ip'] 
@@ -37,7 +37,7 @@ $my_peers = curl_get_array($url);
 
 // Lookup peers we already know about in our local database
 $sql = "SELECT private_ip , screen_id , region, public_ip FROM my_peers";
-$known_peers = query_to_array($sql, &$link) 
+$known_peers = query_to_array($sql, &$link);
 
 foreach ($my_peers as $i=>$peer) {
   // do we know about this peer (yea loop within a loop... not expecting more than 100 peers)
@@ -67,13 +67,13 @@ foreach ($my_peers as $i=>$peer) {
 
 // Finally pull back peers in same region
 $sql = "SELECT private_ip, screen_id FROM my_peers WHERE region=" . sqlq($config['region'], 0);
-$local_peers = query_to_array($sql, &$link) 
+$local_peers = query_to_array($sql, &$link);
 // End Self registration and awareness
 /////////////////////////////////////////////////
 
 /////////////////////////////////////////////////
 // Now retreive what we're suppose to show next
-// Build the my_peers table schema on the fly
+// Build the my_media table schema on the fly
 $sql = 'CREATE TABLE IF NOT EXISTS my_media ('
   . 'display_order int NOT NULL AUTO_INCREMENT, '
   . 'media_path varchar(1024) NOT NULL, '
@@ -85,7 +85,7 @@ $result = mysql_query($sql, $link);
 if (!$result) {die('Invalid query: ' . mysql_error() . "\n");}
 
 // This returns the next 'X' files that this screen will display
-$url = 'http://MyEC2instance.com/send_media_queue.php?'
+$url = 'http://' . $config['master_server'] . '/send_media_queue.php?'
   . '&screen_id=' . $config['screen_id'] 
   . '&region=' . $config['region'];
 
@@ -116,7 +116,7 @@ foreach ($my_media as $i=>$media) {
   // Did we find locally or do we need to retreive it
   if ($media_host == '') {
     //TODO: add disk space checks/cleanup and check file size prior to downloading
-    $url = 'http://MyEC2instance.com/send_media.php?media_path=' . urlencode($media['media_path']);
+    $url = 'http://' . $config['master_server'] . '/send_media.php?media_path=' . urlencode($media['media_path']);
     set_time_limit(0);
     $fp = fopen ($filepath, 'w+');
     $ch = curl_init($url);
@@ -144,7 +144,7 @@ foreach ($my_media as $i=>$media) {
 
 // Finally commit what we are going to show to the database and register it with the main host
 $post_data = "medialist=" & urlencode(json_encode($confirm_reg));
-$url = 'http://MyEC2instance.com/confirm_media_queue.php?'
+$url = 'http://' . $config['master_server'] . '/confirm_media_queue.php?'
   . '&screen_id=' . $config['screen_id'] 
   . '&region=' . $config['region'];
 $ch = curl_init();
