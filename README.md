@@ -23,7 +23,9 @@ b) With the JSON data it will know the URL of the media to show next and display
   
 <b>node/media_display.js</b> A node.js script that creates a node.js server on localhost:8080<br>
   a) For anything in the "/public/" folder it should just hand back static content<br>
-  b) Requests for "/get_media" will return JSON data that specifies the next media to display.  This data will come from a queue table in MySQL - See below for how this will get populated.  The media that is specified in the JSON data should be confirmed by get_media.php as "on local network" of the localhost before it is sent to the client.<br><br>
+  b) Requests for "/get_media" will return JSON data that specifies the next media to display.  This data will come from a queue table in MySQL - See below for how this will get populated.  The media that is specified in the JSON data should be confirmed by get_media.php as "on local network" of the localhost before it is sent to the client.<br>
+  c) Requests for "/find_media" are a node handled call that looks for media on the local hard drive.  This should return true/false, the IP to use in the URL and the space remaining on the local drive (in theory we could later use this information to better stripe data across all locally available peers).
+  <br><br>
   
 <B>get_media.php</b> A php script that will talk to the main EC2 server, retreive media to the local network and enqueue media for display.  As follows:<br>
   a) Every 10 minutes a cron job kicks this script off, script makes sure it is not already running<br>
@@ -38,9 +40,6 @@ b) With the JSON data it will know the URL of the media to show next and display
   g) Script makes a curl call to a public URL like http://MyEC2instance.com/confirm_media_queue.php?screen_id=1&region=MainStreet and POSTS json data that confirms which media it successfully registered.  This way if something goes haywire we'll get a resend<br>
   ** If this script cannot make any network calls, local or over the internet it should revert to showing what it already has stored on it's local drive.<br><br>
     
-<b>find_media</b> - a node handled call that looks for media on the local hard drive.<br>
-  a) This should return true/false, the IP to use in the URL and the space remaining on the local drive (in theory we could later use this information to better stripe data across all locally available peers).<br><br>
-  
 
   
 <h1>Files on <b>EC2 public instance</b></h1>
