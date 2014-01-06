@@ -6,6 +6,9 @@
 // uses express node.js npm checkout API docs here: http://expressjs.com/api.html
 // uses express node-mysql npm checkout here: https://npmjs.org/package/mysql
 
+// load the config file for this local slideshow server
+var config = require('../config.json');
+
 // Setup node server 
 var express = require('express')
   , app = express()  
@@ -56,10 +59,25 @@ app.get('/get_media', function (req, res) {
 	  	res.json({ media_path: rows[0].media_path, media_type: rows[0].media_type, media_host: rows[0].media_host });
 	  }	
 	});	
-	
-	
-	
 });
+
+
+// check if a media file exists locally
+app.get('/find_media', function (req, res) {
+	res.set('Content-Type', 'application/json');
+	
+	var fs = require('fs');
+	var file_path = config.media_folder + req.query.media_path;
+	fs.exists(file_path, function(exists) {
+	  // might do something with in the future 
+	  if (exists) {
+	    res.json({ found: true, disk_remaining: 0});
+	  } else {
+	    res.json({ found: false, disk_remaining: 0});
+	  }
+	});
+});
+
 
 // Stub for future remote control interface
 app.get('/remote', function (req, res) {
