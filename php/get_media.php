@@ -90,23 +90,56 @@ $url = 'http://MyEC2instance.com/send_media_queue.php?'
   . '&region=' . $config['region'];
 
 $confirm_reg = array();
+$isql = "";
 $my_media = curl_get_array($url);
 foreach ($my_media as $i=>$media) {
   // see if we have this locally
-  $filepath = $config . $media['media_path'];
+  $media_host = '';
+  $filepath = $config['media_folder'] . $media['media_path'];
   if (file_exists($filepath)) {
     $confirm_reg[] = $media['media_path'];
+    $media_host = 'localhost';
   } else {
     // see if a local peer has it
     foreach ($local_peers as $j => $peer) {
       $url = 'http://' . $peer['private_ip'] . ':8080/find_media?media_path=' . urlencode($media['media_path']);
       $peer_media = curl_get_array($url);
-      //TODO: was working here
+      
+      if ($peer_media[0]['found']) {
+        $confirm_reg[] = $media['media_path'];
+        $media_host = $peer['private_ip'];
+        break;
+      }
     }
-    
-    
   }
   
+  // Did we find locally or do we need to retreive it
+  if ($media_host == '') {
+    //TODO: add disk space checks/cleanup and check file size prior to downloading
+    $url = 'http://MyEC2instance.com/send_media.php?media_path=' . urlencode($media['media_path']);
+    set_time_limit(0);
+    $fp = fopen ($filepath, 'w+');
+    $ch = curl_init($url);
+    curl_setopt($ch, CURLOPT_TIMEOUT, 50);
+    curl_setopt($ch, CURLOPT_FILE, $fp); 
+    curl_setopt($ch, CURLOPT_FOLLOWLOCATION, true);
+    curl_exec($ch); 
+    curl_close($ch);
+    fclose($fp);
+    if(curl_errno($c)) {
+      echo 'error:' . curl_error($c);
+    } else {
+      $confirm_reg[] = $media['media_path'];
+      $media_host = 'localhost';    
+    }
+  }
+  
+  if ($media_host != '') {
+    $isql .= "INSERT INTO my_media (media_path, media_type, media_host) VALUES ("
+          . sqlq($media['media_path'], 0) . ','
+          . sqlq($media['media_type'], 0) . ','
+          . sqlq($media_host, 0) . '); ';
+  }
 }
 
 
