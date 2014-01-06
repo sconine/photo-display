@@ -3,5 +3,10 @@
     "region": "Boston",
     "public_ip": "99.99.99.99",
     "media_folder": "/usr/www/html/node/public/images",
-    "master_server": "99.99.99.99"
+    "master_server": "99.99.99.99",
+    "mysql": {
+        "host": "localhost",
+        "user": "mysql_user",
+        "password": "mysql_password"
+    }
 }
