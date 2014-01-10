@@ -45,9 +45,15 @@ b) With the JSON data it will know the URL of the media to show next and display
 <h1>Files on <b>EC2 public instance</b></h1>
 <b>send_media_queue.php</b> A scripts that reads a SimpleDB (or Dynamo or something persistent in the cloud) table that keeps track of what images have been sent to which screen and what is being stored on S3.  Based on requested configuration (need to flush that out) this script will return the next X hours (or X files) to display as a JSON document.<br><br>
 
+<b>send_media.php</b> A script that pulls a single resource off S3 and sends it down to a server.  Called like: http://MyEC2instance.com/send_media.php?media_id=someID<br><br>
+
+<b>confirm_media_queue.php</b> A script that receives JSON data and updates the status of media queue items such that the host knows they were received and logged correctly.<br><br>
+
 
 <b>sync_media.php</b> A script that pulls the full media list off S3 and makes sure that the list in the SimpleDB is current.  Does adds and deletes only.  Once the sync is complete this job should also look to see if we need to re-randomize the list of media.  Randomization will happen by updating a column with a random number and then sorting on that column.  Only after all media has been displayed once will re-randomization happen (I hate it when randomizers "pick favorites" and this is a good way to avoid that).  This script will be scheduled to run once per day.<br><br>
 
 <b>find_peers.php</b> A script that registers new regions and computers (if it has not seen what is being passed in) and then returns JSON data that is the information for all the peers in the same "region".  Regions and computers will be stored in a SimpleDB table or some other cloud persistent storage.
-  
-  
+<br><br>
+<h1>Other Thoughts</h1>
+Could add functionality so that there was a key screens used to verify they were legit before media was send.<br>
+
