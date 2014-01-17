@@ -161,11 +161,20 @@ if (!isset($result['Item']['screen_id']['S'])) {
         )),
         'ReturnConsumedCapacity' => 'TOTAL'
     ));
+    
+    // TODO: make sure to push this screen onto the region screen list if we didn't just create the region
+
+} else {
+    
+    // TODO: update the screen_last_checkin value for this screen
 }
 
 
+// Finally return every screen we know about (could filter this by region, but not expecting this to be very many overall)
 
-// make sure to push this screen onto the region screen list if we didn't just create the region
+// TODO: return all screens we know about
+
+
 
 
 ?>
