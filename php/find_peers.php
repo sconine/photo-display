@@ -1,5 +1,5 @@
 <?php
-// Get the media we have stored on S3 and load it into a dynamoDB
+// A script that registers screens and returns peers
 
 require 'vendor/autoload.php';
 
@@ -11,49 +11,95 @@ $client = $aws->get('DynamoDb');
 $result = $client->listTables();
 
 // TableNames contains an array of table names
-$has_table = false;
+$has_regions = false;
+$has_screens = false;
 foreach ($result['TableNames'] as $table_name) {
-    if ($table_name == "media_files") {$has_table = true;}
+    if ($table_name == "media_regions") {$has_regions = true;}
+    if ($table_name == "media_screens") {$has_screens = true;}
     if (!if (isset($_SERVER['HTTP_HOST'])) {
         echo $$table_name . "\n";
     }
 }
 
-// Create table is non-existent
-if (!$has_table ) {
+// Create tables if non-existent
+if (!$has_regions ) {
     $client->createTable(array(
-    'TableName' => 'media_files',
-    'AttributeDefinitions' => array(
-        array(
-            'AttributeName' => 'file_name',
-            'AttributeType' => 'S'
+        'TableName' => 'media_regions',
+        'AttributeDefinitions' => array(
+            array(
+                'AttributeName' => 'region_name',
+                'AttributeType' => 'S'
+            ),
+            array(
+                'AttributeName' => 'region_active',
+                'AttributeType' => 'B'
+            ),
+            array(
+                'AttributeName' => 'region_screen_list',
+                'AttributeType' => 'SS'
+            )
         ),
-        array(
-            'AttributeName' => 'shown_state',
-            'AttributeType' => 'N'
+        'KeySchema' => array(
+            array(
+                'AttributeName' => 'region_name',
+                'KeyType'       => 'HASH'
+            )
         ),
-        array(
-            'AttributeName' => 'shown_on',
-            'AttributeType' => 'SS'
+        'ProvisionedThroughput' => array(
+            'ReadCapacityUnits'  => 1,
+            'WriteCapacityUnits' => 1
         )
-    ),
-    'KeySchema' => array(
-        array(
-            'AttributeName' => 'file_name',
-            'KeyType'       => 'HASH'
-        ),
-        array(
-            'AttributeName' => 'shown_state',
-            'KeyType'       => 'RANGE'
-        )
-    ),
-    'ProvisionedThroughput' => array(
-        'ReadCapacityUnits'  => 10,
-        'WriteCapacityUnits' => 20
-    )
-));
-    
+    ));
 }
+
+// Create tables if non-existent
+if (!$has_screens ) {
+    $client->createTable(array(
+        'TableName' => 'media_screens',
+        'AttributeDefinitions' => array(
+            array(
+                'AttributeName' => 'screen_id',
+                'AttributeType' => 'S'
+            ),
+            array(
+                'AttributeName' => 'screen_region_name',
+                'AttributeType' => 'S'
+            ),
+            array(
+                'AttributeName' => 'screen_private_ip',
+                'AttributeType' => 'S'
+            ),
+            array(
+                'AttributeName' => 'screen_public_ip',
+                'AttributeType' => 'S'
+            ),
+            array(
+                'AttributeName' => 'screen_last_checkin',
+                'AttributeType' => 'N'
+            ),
+            array(
+                'AttributeName' => 'screen_active',
+                'AttributeType' => 'B'
+            )
+        ),
+        'KeySchema' => array(
+            array(
+                'AttributeName' => 'screen_id',
+                'KeyType'       => 'HASH'
+            ),
+            array(
+                'AttributeName' => 'screen_region_name',
+                'KeyType'       => 'RANGE'
+            )
+
+        ),
+        'ProvisionedThroughput' => array(
+            'ReadCapacityUnits'  => 1,
+            'WriteCapacityUnits' => 1
+        )
+    ));
+}
+
 
 
 ?>
