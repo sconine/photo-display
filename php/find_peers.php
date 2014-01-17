@@ -1,5 +1,6 @@
 <?php
 // A script that registers screens and returns peers
+// for reference: http://docs.aws.amazon.com/aws-sdk-php/guide/latest/service-dynamodb.html
 
 require 'vendor/autoload.php';
 
@@ -100,6 +101,71 @@ if (!$has_screens ) {
     ));
 }
 
+
+// ok we've got tables, see what we were sent
+$region_name = '';
+$screen_id = '';
+$screen_private_ip = '';
+$screen_public_ip = '';
+if (isset($_REQUEST['region'])) {$region_name = $_REQUEST['region'];}
+if ($region_name == '') {$region_name = 'Default Region';}
+if (isset($_REQUEST['screen_id'])) {$screen_id = $_REQUEST['screen_id'];}
+if ($screen_id == '') {$screen_id = 'Default Screen';}
+if (isset($_REQUEST['private_ip'])) {$screen_private_ip = $_REQUEST['private_ip'];}
+if (isset($_REQUEST['public_ip'])) {$screen_public_ip = $_REQUEST['public_ip'];}
+$time = time();
+
+// have we seen this region
+$result = $client->getItem(array(
+    'ConsistentRead' => true,
+    'TableName' => 'region_name',
+    'Key'       => array(
+        'region_name'   => array('S' => $region_name)
+    )
+));
+
+if (!isset($result['Item']['region_name']['S'])) {
+    // Add this region
+    $result = $client->putItem(array(
+        'TableName' => 'region_name',
+        'Item' => $client->formatAttributes(array(
+            'region_name'      => $region_name,
+            'region_active'    => true,
+            'region_screen_list'   => array($screen_id)
+        )),
+        'ReturnConsumedCapacity' => 'TOTAL'
+    ));
+}
+
+// have we seen this screen
+$result = $client->getItem(array(
+    'ConsistentRead' => true,
+    'TableName' => 'media_screens',
+    'Key'       => array(
+        'screen_id'   => array('S' => $screen_id),
+        'screen_region_name'   => array('S' => $region_name)
+    )
+));
+
+if (!isset($result['Item']['screen_id']['S'])) {
+    // Add this screen
+    $result = $client->putItem(array(
+        'TableName' => 'media_screens',
+        'Item' => $client->formatAttributes(array(
+            'screen_id'      => $screen_id,
+            'screen_region_name'    => $region_name,
+            'screen_private_ip'    => $screen_private_ip,
+            'screen_public_ip'    => $screen_public_ip,
+            'screen_last_checkin'    => $time,
+            'screen_active'    => true
+        )),
+        'ReturnConsumedCapacity' => 'TOTAL'
+    ));
+}
+
+
+
+// make sure to push this screen onto the region screen list if we didn't just create the region
 
 
 ?>
