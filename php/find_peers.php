@@ -197,10 +197,10 @@ if (!isset($result['Item']['screen_id']['S'])) {
 }
 
 
-// Finally return every screen we know about (could filter this by region, but not expecting this to be very many overall)
-
-// TODO: return all screens we know about
-
+// Finally return every screen we know about 
+// (could filter this by region, but not expecting this to be very many overall)
+$iterator = $client->getIterator('Scan', array('TableName' => 'media_screens'));
+echo json_encode($iterator);
 
 
 
