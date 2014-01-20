@@ -103,6 +103,7 @@ if (!$has_screens ) {
 
 
 // ok we've got tables, see what we were sent
+$created_region = false;
 $region_name = '';
 $screen_id = '';
 $screen_private_ip = '';
@@ -135,6 +136,7 @@ if (!isset($result['Item']['region_name']['S'])) {
         )),
         'ReturnConsumedCapacity' => 'TOTAL'
     ));
+    $created_region = true;
 }
 
 // have we seen this screen
@@ -162,11 +164,36 @@ if (!isset($result['Item']['screen_id']['S'])) {
         'ReturnConsumedCapacity' => 'TOTAL'
     ));
     
-    // TODO: make sure to push this screen onto the region screen list if we didn't just create the region
+    // Make sure to push this screen onto the region screen list if we didn't just create the region
+    if (!$created_region) {
+        $result = $client->updateItem(array(
+            'TableName' => 'region_name',
+            'Key'       => array(
+                'region_name'   => array('S' => $region_name)
+            ),
+            'AttributeUpdates' => array(
+                'region_screen_list'   => array('SS' => array($screen_id)),
+                'Action' => 'ADD'
+            )
+        ));
+    }
 
 } else {
+    // Update the screen_last_checkin and IP values for this screen
+    $result = $client->updateItem(array(
+        'TableName' => 'media_screens',
+        'Key'       => array(
+            'screen_id'   => array('S' => $screen_id),
+            'screen_region_name'   => array('S' => $region_name)
+        )
+        'AttributeUpdates' => array(
+            'screen_private_ip'    =>  array('S' => $screen_private_ip),
+            'screen_public_ip'    =>  array('S' => $screen_public_ip),
+            'screen_last_checkin'    =>  array('N' => $time),
+            'Action' => 'PUT'
+        )
+    ));    
     
-    // TODO: update the screen_last_checkin value for this screen
 }
 
 
