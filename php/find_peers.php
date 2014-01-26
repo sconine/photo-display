@@ -106,8 +106,8 @@ if ($debug) {echo "Currect Tables Exist<br>\n";}
 $created_region = false;
 $region_name = '';
 $screen_id = '';
-$screen_private_ip = '';
-$screen_public_ip = '';
+$screen_private_ip = '192.168.1.77';
+$screen_public_ip = '192.168.1.66';
 if (isset($_REQUEST['region'])) {$region_name = $_REQUEST['region'];}
 if ($region_name == '') {$region_name = 'Default Region';}
 if (isset($_REQUEST['screen_id'])) {$screen_id = $_REQUEST['screen_id'];}
@@ -172,7 +172,7 @@ if (!isset($result['Item']['screen_id']['S'])) {
                 'region_name'   => array('S' => $region_name)
             ),
             'AttributeUpdates' => array(
-                'region_screen_list'   => array('S' => array($screen_id)),
+                'region_screen_list'   => array('SS' => array($screen_id)),
                 'Action' => 'ADD'
             )
         ));
