@@ -17,10 +17,13 @@ $has_screens = false;
 foreach ($result['TableNames'] as $table_name) {
     if ($table_name == "media_regions") {$has_regions = true;}
     if ($table_name == "media_screens") {$has_screens = true;}
-    if (!isset($_SERVER['HTTP_HOST'])) {
+    //if (!isset($_SERVER['HTTP_HOST'])) {
         echo $$table_name . "\n";
-    }
+    //}
 }
+
+echo 'hi';
+
 
 // Create tables if non-existent
 if (!$has_regions ) {
