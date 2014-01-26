@@ -2,7 +2,7 @@
 // A script that registers screens and returns peers
 // for reference: http://docs.aws.amazon.com/aws-sdk-php/guide/latest/service-dynamodb.html
 
-require 'vendor/autoload.php';
+require '../vendor/autoload.php';
 
 use Aws\Common\Aws;
 
