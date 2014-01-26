@@ -53,6 +53,8 @@ if (!$has_regions ) {
         )
     ));
     if ($debug) {echo "Created Table: media_regions<br>\n";}
+    $client->waitUntilTableExists(array('TableName' => 'media_regions'));
+    if ($debug) {echo "Table Exists!<br>\n";}
 }
 
 
@@ -88,7 +90,8 @@ if (!$has_screens ) {
         )
     ));
     if ($debug) {echo "Created Table: media_screens<br>\n";}
-
+    $client->waitUntilTableExists(array('TableName' => 'media_screens'));
+    if ($debug) {echo "Table Exists!<br>\n";}
 }
 
 exit;
