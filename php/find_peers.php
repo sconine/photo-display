@@ -101,7 +101,7 @@ if (!$has_screens ) {
 }
 
 // ok we've got tables, see what we were sent
-if ($debug) {echo "Currect Tables Exist<br>\n";}
+if ($debug) {echo "Current Tables Exist<br>\n";}
 $created_region = false;
 $region_name = '';
 $screen_id = '';
@@ -116,6 +116,7 @@ if (isset($_REQUEST['public_ip'])) {$screen_public_ip = $_REQUEST['public_ip'];}
 $time = time();
 
 // have we seen this region
+if ($debug) {echo "Looking up region: $region_name<br>\n";}
 $result = $client->getItem(array(
     'ConsistentRead' => true,
     'TableName' => 'region_name',
@@ -123,9 +124,11 @@ $result = $client->getItem(array(
         'region_name'   => array('S' => $region_name)
     )
 ));
+if ($debug) {var_dump($result);}
 
 if (!isset($result['Item']['region_name']['S'])) {
     // Add this region
+    if ($debug) {echo "$region_name not found, adding region now<br>\n";}
     $result = $client->putItem(array(
         'TableName' => 'region_name',
         'Item' => $client->formatAttributes(array(
@@ -136,9 +139,11 @@ if (!isset($result['Item']['region_name']['S'])) {
         'ReturnConsumedCapacity' => 'TOTAL'
     ));
     $created_region = true;
+    if ($debug) {echo "$region_name added<br>\n";}
 }
 
 // have we seen this screen
+if ($debug) {echo "Looking up screen: $screen_id in $region_name<br>\n";}
 $result = $client->getItem(array(
     'ConsistentRead' => true,
     'TableName' => 'media_screens',
@@ -147,9 +152,11 @@ $result = $client->getItem(array(
         'screen_region_name'   => array('S' => $region_name)
     )
 ));
+if ($debug) {var_dump($result);}
 
 if (!isset($result['Item']['screen_id']['S'])) {
     // Add this screen
+    if ($debug) {echo "$screen_id in $region_name not found, adding screen now<br>\n";}
     $result = $client->putItem(array(
         'TableName' => 'media_screens',
         'Item' => $client->formatAttributes(array(
@@ -162,7 +169,8 @@ if (!isset($result['Item']['screen_id']['S'])) {
         )),
         'ReturnConsumedCapacity' => 'TOTAL'
     ));
-    
+     if ($debug) {echo "$screen_id in $region_name added<br>\n";}
+   
     // Make sure to push this screen onto the region screen list if we didn't just create the region
     if (!$created_region) {
         $result = $client->updateItem(array(
@@ -175,10 +183,12 @@ if (!isset($result['Item']['screen_id']['S'])) {
                 'Action' => 'ADD'
             )
         ));
+        if ($debug) {echo "$screen_id in $region_name pushed onto region list<br>\n";}
     }
 
 } else {
     // Update the screen_last_checkin and IP values for this screen
+    if ($debug) {echo "$screen_id in $region_name checkin will be updated<br>\n";}
     $result = $client->updateItem(array(
         'TableName' => 'media_screens',
         'Key'       => array(
@@ -192,7 +202,8 @@ if (!isset($result['Item']['screen_id']['S'])) {
             'Action' => 'PUT'
         )
     ));    
-    
+    if ($debug) {echo "$screen_id in $region_name updated<br>\n";}
+
 }
 
 
