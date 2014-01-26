@@ -4,6 +4,13 @@
 
 require '../vendor/autoload.php';
 
+// don't want to print debug through web server in general
+if (!isset($_SERVER['HTTP_HOST'])) {
+    $debug = true; 
+} else {
+    $debug = true;
+}
+
 use Aws\Common\Aws;
 
 // You'll need to edit this with your config file
@@ -18,17 +25,13 @@ $has_screens = false;
 foreach ($result['TableNames'] as $table_name) {
     if ($table_name == "media_regions") {$has_regions = true;}
     if ($table_name == "media_screens") {$has_screens = true;}
-    //if (!isset($_SERVER['HTTP_HOST'])) {
-        echo $table_name . ": table_name\n";
-    //}
+    if ($debug) {echo "Found Table: " . $table_name . "<br>\n";}
 }
-
-echo 'hi';
-exit;
 
 
 // Create tables if non-existent
 if (!$has_regions ) {
+    if ($debug) {echo "Attempting to Create media_regions<br>\n";}
     $client->createTable(array(
         'TableName' => 'media_regions',
         'AttributeDefinitions' => array(
@@ -56,10 +59,13 @@ if (!$has_regions ) {
             'WriteCapacityUnits' => 1
         )
     ));
+    if ($debug) {echo "Created media_regions<br>\n";}
 }
+
 
 // Create tables if non-existent
 if (!$has_screens ) {
+    if ($debug) {echo "Attempting to Create media_screens<br>\n";}
     $client->createTable(array(
         'TableName' => 'media_screens',
         'AttributeDefinitions' => array(
@@ -104,10 +110,13 @@ if (!$has_screens ) {
             'WriteCapacityUnits' => 1
         )
     ));
+    if ($debug) {echo "Created media_screens<br>\n";}
+
 }
 
 
 // ok we've got tables, see what we were sent
+if ($debug) {echo "Currect Tables Exist<br>\n";}
 $created_region = false;
 $region_name = '';
 $screen_id = '';
