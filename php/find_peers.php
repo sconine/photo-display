@@ -6,12 +6,11 @@ require '../vendor/autoload.php';
 
 use Aws\Common\Aws;
 
-// You'll need to edit this with your config
+// You'll need to edit this with your config file
+// make sure you specify the correct region as dynamo is region specific
 $aws = Aws::factory('/usr/www/html/photo-display/php/amz_config.json');
 $client = $aws->get('DynamoDb');
 $result = $client->listTables();
-var_dump($result);
-//var_dump($client);
 
 // TableNames contains an array of table names
 $has_regions = false;
