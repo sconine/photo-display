@@ -119,7 +119,7 @@ $time = time();
 if ($debug) {echo "Looking up region: $region_name<br>\n";}
 $result = $client->getItem(array(
     'ConsistentRead' => true,
-    'TableName' => 'region_name',
+    'TableName' => 'media_regions',
     'Key'       => array(
         'region_name'   => array('S' => $region_name)
     )
@@ -130,7 +130,7 @@ if (!isset($result['Item']['region_name']['S'])) {
     // Add this region
     if ($debug) {echo "$region_name not found, adding region now<br>\n";}
     $result = $client->putItem(array(
-        'TableName' => 'region_name',
+        'TableName' => 'media_regions',
         'Item' => $client->formatAttributes(array(
             'region_name'      => $region_name,
             'region_active'    => true,
