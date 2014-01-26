@@ -100,7 +100,6 @@ if (!$has_screens ) {
     if ($debug) {echo "Table Exists!<br>\n";}
 }
 
-exit;
 // ok we've got tables, see what we were sent
 if ($debug) {echo "Currect Tables Exist<br>\n";}
 $created_region = false;
