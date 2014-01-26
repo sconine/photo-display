@@ -198,10 +198,9 @@ if (!isset($result['Item']['screen_id']['S'])) {
             'screen_region_name'   => array('S' => $region_name)
         ),
         'AttributeUpdates' => array(
-            'screen_private_ip'    =>  array('S' => $screen_private_ip),
-            'screen_public_ip'    =>  array('S' => $screen_public_ip),
-            'screen_last_checkin'    =>  array('N' => $time),
-            'Action' => 'PUT'
+            'screen_private_ip'    =>  array('Action' => 'PUT', 'Value' => array('S' => $screen_private_ip)),
+            'screen_public_ip'    =>  array('Action' => 'PUT', 'Value' => array('S' => $screen_public_ip)),
+            'screen_last_checkin'    =>  array('Action' => 'PUT', 'Value' => array('N' => $time))
         )
     ));    
     if ($debug) {echo "$screen_id in $region_name updated<br>\n";}
