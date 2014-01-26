@@ -37,7 +37,7 @@ if (!$has_regions ) {
             ),
             array(
                 'AttributeName' => 'region_screen_list',
-                'AttributeType' => 'SS'
+                'AttributeType' => 'S'
             )
         ),
         'KeySchema' => array(
@@ -172,7 +172,7 @@ if (!isset($result['Item']['screen_id']['S'])) {
                 'region_name'   => array('S' => $region_name)
             ),
             'AttributeUpdates' => array(
-                'region_screen_list'   => array('SS' => array($screen_id)),
+                'region_screen_list'   => array('S' => array($screen_id)),
                 'Action' => 'ADD'
             )
         ));
