@@ -32,6 +32,9 @@ foreach ($result['TableNames'] as $table_name) {
 
 // Create tables if non-existent
 if (!$has_regions ) {
+    // This can take a few mintes so increase timelimit
+    set_time_limit(600);
+    
     if ($debug) {echo "Attempting to Create Table: media_regions<br>\n";}
     $client->createTable(array(
         'TableName' => 'media_regions',
@@ -60,6 +63,9 @@ if (!$has_regions ) {
 
 // Create tables if non-existent
 if (!$has_screens ) {
+    // This can take a few mintes so increase timelimit
+    set_time_limit(600);
+    
     if ($debug) {echo "Attempting to Create Table: media_screens<br>\n";}
     $client->createTable(array(
         'TableName' => 'media_screens',
