@@ -185,7 +185,7 @@ if (!isset($result['Item']['screen_id']['S'])) {
         'Key'       => array(
             'screen_id'   => array('S' => $screen_id),
             'screen_region_name'   => array('S' => $region_name)
-        )
+        ),
         'AttributeUpdates' => array(
             'screen_private_ip'    =>  array('S' => $screen_private_ip),
             'screen_public_ip'    =>  array('S' => $screen_public_ip),
