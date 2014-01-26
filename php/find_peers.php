@@ -31,7 +31,7 @@ foreach ($result['TableNames'] as $table_name) {
 
 // Create tables if non-existent
 if (!$has_regions ) {
-    if ($debug) {echo "Attempting to Create media_regions<br>\n";}
+    if ($debug) {echo "Attempting to Create Table: media_regions<br>\n";}
     $client->createTable(array(
         'TableName' => 'media_regions',
         'AttributeDefinitions' => array(
@@ -52,6 +52,14 @@ if (!$has_regions ) {
             array(
                 'AttributeName' => 'region_name',
                 'KeyType'       => 'HASH'
+            ),
+            array(
+                'AttributeName' => 'region_active',
+                'KeyType'       => 'RANGE'
+            ),
+            array(
+                'AttributeName' => 'region_screen_list',
+                'KeyType'       => 'RANGE'
             )
         ),
         'ProvisionedThroughput' => array(
@@ -59,13 +67,13 @@ if (!$has_regions ) {
             'WriteCapacityUnits' => 1
         )
     ));
-    if ($debug) {echo "Created media_regions<br>\n";}
+    if ($debug) {echo "Created Table: media_regions<br>\n";}
 }
 
 
 // Create tables if non-existent
 if (!$has_screens ) {
-    if ($debug) {echo "Attempting to Create media_screens<br>\n";}
+    if ($debug) {echo "Attempting to Create Table: media_screens<br>\n";}
     $client->createTable(array(
         'TableName' => 'media_screens',
         'AttributeDefinitions' => array(
@@ -110,7 +118,7 @@ if (!$has_screens ) {
             'WriteCapacityUnits' => 1
         )
     ));
-    if ($debug) {echo "Created media_screens<br>\n";}
+    if ($debug) {echo "Created Table: media_screens<br>\n";}
 
 }
 
