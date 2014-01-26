@@ -10,8 +10,8 @@ use Aws\Common\Aws;
 $aws = Aws::factory('/usr/www/html/photo-display/php/amz_config.json');
 $client = $aws->get('DynamoDb');
 $result = $client->listTables();
-var_dump($result);
-//var_dump($client);
+//var_dump($result);
+var_dump($client);
 
 // TableNames contains an array of table names
 $has_regions = false;
