@@ -124,7 +124,7 @@ $result = $client->getItem(array(
         'region_name'   => array('S' => $region_name)
     )
 ));
-if ($debug) {var_dump($result);}
+if ($debug) {var_dump($result); echo '<br>';}
 
 if (!isset($result['Item']['region_name']['S'])) {
     // Add this region
@@ -154,7 +154,7 @@ $result = $client->getItem(array(
         'screen_region_name'   => array('S' => $region_name)
     )
 ));
-if ($debug) {var_dump($result);}
+if ($debug) {var_dump($result); echo '<br>';}
 
 if (!isset($result['Item']['screen_id']['S'])) {
     // Add this screen
