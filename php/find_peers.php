@@ -1,6 +1,7 @@
 <?php
 // A script that registers screens and returns peers
 // for reference: http://docs.aws.amazon.com/aws-sdk-php/guide/latest/service-dynamodb.html
+// and also useful: http://docs.aws.amazon.com/amazondynamodb/latest/developerguide/AppendixSampleDataCodePHP.html
 
 require '../vendor/autoload.php';
 
@@ -38,28 +39,12 @@ if (!$has_regions ) {
             array(
                 'AttributeName' => 'region_name',
                 'AttributeType' => 'S'
-            ),
-            array(
-                'AttributeName' => 'region_active',
-                'AttributeType' => 'B'
-            ),
-            array(
-                'AttributeName' => 'region_screen_list',
-                'AttributeType' => 'S'
             )
         ),
         'KeySchema' => array(
             array(
                 'AttributeName' => 'region_name',
                 'KeyType'       => 'HASH'
-            ),
-            array(
-                'AttributeName' => 'region_active',
-                'KeyType'       => 'RANGE'
-            ),
-            array(
-                'AttributeName' => 'region_screen_list',
-                'KeyType'       => 'RANGE'
             )
         ),
         'ProvisionedThroughput' => array(
@@ -84,22 +69,6 @@ if (!$has_screens ) {
             array(
                 'AttributeName' => 'screen_region_name',
                 'AttributeType' => 'S'
-            ),
-            array(
-                'AttributeName' => 'screen_private_ip',
-                'AttributeType' => 'S'
-            ),
-            array(
-                'AttributeName' => 'screen_public_ip',
-                'AttributeType' => 'S'
-            ),
-            array(
-                'AttributeName' => 'screen_last_checkin',
-                'AttributeType' => 'N'
-            ),
-            array(
-                'AttributeName' => 'screen_active',
-                'AttributeType' => 'B'
             )
         ),
         'KeySchema' => array(
@@ -122,7 +91,7 @@ if (!$has_screens ) {
 
 }
 
-
+exit;
 // ok we've got tables, see what we were sent
 if ($debug) {echo "Currect Tables Exist<br>\n";}
 $created_region = false;
