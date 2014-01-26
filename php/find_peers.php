@@ -140,6 +140,8 @@ if (!isset($result['Item']['region_name']['S'])) {
     ));
     $created_region = true;
     if ($debug) {echo "$region_name added<br>\n";}
+} else {
+    if ($debug) {echo "$region_name found!<br>\n";}
 }
 
 // have we seen this screen
@@ -188,7 +190,7 @@ if (!isset($result['Item']['screen_id']['S'])) {
 
 } else {
     // Update the screen_last_checkin and IP values for this screen
-    if ($debug) {echo "$screen_id in $region_name checkin will be updated<br>\n";}
+    if ($debug) {echo "$screen_id in $region_name found!<br>\n";}
     $result = $client->updateItem(array(
         'TableName' => 'media_screens',
         'Key'       => array(
