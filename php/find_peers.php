@@ -218,15 +218,13 @@ foreach ($iterator as $item) {
     $ta['screen_region_name'] = $item['screen_region_name']['S'];
     $ta['screen_private_ip'] = $item['screen_private_ip']['S'];
     $ta['screen_public_ip'] = $item['screen_public_ip']['S'];
-    $ta['screen_active'] = $item['screen_active']['B'];
+    $ta['screen_active'] = $item['screen_active']['N'];
     $to_ret[] = $ta;
-    if ($debug) {echo '<hr>'; var_dump($item);}
-
 }
 
 
-if ($debug) {echo '<hr>'; var_dump($to_ret);}
-//echo json_encode($iterator);
+//if ($debug) {echo '<hr>'; var_dump($to_ret);}
+echo json_encode($to_ret);
 
 
 
