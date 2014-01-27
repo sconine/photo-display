@@ -208,15 +208,22 @@ if (!isset($result['Item']['screen_id']['S'])) {
 }
 
 
-// Finally return every screen we know about 
+// Finally return every screen we know about in a json object
 // (could filter this by region, but not expecting this to be very many overall)
 $iterator = $client->getIterator('Scan', array('TableName' => 'media_screens'));
+$to_ret = array();
 foreach ($iterator as $item) {
-    echo $item['screen_id']['S'] . "\n";
-    echo $item['screen_region_name']['S'] . "<br>\n";
+    $ta = array();
+    $ta['screen_id'] = $item['screen_id']['S'];
+    $ta['screen_region_name'] = $item['screen_region_name']['S'];
+    $ta['screen_private_ip'] = $item['screen_private_ip']['S'];
+    $ta['screen_public_ip'] = $item['screen_public_ip']['S'];
+    $ta['screen_active'] = $item['screen_active']['B'];
+    $to_ret[] = $ta;
 }
 
-//if ($debug) {echo '<hr>'; var_dump($iterator);}
+
+if ($debug) {echo '<hr>'; var_dump($to_ret);}
 //echo json_encode($iterator);
 
 
