@@ -108,7 +108,7 @@ $region_name = '';
 $screen_id = '';
 $screen_private_ip = '192.168.1.77';
 $screen_public_ip = '192.168.1.66';
-if (isset($_REQUEST['region'])) {$region_name = $_REQUEST['region'];}
+if (isset($_REQUEST['screen_region_name'])) {$region_name = $_REQUEST['screen_region_name'];}
 if ($region_name == '') {$region_name = 'Default Region';}
 if (isset($_REQUEST['screen_id'])) {$screen_id = $_REQUEST['screen_id'];}
 if ($screen_id == '') {$screen_id = 'Default Screen';}
@@ -176,6 +176,7 @@ if (!isset($result['Item']['screen_id']['S'])) {
    
     // Make sure to push this screen onto the region screen list if we didn't just create the region
     if (!$created_region) {
+        if ($debug) {echo "$screen_id in $region_name adding to region list<br>\n";}
         $result = $client->updateItem(array(
             'TableName' => 'region_name',
             'Key'       => array(
