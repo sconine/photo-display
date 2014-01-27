@@ -71,13 +71,14 @@ app.get('/find_media', function (req, res) {
 	res.set('Content-Type', 'application/json');
 	
 	var fs = require('fs');
+	// TODO: check if config.media_folder ends with a slash or not
 	var file_path = config.media_folder + req.query.media_path;
 	fs.exists(file_path, function(exists) {
 	  // might do something with in the future 
 	  if (exists) {
-	    res.json({ found: true, disk_remaining: 0});
+	    res.json({ found: true, disk_remaining: 0, file_path: file_path});
 	  } else {
-	    res.json({ found: false, disk_remaining: 0});
+	    res.json({ found: false, disk_remaining: 0, file_path: file_path});
 	  }
 	});
 });
