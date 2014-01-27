@@ -9,7 +9,7 @@ require '../vendor/autoload.php';
 if (!isset($_SERVER['HTTP_HOST'])) {
     $debug = true; 
 } else {
-    $debug = true;
+    if (isset($_REQUEST['debug'])) {$debug = true;}
 }
 
 use Aws\Common\Aws;
