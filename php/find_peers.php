@@ -182,8 +182,7 @@ if (!isset($result['Item']['screen_id']['S'])) {
                 'region_name'   => array('S' => $region_name)
             ),
             'AttributeUpdates' => array(
-                'region_screen_list'   => array('SS' => array($screen_id)),
-                'Action' => 'ADD'
+                'region_screen_list'   => array('Action' => 'ADD', 'Value' => array('SS' => array($screen_id)))
             )
         ));
         if ($debug) {echo "$screen_id in $region_name pushed onto region list<br>\n";}
