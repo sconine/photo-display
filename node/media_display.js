@@ -34,7 +34,8 @@ var mysql      = require('mysql');
 var connection = mysql.createConnection({
   host     : config.mysql.host,
   user     : config.mysql.user,
-  password : config.mysql.password,
+  password : config.mysql.password, 
+  database : config.mysql.database
 });
 connection.connect();
 
@@ -52,11 +53,14 @@ app.get('/get_media', function (req, res) {
 	
 	// Get the next item to display
 	// you might need to run get_media.php first to build this table
-	connection.query('SELECT media_path, media_type, media_host FROM my_media WHERE displayed is NULL ORDER BY display_order LIMIT 1', function(err, rows, fields) {
+	connection.query('SELECT media_path, media_type, media_host FROM my_media WHERE media_displayed is NULL ORDER BY media_order LIMIT 1', function(err, rows, fields) {
 	  if (err) { res.json({ media_type: 'text', media_url: err});}
 	  else {
-	  	//res.json({ media_url: 'http://localhost:8080/public/images/my_image.jpg', media_type: 'image' });
-	  	res.json({ media_path: rows[0].media_path, media_type: rows[0].media_type, media_host: rows[0].media_host });
+		if (rows.length > 0) {
+		  	res.json({ media_path: rows[0].media_path, media_type: rows[0].media_type, media_host: rows[0].media_host });
+		} else {
+			res.json({ media_type: 'text', media_url: 'no rows returned'});
+		}
 	  }	
 	});	
 });
