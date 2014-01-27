@@ -6,8 +6,8 @@
     "master_server": "99.99.99.99",
     "mysql": {
         "host": "localhost",
-        "user": "root",
-        "password": "myscr33ns",
+        "user": "myuser",
+        "password": "mypass",
         "database": "media"
     }
 }
