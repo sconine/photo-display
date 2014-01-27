@@ -6,6 +6,7 @@
 require '../vendor/autoload.php';
 
 // don't want to print debug through web server in general
+$debug = false; 
 if (!isset($_SERVER['HTTP_HOST'])) {
     $debug = true; 
 } else {
