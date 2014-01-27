@@ -220,6 +220,8 @@ foreach ($iterator as $item) {
     $ta['screen_public_ip'] = $item['screen_public_ip']['S'];
     $ta['screen_active'] = $item['screen_active']['B'];
     $to_ret[] = $ta;
+    if ($debug) {echo '<hr>'; var_dump($item);}
+
 }
 
 
