@@ -178,7 +178,7 @@ if (!isset($result['Item']['screen_id']['S'])) {
     if (!$created_region) {
         if ($debug) {echo "$screen_id in $region_name adding to region list<br>\n";}
         $result = $client->updateItem(array(
-            'TableName' => 'region_name',
+            'TableName' => 'media_regions',
             'Key'       => array(
                 'region_name'   => array('S' => $region_name)
             ),
