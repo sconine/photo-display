@@ -16,7 +16,7 @@ if (count($pids) > 1) {
 }
 
 // Connect to local MySQL database
-$link = mysql_connect('localhost', 'mysql_user', 'mysql_password') or die('Could not connect: ' . mysql_error());
+$link = mysql_connect($config['mysql']['host'], 'mysql_user', 'mysql_password') or die('Could not connect: ' . mysql_error());
 echo 'Connected to MySQL';
 mysql_select_db('my_database') or die('Could not select database');
 
