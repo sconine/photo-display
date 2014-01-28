@@ -5,6 +5,7 @@
 // Load my configuration
 $datastring = file_get_contents('../config.json');
 $config = json_decode($datastring, true);
+$debug = true;
 
 // Die if already running
 $my_name = $_SERVER['SCRIPT_NAME'];
@@ -15,81 +16,97 @@ if (count($pids) > 1) {
   exit();
 }
 
+// Get local machine IP address
+$my_ip =  gethostbyname(trim(`hostname --all-ip-addresses`)); 
+
 // Connect to local MySQL database
-$link = mysql_connect($config['mysql']['host'], $config['mysql']['user'], $config['mysql']['password']) or die('Could not connect: ' . mysql_error());
-echo 'Connected to MySQL';
-mysql_select_db($config['mysql']['database']) or die('Could not select database');
+$mysqli = new mysqli($config['mysql']['host'], $config['mysql']['user'], $config['mysql']['password'], $config['mysql']['database']);
+if ($mysqli->connect_errno) {
+	echo "Failed to connect to MySQL: (" . $mysqli->connect_errno . ") " . $mysqli->connect_error;
+	die;
+}
+if ($debug) {
+	echo $mysqli->host_info . "\n";
+	echo 'Connected to MySQL'. "\n";
+}
 
 /////////////////////////////////////////////////
 // Register yourself and learn about local peers
 // Build the my_peers table schema on the fly
-$sql = 'CREATE TABLE IF NOT EXISTS my_peers (region varchar(128) NOT NULL, screen_id varchar(128) NOT NULL, private_ip varchar(32) NOT NULL, public_ip varchar(32) NOT NULL, PRIMARY KEY (region, screen_id));';
-$result = mysql_query($sql, $link);
-if (!$result) {die('Invalid query: ' . mysql_error() . "\n");}
+$sql = 'CREATE TABLE IF NOT EXISTS my_peers (screen_region_name varchar(128) NOT NULL, screen_id varchar(128) NOT NULL, screen_private_ip varchar(32) NOT NULL, screen_public_ip varchar(32) NOT NULL, PRIMARY KEY (screen_region_name, screen_id));';
+if (!$mysqli->query($sql)) {die("Table creation failed: (" . $mysqli->errno . ") " . $mysqli->error);}
+if ($debug) {echo 'my_peers table Exists'. "\n";}
+
 
 // Call the central public registration server
-$url = 'http://' . $config['master_server'] . '/find_peers.php?private_ip='
-  . $_SERVER['SERVER_ADDR'] 
+$url = 'http://' . $config['master_server'] . '/photo-display/php/find_peers.php?screen_private_ip=' . $my_ip
   . '&screen_id=' . $config['screen_id'] 
-  . '&public_ip=' . $config['public_ip'] 
-  . '&region=' . $config['region'];
+  . '&screen_public_ip=' . $config['public_ip'] 
+  . '&screen_region_name=' . $config['region'];
 $my_peers = curl_get_array($url);
+//if ($debug) {var_dump($my_peers); echo "\n";}
 
 // Lookup peers we already know about in our local database
-$sql = "SELECT private_ip , screen_id , region, public_ip FROM my_peers";
-$known_peers = query_to_array($sql, &$link);
+$sql = "SELECT screen_private_ip , screen_id , screen_region_name, screen_public_ip FROM my_peers;";
+$known_peers = query_to_array($sql, &$mysqli);
+
 
 foreach ($my_peers as $i=>$peer) {
+  //if ($debug) {echo "Checking: " . $peer['screen_id'] . " " . $peer['screen_region_name'] . "\n";}
+
   // do we know about this peer (yea loop within a loop... not expecting more than 100 peers)
   $known_peer = false;
-  foreach ($known_peers as $j=$k_peer) {
-    if ($peer['region'] == $k_peer['region'] && $peer['screen_id'] == $k_peer['screen_id']){
+  foreach ($known_peers as $j=>$k_peer) {
+    //if ($debug) {echo "Found: " . $k_peer['screen_id'] . " " . $k_peer['screen_region_name'] . "\n";}
+    if ($peer['screen_region_name'] == $k_peer['screen_region_name'] && $peer['screen_id'] == $k_peer['screen_id']){
       $known_peer = true;
       
       // Did other info change, if so update in the local database
-      if ($peer['private_ip'] != $k_peer['private_ip'] || $peer['public_ip'] != $k_peer['public_ip']) {
-          $sql = "UPDATE my_peers SET private_ip =" . sqlq($peer['private_ip'], 0) . ", public_ip =" . sqlq($peer['public_ip'], 0) . " WHERE screen_id = " . sqlq($peer['screen_id'], 0) . " AND region = " . sqlq($peer['region'], 0);
-          $usql = query_to_array($sql, &$link) ;
+      if ($peer['screen_private_ip'] != $k_peer['screen_private_ip'] || $peer['screen_public_ip'] != $k_peer['screen_public_ip']) {
+          $sql = "UPDATE my_peers SET screen_private_ip =" . sqlq($peer['screen_private_ip'], 0) 
+		. ", screen_public_ip =" . sqlq($peer['screen_public_ip'], 0) . " WHERE screen_id = " 
+		. sqlq($peer['screen_id'], 0) . " AND screen_region_name = " . sqlq($peer['screen_region_name'], 0);
+	  if ($debug) {echo "Running: $sql\n";}
+	  if (!$mysqli->query($sql)) {die("Update Failed: (" . $mysqli->errno . ") " . $mysqli->error);}
       }
     }
-    
-    // If a new peer add them to the local db
-    if (!$known_peer) {
-      $sql = "INSERT INTO my_peers (private_ip , screen_id , region, public_ip) VALUES (";
-      $sql .= sqlq($peer['private_ip'], 0) . ',';
-      $sql .= sqlq($peer['screen_id'], 0) . ',';
-      $sql .= sqlq($peer['region'], 0) . ',';
-      $sql .= sqlq($peer['public_ip'], 0) . ')';
-      $isql = query_to_array($sql, &$link) ;
-    }
-  }
+   }
+	// If a new peer add them to the local db
+	if (!$known_peer) {
+		$sql = "INSERT INTO my_peers (screen_private_ip , screen_id , screen_region_name, screen_public_ip) VALUES (";
+		$sql .= sqlq($peer['screen_private_ip'], 0) . ',';
+		$sql .= sqlq($peer['screen_id'], 0) . ',';
+		$sql .= sqlq($peer['screen_region_name'], 0) . ',';
+		$sql .= sqlq($peer['screen_public_ip'], 0) . ')';
+		if ($debug) {echo "Running: $sql\n";}
+		if (!$mysqli->query($sql)) {die("Insert Failed: (" . $mysqli->errno . ") " . $mysqli->error);}
+	}
 }
 
 // Finally pull back peers in same region
-$sql = "SELECT private_ip, screen_id FROM my_peers WHERE region=" . sqlq($config['region'], 0);
-$local_peers = query_to_array($sql, &$link);
+$sql = "SELECT screen_private_ip, screen_id FROM my_peers WHERE screen_region_name=" . sqlq($config['region'], 0);
+$local_peers = query_to_array($sql, &$mysqli);
 // End Self registration and awareness
 /////////////////////////////////////////////////
 
 /////////////////////////////////////////////////
 // Now retreive what we're suppose to show next
 // Build the my_media table schema on the fly
-$sql = 'CREATE TABLE IF NOT EXISTS my_media ('
-  . 'display_order int NOT NULL AUTO_INCREMENT, '
-  . 'media_path varchar(1024) NOT NULL, '
-  . 'media_type varchar(128) NOT NULL, ' 
-  . 'media_size int NOT NULL, ' 
-  . 'media_host varchar(64) NULL, ' 
-  . 'displayed datetime NULL, '
-  . 'PRIMARY KEY (display_order));';
-$result = mysql_query($sql, $link);
-if (!$result) {die('Invalid query: ' . mysql_error() . "\n");}
+$sql = 'CREATE TABLE IF NOT EXISTS  my_media ('
+	. ' media_id INT AUTO_INCREMENT PRIMARY KEY,'
+	. ' media_path VARCHAR(2000) NOT NULL,'
+	. ' media_type VARCHAR(128) NOT NULL,'
+	. ' media_host VARCHAR(256) NULL,'
+	. ' media_displayed DATE NULL,'
+	. ' media_order INT);';
+if ($debug) {echo "Running $sql\n";}
+if (!$mysqli->query($sql)) {die("Table creation failed: (" . $mysqli->errno . ") " . $mysqli->error);}
 
 // Do a little disk space management (if < 100MB)
 if (disk_free_space($config['media_folder']) < (1024 * 1024 * 100)) {
   //remove most recently displayed files
   $sql = "SELECT display_order, media_path, media_size FROM my_media WHERE displayed is not null AND media_host = 'localhost' ORDER BY displayed desc limit 200";
-  $remove_files = query_to_array($sql, &$link);
+  $remove_files = query_to_array($sql, &$mysqli);
   
   $tot_size = 0;
   foreach ($remove_files as $i=>$row) {
@@ -100,7 +117,7 @@ if (disk_free_space($config['media_folder']) < (1024 * 1024 * 100)) {
     // not going to do this for now, as it will be interesting to keep 
     // an ongoing log of what was shown when
     // $sql = "DELETE FROM my_media WHERE display_order=" . sqlq($row['display_order']), 1);
-    // $dsql = query_to_array($sql, &$link);
+    // $dsql = query_to_array($sql, &$mysqli);
     $tot_size = $tot_size + $row['media_size'];
   }
   
@@ -182,22 +199,24 @@ $result=curl_exec($ch);
 if(curl_errno($c)) {
   echo 'error will not update local database:' . curl_error($c);
 } else {
-  $misql = query_to_array($isql, &$link) ;
+  if (!$mysqli->query($isql)) {die("Insert Failed: (" . $mysqli->errno . ") " . $mysqli->error);}
 }
 
 // Close MySQL Connection
-mysql_close($link);
+mysql_close($mysqli);
 
 
 // CURL Functions
 function curl_get_array($url) {
+  global $debug;
+  if ($debug) {echo "Calling: $url \n";}
   $ch = curl_init();
   curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
   curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
   curl_setopt($ch, CURLOPT_URL,$url);
   $result=curl_exec($ch);
-  if(curl_errno($c)) {
-    echo 'error:' . curl_error($c);
+  if(curl_errno($ch)) {
+    echo 'error:' . curl_error($ch);
   } else {
     return json_decode($result, true);
   }
@@ -219,13 +238,14 @@ function sqlq($var, $var_type) {
   return 'NULL';
 }
 
-function query_to_array($sql, &$link) {
-  var $to_ret = array();
-  $result = mysql_query($sql, $link);
-  while ($row = mysql_fetch_assoc($result)) {
+function query_to_array($sql, &$mysqli) {
+  global $debug;
+  $to_ret = array();
+  if ($debug) {echo "Running: $sql \n";}
+  $result = $mysqli->query($sql);
+  while ($row = $result->fetch_assoc()) {
       $to_ret[] = $row;
   }
-  mysql_free_result($result);
   return $to_ret;
 }
 ?>
