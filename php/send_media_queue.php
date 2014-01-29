@@ -23,7 +23,7 @@ $client = $aws->get('DynamoDb');
 //TODO: Query media tables and return list of media
 // Finally return every screen we know about in a json object
 // (could filter this by region, but not expecting this to be very many overall)
-$iterator = $client->getIterator('Scan', array('TableName' => 'media_screens'));
+$iterator = $client->getIterator('Scan', array('TableName' => 'media'));
 $to_ret = array();
 foreach ($iterator as $item) {
     $ta = array();
