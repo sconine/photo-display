@@ -61,7 +61,25 @@ if (!$has_table ) {
 // Likely field list:
 // 'file_name','shown_state','shown_on', 'file_name','shown_state',
 
+// connect to S3 and get a list of files we are storeing
+// Unknown: What is the pratical upper limit to # of files, hoping it is like 1M
+$s3_client = $aws->get('s3');
 
+// Set the bucket for where media is stored and retrive all objects
+// this is what could get to be a big list
+$bucket = 'SConine_Photos';
+$iterator = $client->getIterator('ListObjects', array(
+    'Bucket' => $bucket
+    //,'Prefix' => 'Dec-2005'  // this will filter to specific matches
+));
+
+// Print all objects
+foreach ($iterator as $object) {
+    echo $object['Key'] . "\n"; // we're treating these like file paths
+}
+
+// Now load anything that is missing in Dynamodb into Dynamo 
+// TRY: a bulk update??
 
 
 
