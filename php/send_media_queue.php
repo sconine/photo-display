@@ -41,7 +41,7 @@ foreach ($send_media as $i=>$media_path) {
 	$usql .= sqlq($media_path,0);
 }
 
-// Always reset things that were sent but not congfirmed
+// Mark these fiels as sent but not congfirmed
 $sql = 'UPDATE media_files SET shown=2 WHERE media_path IN (' . $usql . ');';
 if ($debug) {echo "Running: $sql\n";}
 if (!$mysqli->query($sql)) {die("Insert Failed: (" . $mysqli->errno . ") " . $mysqli->error);}
