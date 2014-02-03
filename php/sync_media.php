@@ -34,6 +34,7 @@ $sql = 'CREATE TABLE IF NOT EXISTS media_files ('
 . ' id INTEGER AUTO_INCREMENT UNIQUE KEY, '
 . ' media_path varchar(2000) NOT NULL, '
 . ' rnd_id int NULL, '
+. ' shown tinyint NOT NULL, '
 . ' PRIMARY KEY (media_path), '
 . ' INDEX(id));';
 if (!$mysqli->query($sql)) {die("Table creation failed: (" . $mysqli->errno . ") " . $mysqli->error);}
@@ -51,17 +52,29 @@ $media_iterator = $client->getIterator('ListObjects', array(
     //,'Prefix' => 'Dec-2005'  // this will filter to specific matches
 ));
 
-// Loop through files and add to our local index
-foreach ($iterator as $s3_item) {
-	$sql = 'INSERT IGNORE INTO media_files (media_path, rnd_id) VALUES ('
-		. sqlq($object['Key'],0) . ','
-		. '(FLOOR( 1 + RAND( ) *60 )) )';
+// First see if we've shown everything, if so we'll re-randomize
+$sql = 'SELECT id FROM media_files WHERE shown=0 LIMIT 50;';
+$shown_all = query_to_array($sql, &$mysqli);
+if (count($shown_all) < 50) {
+	// We've pretty much shown everything to re-randomize and reset (expecting 100,000 files typically)
+	$sql = 'UPDATE media_files '
+		. ' SET rnd_id=(FLOOR( 1 + RAND( ) *60 )), shown=0;';
 	if ($debug) {echo "Running: $sql\n";}
 	if (!$mysqli->query($sql)) {die("Insert Failed: (" . $mysqli->errno . ") " . $mysqli->error);}
 }
 
 
-// Query helper functions
+// Loop through files and add to our local index
+foreach ($iterator as $s3_item) {
+	$sql = 'INSERT IGNORE INTO media_files (media_path, rnd_id, shown) VALUES ('
+		. sqlq($object['Key'],0) . ','
+		. '(FLOOR( 1 + RAND( ) *60 )), 0)';
+	if ($debug) {echo "Running: $sql\n";}
+	if (!$mysqli->query($sql)) {die("Insert Failed: (" . $mysqli->errno . ") " . $mysqli->error);}
+}
+
+
+// Query helper functions - TODO: pull these into a common function file
 function sqlq($var, $var_type) {
   if ($var_type == 1) {
     if (is_numeric($var) && !empty($var)) {
@@ -76,4 +89,14 @@ function sqlq($var, $var_type) {
   return 'NULL';
 }
 
+function query_to_array($sql, &$mysqli) {
+  global $debug;
+  $to_ret = array();
+  if ($debug) {echo "Running: $sql \n";}
+  $result = $mysqli->query($sql);
+  while ($row = $result->fetch_assoc()) {
+      $to_ret[] = $row;
+  }
+  return $to_ret;
+}
 ?>
