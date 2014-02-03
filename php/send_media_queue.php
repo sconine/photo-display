@@ -20,27 +20,59 @@ use Aws\Common\Aws;
 $aws = Aws::factory('/usr/www/html/photo-display/php/amz_config.json');
 $client = $aws->get('DynamoDb');
 
-//TODO: Query media tables and return list of media
-// Finally return every screen we know about in a json object
-// (could filter this by region, but not expecting this to be very many overall)
-$iterator = $client->getIterator('Scan', array('TableName' => 'media'));
-$to_ret = array();
-foreach ($iterator as $item) {
-    $ta = array();
-    $ta['screen_id'] = $item['screen_id']['S'];
-    $ta['screen_region_name'] = $item['screen_region_name']['S'];
-    $ta['screen_private_ip'] = $item['screen_private_ip']['S'];
-    $ta['screen_public_ip'] = $item['screen_public_ip']['S'];
-    $ta['screen_active'] = $item['screen_active']['N'];
-    $to_ret[] = $ta;
+// Connect to local MySQL database
+$mysqli = new mysqli($config['mysql']['host'], $config['mysql']['user'], $config['mysql']['password'], $config['mysql']['database']);
+if ($mysqli->connect_errno) {
+	echo "Failed to connect to MySQL: (" . $mysqli->connect_errno . ") " . $mysqli->connect_error;
+	die;
 }
+if ($debug) {
+	echo $mysqli->host_info . "\n";
+	echo 'Connected to MySQL'. "\n";
+}
+
+/////////////////////////////////////////////////
+// We should have been sent a screen_id & region request variables
+
+// See if there are filters for this region/screen
+
+
+
+// see if this is video media that needs to be synchronized
+
+
+
 
 
 //if ($debug) {echo '<hr>'; var_dump($to_ret);}
 echo json_encode($to_ret);
 
 
+// Query helper functions
+function sqlq($var, $var_type) {
+  if ($var_type == 1) {
+    if (is_numeric($var) && !empty($var)) {
+      return $var;
+    } 
+  } else {
+    if (!empty($var)) {
+      $var = str_replace("'", "''", $var);
+      return "'" . $var . "'";
+    }
+  }
+  return 'NULL';
+}
 
+function query_to_array($sql, &$mysqli) {
+  global $debug;
+  $to_ret = array();
+  if ($debug) {echo "Running: $sql \n";}
+  $result = $mysqli->query($sql);
+  while ($row = $result->fetch_assoc()) {
+      $to_ret[] = $row;
+  }
+  return $to_ret;
+}
 
 
 
