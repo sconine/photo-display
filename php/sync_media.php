@@ -13,21 +13,12 @@ if (!isset($_SERVER['HTTP_HOST'])) {
     if (isset($_REQUEST['debug'])) {$debug = true;}
 }
 
-use Aws\Common\Aws;
+//Use MY SQL - this include assumes that $config has been loaded 
+include 'my_sql.php';
 
 // You'll need to edit this with your config
-$aws = Aws::factory('/usr/www/html/photo-display/php/amz_config.json');
-
-// Connect to local MySQL database
-$mysqli = new mysqli($config['mysql']['host'], $config['mysql']['user'], $config['mysql']['password'], $config['mysql']['database']);
-if ($mysqli->connect_errno) {
-	echo "Failed to connect to MySQL: (" . $mysqli->connect_errno . ") " . $mysqli->connect_error;
-	die;
-}
-if ($debug) {
-	echo $mysqli->host_info . "\n";
-	echo 'Connected to MySQL'. "\n";
-}
+use Aws\Common\Aws;
+'/usr/www/html/photo-display/php/amz_config.json');
 
 // Build the media_files table schema on the fly
 // id = increment column for joins if need be in the future
@@ -82,30 +73,4 @@ foreach ($iterator as $s3_item) {
 	if (!$mysqli->query($sql)) {die("Insert Failed: (" . $mysqli->errno . ") " . $mysqli->error);}
 }
 
-
-// Query helper functions - TODO: pull these into a common function file
-function sqlq($var, $var_type) {
-  if ($var_type == 1) {
-    if (is_numeric($var) && !empty($var)) {
-      return $var;
-    } 
-  } else {
-    if (!empty($var)) {
-      $var = str_replace("'", "''", $var);
-      return "'" . $var . "'";
-    }
-  }
-  return 'NULL';
-}
-
-function query_to_array($sql, &$mysqli) {
-  global $debug;
-  $to_ret = array();
-  if ($debug) {echo "Running: $sql \n";}
-  $result = $mysqli->query($sql);
-  while ($row = $result->fetch_assoc()) {
-      $to_ret[] = $row;
-  }
-  return $to_ret;
-}
 ?>
