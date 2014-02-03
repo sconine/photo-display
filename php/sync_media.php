@@ -51,9 +51,29 @@ $media_iterator = $client->getIterator('ListObjects', array(
     //,'Prefix' => 'Dec-2005'  // this will filter to specific matches
 ));
 
+// Loop through files and add to our local index
+foreach ($iterator as $s3_item) {
+	$sql = 'INSERT IGNORE INTO media_files (media_path, rnd_id) VALUES ('
+		. sqlq($object['Key'],0) . ','
+		. '(FLOOR( 1 + RAND( ) *60 )) )';
+	if ($debug) {echo "Running: $sql\n";}
+	if (!$mysqli->query($sql)) {die("Insert Failed: (" . $mysqli->errno . ") " . $mysqli->error);}
+}
 
 
-
-
+// Query helper functions
+function sqlq($var, $var_type) {
+  if ($var_type == 1) {
+    if (is_numeric($var) && !empty($var)) {
+      return $var;
+    } 
+  } else {
+    if (!empty($var)) {
+      $var = str_replace("'", "''", $var);
+      return "'" . $var . "'";
+    }
+  }
+  return 'NULL';
+}
 
 ?>
