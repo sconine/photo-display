@@ -34,5 +34,5 @@ if ($debug) {echo "Running: $sql\n";}
 if (!$mysqli->query($sql)) {die("Insert Failed: (" . $mysqli->errno . ") " . $mysqli->error);}
 
 
-echo 'success';
+echo 'success!';
 ?>
