@@ -7,7 +7,6 @@
 require '../vendor/autoload.php';
 $datastring = file_get_contents('../config.json');
 $config = json_decode($datastring, true);
-$debug = true;
 
 // don't want to print debug through web server in general
 $debug = false; 
