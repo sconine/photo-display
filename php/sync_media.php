@@ -2,6 +2,8 @@
 // Get the media we have stored on S3 and load it into a dynamoDB
 
 require 'vendor/autoload.php';
+$datastring = file_get_contents('../config.json');
+$config = json_decode($datastring, true);
 
 // don't want to print debug through web server in general
 $debug = false; 
@@ -15,51 +17,27 @@ use Aws\Common\Aws;
 
 // You'll need to edit this with your config
 $aws = Aws::factory('/usr/www/html/photo-display/php/amz_config.json');
-$client = $aws->get('DynamoDb');
-$result = $client->listTables();
 
-// TableNames contains an array of table names
-$has_table = false;
-foreach ($result['TableNames'] as $table_name) {
-    if ($table_name == "media_files") {$has_table = true;}
-    if (!if (isset($_SERVER['HTTP_HOST'])) {
-        if ($debug) {echo "Found Table: " . $table_name . "<br>\n";}
-    }
+// Connect to local MySQL database
+$mysqli = new mysqli($config['mysql']['host'], $config['mysql']['user'], $config['mysql']['password'], $config['mysql']['database']);
+if ($mysqli->connect_errno) {
+	echo "Failed to connect to MySQL: (" . $mysqli->connect_errno . ") " . $mysqli->connect_error;
+	die;
+}
+if ($debug) {
+	echo $mysqli->host_info . "\n";
+	echo 'Connected to MySQL'. "\n";
 }
 
-// Create table is non-existent
-if (!$has_table ) {
-    // This can take a few mintes so increase timelimit
-    set_time_limit(600);
-    
-    if ($debug) {echo "Attempting to Create Table: media_files<br>\n";}
-    $client->createTable(array(
-        'TableName' => 'media_regions',
-        'AttributeDefinitions' => array(
-            array(
-                'AttributeName' => 'file_name',
-                'AttributeType' => 'S'
-            )
-        ),
-        'KeySchema' => array(
-            array(
-                'AttributeName' => 'file_name',
-                'KeyType'       => 'HASH'
-            )
-        ),
-        'ProvisionedThroughput' => array(
-            'ReadCapacityUnits'  => 10,
-            'WriteCapacityUnits' => 20
-        )
-    ));
-    if ($debug) {echo "Created Table: media_files<br>\n";}
-    $client->waitUntilTableExists(array('TableName' => 'media_files'));
-    if ($debug) {echo "Table Exists!<br>\n";}
-
-}
-
-// Likely field list:
-// 'file_name','shown_state','shown_on', 'file_name','shown_state',
+// Build the media_files table schema on the fly
+$sql = 'CREATE TABLE IF NOT EXISTS media_files ('
+. ' id INTEGER AUTO_INCREMENT UNIQUE KEY, '
+. ' media_path varchar(2000) NOT NULL, '
+. ' rnd_id int NULL, '
+. ' PRIMARY KEY (media_path), '
+. ' INDEX(id));';
+if (!$mysqli->query($sql)) {die("Table creation failed: (" . $mysqli->errno . ") " . $mysqli->error);}
+if ($debug) {echo 'media_files table Exists'. "\n";}
 
 // connect to S3 and get a list of files we are storeing
 // Unknown: What is the pratical upper limit to # of files, hoping it is like 1M
@@ -68,21 +46,10 @@ $s3_client = $aws->get('s3');
 // Set the bucket for where media is stored and retrive all objects
 // this is what could get to be a big list
 $bucket = 'SConine_Photos';
-$iterator = $client->getIterator('ListObjects', array(
+$media_iterator = $client->getIterator('ListObjects', array(
     'Bucket' => $bucket
     //,'Prefix' => 'Dec-2005'  // this will filter to specific matches
 ));
-
-// Print all objects
-foreach ($iterator as $object) {
-    echo $object['Key'] . "\n"; // we're treating these like file paths
-}
-
-// Now load anything that is missing in Dynamodb into Dynamo 
-// TRY: a bulk update??
-
-
-
 
 
 
