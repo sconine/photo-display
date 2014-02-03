@@ -37,7 +37,8 @@ $send_media = query_to_array($sql, &$mysqli);
 
 $usql = '';
 foreach ($send_media as $i=>$media_path) {
-	$usql .= sqlq($media_path,0) . ',';
+	if ($usql != '') {$usql .= ',';}
+	$usql .= sqlq($media_path,0);
 }
 
 // Always reset things that were sent but not congfirmed
