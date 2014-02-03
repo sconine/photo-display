@@ -3,7 +3,11 @@
 // for reference: http://docs.aws.amazon.com/aws-sdk-php/guide/latest/service-dynamodb.html
 // and also useful: http://docs.aws.amazon.com/amazondynamodb/latest/developerguide/AppendixSampleDataCodePHP.html
 
+// Load my configuration
 require '../vendor/autoload.php';
+$datastring = file_get_contents('../config.json');
+$config = json_decode($datastring, true);
+$debug = true;
 
 // don't want to print debug through web server in general
 $debug = false; 
