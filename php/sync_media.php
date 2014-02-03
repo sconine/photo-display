@@ -30,13 +30,17 @@ if ($debug) {
 }
 
 // Build the media_files table schema on the fly
+// id = increment column for joins if need be in the future
+// rnd_id = random ID used for sorting
+// shown_int = the state of being shown this is 0 = now shown, 1 = shown, 2 = sent but not confirmed
+
 $sql = 'CREATE TABLE IF NOT EXISTS media_files ('
 . ' id INTEGER AUTO_INCREMENT UNIQUE KEY, '
 . ' media_path varchar(2000) NOT NULL, '
 . ' rnd_id int NULL, '
-. ' shown tinyint NOT NULL, '
+. ' shown int NOT NULL, '
 . ' PRIMARY KEY (media_path), '
-. ' INDEX(id));';
+. ' INDEX(id), INDEX(shown));';
 if (!$mysqli->query($sql)) {die("Table creation failed: (" . $mysqli->errno . ") " . $mysqli->error);}
 if ($debug) {echo 'media_files table Exists'. "\n";}
 
@@ -62,6 +66,11 @@ if (count($shown_all) < 50) {
 	if ($debug) {echo "Running: $sql\n";}
 	if (!$mysqli->query($sql)) {die("Insert Failed: (" . $mysqli->errno . ") " . $mysqli->error);}
 }
+
+// Always reset things that were sent but not congfirmed
+$sql = 'UPDATE media_files SET shown=0 WHERE shown=3;';
+if ($debug) {echo "Running: $sql\n";}
+if (!$mysqli->query($sql)) {die("Insert Failed: (" . $mysqli->errno . ") " . $mysqli->error);}
 
 
 // Loop through files and add to our local index
