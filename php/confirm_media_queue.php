@@ -5,7 +5,7 @@ $datastring = file_get_contents('../config.json');
 $config = json_decode($datastring, true);
 
 // don't want to print debug through web server in general
-$debug = false; 
+$debug = true; 
 if (!isset($_SERVER['HTTP_HOST'])) {
     $debug = true; 
 } else {
