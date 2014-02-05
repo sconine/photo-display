@@ -3,6 +3,7 @@
     "region": "Boston",
     "public_ip": "99.99.99.99",
     "media_folder": "/usr/www/html/node/public/images",
+    "ec2_image_bucket": "BucketName",
     "master_server": "99.99.99.99",
     "mysql": {
         "host": "localhost",
