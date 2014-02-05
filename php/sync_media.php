@@ -18,7 +18,7 @@ include 'my_sql.php';
 
 // You'll need to edit this with your config
 use Aws\Common\Aws;
-'/usr/www/html/photo-display/php/amz_config.json');
+$aws = Aws::factory('/usr/www/html/photo-display/php/amz_config.json');
 
 // Build the media_files table schema on the fly
 // id = increment column for joins if need be in the future
