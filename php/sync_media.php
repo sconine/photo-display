@@ -44,7 +44,7 @@ $s3_client = $aws->get('s3');
 // Set the bucket for where media is stored and retrive all objects
 // this is what could get to be a big list
 $bucket = 'SConine_Photos';
-$media_iterator = $client->getIterator('ListObjects', array(
+$media_iterator = $s3_client->getIterator('ListObjects', array(
     'Bucket' => $bucket
     //,'Prefix' => 'Dec-2005'  // this will filter to specific matches
 ));
