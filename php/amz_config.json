@@ -3,8 +3,8 @@
     "services": {
         "default_settings": {
             "params": {
-                "key": "AKIAI4IF2YXI6P7WYGLA",
-                "secret": "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",
+                "key": "key",
+                "secret": "secret",
                 "region": "us-east-1"
             }
         }
