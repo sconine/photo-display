@@ -49,7 +49,7 @@ $media_iterator = $client->getIterator('ListObjects', array(
 
 // First see if we've shown everything, if so we'll re-randomize
 $sql = 'SELECT id FROM media_files WHERE shown=0 LIMIT 50;';
-$shown_all = query_to_array($sql, &$mysqli);
+$shown_all = query_to_array($sql, $mysqli);
 if (count($shown_all) < 50) {
 	// We've pretty much shown everything to re-randomize and reset (expecting 100,000 files typically)
 	$sql = 'UPDATE media_files '
