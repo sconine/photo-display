@@ -18,7 +18,7 @@ if ($debug) {var_dump($config);}
 include 'my_sql.php';
 
 // You'll need to edit this with your config
-require 'vendor/autoload.php';
+require '../vendor/autoload.php';
 use Aws\Common\Aws;
 $aws = Aws::factory('/usr/www/html/photo-display/php/amz_config.json');
 
