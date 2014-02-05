@@ -12,7 +12,7 @@ if (!isset($_SERVER['HTTP_HOST'])) {
     if (isset($_REQUEST['debug'])) {$debug = true;}
 }
 
-if ($debug) {var_dump $config;}
+if ($debug) {var_dump($config);}
 
 //Use MY SQL - this include assumes that $config has been loaded 
 include 'my_sql.php';
