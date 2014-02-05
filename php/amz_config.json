@@ -3,9 +3,9 @@
     "services": {
         "default_settings": {
             "params": {
-                "key": "your-aws-access-key-id",
-                "secret": "your-aws-secret-access-key",
-                "region": "us-west-2"
+                "key": "AKIAI4IF2YXI6P7WYGLA",
+                "secret": "AJ4fOQUzZwFwXdx8rQHNzegooeoHp2QPoBt7ann1",
+                "region": "us-east-1"
             }
         }
     }
