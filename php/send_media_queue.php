@@ -33,7 +33,13 @@ include 'my_sql.php';
 // 	See if this is video media that needs to be synchronized
 
 $sql = "SELECT media_path FROM media_files WHERE shown=0 ORDER BY rnd_id LIMIT 25;";
-$send_media = query_to_array($sql, &$mysqli);
+$send_media = query_to_array($sql, $mysqli);
+
+// If we didn't get anything just return 25 - sync_media.php needs to run to reset
+if (count($send_media) == 0) {
+	$sql = "SELECT media_path FROM media_files ORDER BY rnd_id LIMIT 25;";
+	$send_media = query_to_array($sql, $mysqli);
+}
 
 $usql = '';
 foreach ($send_media as $row) {
@@ -41,10 +47,12 @@ foreach ($send_media as $row) {
 	$usql .= sqlq($row['media_path'],0);
 }
 
-// Mark these fiels as sent but not congfirmed
-$sql = 'UPDATE media_files SET shown=2 WHERE media_path IN (' . $usql . ');';
-if ($debug) {echo "Running: $sql\n";}
-if (!$mysqli->query($sql)) {die("Insert Failed: (" . $mysqli->errno . ") " . $mysqli->error);}
+if ($usql != '') {
+	// Mark these fields as sent but not congfirmed
+	$sql = 'UPDATE media_files SET shown=2 WHERE media_path IN (' . $usql . ');';
+	if ($debug) {echo "Running: $sql\n";}
+	if (!$mysqli->query($sql)) {die("Insert Failed: (" . $mysqli->errno . ") " . $mysqli->error);}
+}
 
 //Send this list of files to the caller
 echo json_encode($send_media);
