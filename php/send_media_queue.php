@@ -36,9 +36,9 @@ $sql = "SELECT media_path FROM media_files WHERE shown=0 ORDER BY rnd_id LIMIT 2
 $send_media = query_to_array($sql, &$mysqli);
 
 $usql = '';
-foreach ($send_media as $i=>$media_path) {
+foreach ($send_media as $row) {
 	if ($usql != '') {$usql .= ',';}
-	$usql .= sqlq($media_path,0);
+	$usql .= sqlq($row['media_path'],0);
 }
 
 // Mark these fiels as sent but not congfirmed
