@@ -56,15 +56,5 @@ if (isset($_REQUEST['media_id'])) {
     //echo "{$bucket['Name']} - {$bucket['CreationDate']}\n";
 //}
 
-// Method to go into a specific bucket with a filter
-//$bucket = 'SConine_Photos';
-//$iterator = $client->getIterator('ListObjects', array(
-//    'Bucket' => $bucket,
-//    'Prefix' => 'Dec-2005'
-//));
-
-//foreach ($iterator as $object) {
-    //echo $object['Key'] . "\n";
-//}
 
 ?>
