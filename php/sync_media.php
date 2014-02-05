@@ -29,7 +29,7 @@ $aws = Aws::factory('/usr/www/html/photo-display/php/amz_config.json');
 
 $sql = 'CREATE TABLE IF NOT EXISTS media_files ('
 . ' id INTEGER AUTO_INCREMENT UNIQUE KEY, '
-. ' media_path varchar(2000) NOT NULL, '
+. ' media_path varchar(767) NOT NULL, '
 . ' rnd_id int NULL, '
 . ' shown int NOT NULL, '
 . ' PRIMARY KEY (media_path), '
