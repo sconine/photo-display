@@ -69,7 +69,7 @@ $media_iterator = $s3_client->getIterator('ListObjects', array(
 foreach ($media_iterator as $s3_item) {
 	$file_path = trim($s3_item['Key']);
 	// don't bother storing folder names
-	if (substr($file_path, -1) == '/') {$file_path = ''}
+	if (substr($file_path, -1) == '/') {$file_path = '';}
 	
 	if ($file_path != '') {
 		$sql = 'INSERT IGNORE INTO media_files (media_path, rnd_id, shown) VALUES ('
