@@ -15,7 +15,7 @@ if ($debug) {echo "datastring: $datastring\n";}
 if ($debug) {var_dump($config);}
 
 // Connect to amazon storage
-require 'vendor/autoload.php';
+require '../vendor/autoload.php';
 use Aws\Common\Aws;
 
 // You'll need to edit this with your config
