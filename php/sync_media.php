@@ -68,7 +68,7 @@ $media_iterator = $s3_client->getIterator('ListObjects', array(
 // Loop through files and add to our local index
 foreach ($media_iterator as $s3_item) {
 	$sql = 'INSERT IGNORE INTO media_files (media_path, rnd_id, shown) VALUES ('
-		. sqlq($object['Key'],0) . ','
+		. sqlq($s3_item['Key'],0) . ','
 		. '(FLOOR( 1 + RAND( ) *60 )), 0)';
 	if ($debug) {echo "Running: $sql\n";}
 	if (!$mysqli->query($sql)) {die("Insert Failed: (" . $mysqli->errno . ") " . $mysqli->error);}
