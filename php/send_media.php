@@ -1,9 +1,21 @@
 <?php
-// This is currently a sample script that I'm using to understand communication
-// with S3 and Amazon in general
+// Script to send a specific media file to a screen
+// don't want to print debug through web server in general
+$debug = false; 
+if (!isset($_SERVER['HTTP_HOST'])) {
+    $debug = true; 
+} else {
+    if (isset($_REQUEST['debug'])) {$debug = true;}
+}
+// Load my configuration
+$datastring = file_get_contents('../config.json');
+$config = json_decode($datastring, true);
 
+if ($debug) {echo "datastring: $datastring\n";}
+if ($debug) {var_dump($config);}
+
+// Connect to amazon storage
 require 'vendor/autoload.php';
-
 use Aws\Common\Aws;
 
 // You'll need to edit this with your config
@@ -11,7 +23,7 @@ $aws = Aws::factory('/usr/www/html/photo-display/php/amz_config.json');
 $client = $aws->get('s3');
 
 // Set the bucket for where media is stored
-$bucket = 'SConine_Photos';
+$bucket = $config['ec2_image_bucket'];
 if (isset($_REQUEST['media_id'])) {
     // Get an object using the getObject operation
     $result = $client->getObject(array(
