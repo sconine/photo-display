@@ -1,10 +1,5 @@
 <?php
 // Get the media we have stored on S3 and load it into a dynamoDB
-
-require 'vendor/autoload.php';
-$datastring = file_get_contents('../config.json');
-$config = json_decode($datastring, true);
-
 // don't want to print debug through web server in general
 $debug = false; 
 if (!isset($_SERVER['HTTP_HOST'])) {
@@ -12,11 +7,18 @@ if (!isset($_SERVER['HTTP_HOST'])) {
 } else {
     if (isset($_REQUEST['debug'])) {$debug = true;}
 }
+// Load my configuration
+$datastring = file_get_contents('../config.json');
+$config = json_decode($datastring, true);
+
+if ($debug) {echo "datastring: $datastring\n";}
+if ($debug) {var_dump($config);}
 
 //Use MY SQL - this include assumes that $config has been loaded 
 include 'my_sql.php';
 
 // You'll need to edit this with your config
+require 'vendor/autoload.php';
 use Aws\Common\Aws;
 $aws = Aws::factory('/usr/www/html/photo-display/php/amz_config.json');
 
