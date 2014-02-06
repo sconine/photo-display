@@ -8,7 +8,7 @@ if (!isset($_SERVER['HTTP_HOST'])) {
     if (isset($_REQUEST['debug'])) {$debug = true;}
 }
 // Load my configuration
-$datastring = file_get_contents('../config.json');
+$datastring = file_get_contents('../master_config.json');
 $config = json_decode($datastring, true);
 
 if ($debug) {echo "datastring: $datastring\n";}
@@ -19,7 +19,7 @@ require '../vendor/autoload.php';
 use Aws\Common\Aws;
 
 // You'll need to edit this with your config
-$aws = Aws::factory('/usr/www/html/photo-display/php/amz_config.json');
+$aws = Aws::factory('/usr/www/html/photo-display/php/amazon_config.json');
 $client = $aws->get('s3');
 
 // Set the bucket for where media is stored
