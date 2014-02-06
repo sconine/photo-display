@@ -74,16 +74,17 @@ foreach ($media_iterator as $s3_item) {
 	
 	if ($file_path != '') {
 		$media_type = "image/jpeg";
-		if ($debug) {echo "Extension: " . substr($file_path, -3) . "\n";}
-		if (substr($file_path, -3) == 'gif') {
+		$f_ext = strtolower(substr($file_path, -3));
+		if ($debug) {echo "Extension: " . $f_ext . "\n";}
+		if ($f_ext == 'gif') {
 			$media_type = "image/gif";
-		} elseif (substr($file_path, -3) == 'mov') {
+		} elseif ($f_ext == 'mov') {
 			$media_type = "image/quicktime";
-		} elseif (substr($file_path, -4) == 'mpeg') {
+		} elseif ($f_ext == 'peg') {
 			$media_type = "image/mpeg";
-		} elseif (substr($file_path, -3) == 'mp4') {
+		} elseif ($f_ext == 'mp4') {
 			$media_type = "image/mp4";
-		} elseif (substr($file_path, -3) == 'cmf') {
+		} elseif ($f_ext == 'cmf') {
 			$media_type = "application/screen.comopound.movie";
 		}
 		
