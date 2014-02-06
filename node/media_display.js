@@ -7,7 +7,9 @@
 // uses express node-mysql npm checkout here: https://npmjs.org/package/mysql
 
 // load the config file for this local slideshow server
-var config = require('../config.json');
+// I copy config.json to master_config.json so that I can modify on local server w/out 
+// checking back into git by accident...
+var config = require('../master_config.json');
 
 // Setup node server 
 var express = require('express')
