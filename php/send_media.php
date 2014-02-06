@@ -24,16 +24,16 @@ $client = $aws->get('s3');
 
 // Set the bucket for where media is stored
 $bucket = $config['ec2_image_bucket'];
-if (isset($_REQUEST['media_id'])) {
+if (isset($_REQUEST['media_path'])) {
     // Get an object using the getObject operation
     $result = $client->getObject(array(
         'Bucket' => $bucket,
-        'Key'    => $_REQUEST['media_id']
+        'Key'    => $_REQUEST['media_path']
     ));
 
     // Deal with consol calls vs calls through a web server
     if (isset($_SERVER['HTTP_HOST'])) {
-        $f_ext = strtolower(substr($_REQUEST['media_id'], -3));
+        $f_ext = strtolower(substr($_REQUEST['media_path'], -3));
         if ($f_ext == 'mov') {
             header('Content-type: video/quicktime');
         } elseif ($f_ext == 'gif') {
