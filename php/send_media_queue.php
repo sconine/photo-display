@@ -5,7 +5,7 @@
 
 // Load my configuration
 require '../vendor/autoload.php';
-$datastring = file_get_contents('../config.json');
+$datastring = file_get_contents('../master_config.json');
 $config = json_decode($datastring, true);
 
 // don't want to print debug through web server in general
@@ -20,7 +20,7 @@ if (!isset($_SERVER['HTTP_HOST'])) {
 // You'll need to edit this with your config file
 // make sure you specify the correct region as dynamo is region specific
 use Aws\Common\Aws;
-$aws = Aws::factory('/usr/www/html/photo-display/php/amz_config.json');
+$aws = Aws::factory('/usr/www/html/photo-display/php/amazon_config.json');
 $client = $aws->get('DynamoDb');
 
 //Use MY SQL - this include assumes that $config has been loaded 
