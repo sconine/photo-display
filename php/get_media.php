@@ -3,7 +3,7 @@
 // retreive media to the local network and enqueue media for display. 
 
 // Load my configuration
-$datastring = file_get_contents('../config.json');
+$datastring = file_get_contents('../master_config.json');
 $config = json_decode($datastring, true);
 $debug = true;
 
