@@ -9,7 +9,7 @@ if (!isset($_SERVER['HTTP_HOST'])) {
 }
 
 // Load my configuration
-$datastring = file_get_contents('../config.json');
+$datastring = file_get_contents('../master_config.json');
 $config = json_decode($datastring, true);
 
 if ($debug) {echo "datastring: $datastring\n";}
