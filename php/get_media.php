@@ -43,7 +43,6 @@ $my_peers = curl_get_array($url, 20);
 $sql = "SELECT screen_private_ip , screen_id , screen_region_name, screen_public_ip FROM my_peers;";
 $known_peers = query_to_array($sql, &$mysqli);
 
-
 foreach ($my_peers as $i=>$peer) {
   //if ($debug) {echo "Checking: " . $peer['screen_id'] . " " . $peer['screen_region_name'] . "\n";}
 
@@ -88,8 +87,9 @@ if ($debug) {echo var_dump($local_peers) . "\n";}
 // Build the my_media table schema on the fly
 $sql = 'CREATE TABLE IF NOT EXISTS  my_media ('
 	. ' media_id INT AUTO_INCREMENT PRIMARY KEY,'
-	. ' media_path VARCHAR(2000) NOT NULL,'
-	. ' media_type VARCHAR(128) NOT NULL,'
+	. ' media_path VARCHAR(767) NOT NULL,'
+	. ' media_size int NOT NULL,'
+	. ' media_type VARCHAR(32) NOT NULL,'
 	. ' media_host VARCHAR(256) NULL,'
 	. ' media_displayed DATE NULL,'
 	. ' media_order INT);';
@@ -124,23 +124,29 @@ $url = 'http://' . $config['master_server'] . '/photo-display/php/send_media_que
   . '&region=' . $config['region'];
 
 $confirm_reg = array();
-$isql = "";
+$isql = array();
 $my_media = curl_get_array($url, 20);
 var_dump($my_media);
 foreach ($my_media as $i=>$media) {
   // see if we have this locally
   $media_host = '';
   $filepath = $config['media_folder'] . $media['media_path'];
+  $is_local = false;
   if (file_exists($filepath)) {
-    $confirm_reg[] = $media['media_path'];
-    $media_host = 'localhost';
-  } else {
+    if (filesize($filepath) > 4000) {
+      $confirm_reg[] = $media['media_path'];
+      $media_host = 'localhost';
+      $is_local = true; 
+    } else {
+      if ($debug) {echo "$filepath exists but it too small getting again!\n";}
+    }
+  } 
+  if (!$is_local) {
     // see if a local peer has it
     foreach ($local_peers as $j => $peer) {
-      $url = 'http://' . $peer['screen_private_ip'] . ':8080/photo-display/php/find_media?media_path=' . urlencode($media['media_path']);
+      $url = 'http://' . $peer['screen_private_ip'] . ':8080/find_media?media_path=' . urlencode($media['media_path']);
       $peer_media = curl_get_array($url, 4);
-      
-      if ($peer_media[0]['found']) {
+      if ($peer_media['found']) {
         $confirm_reg[] = $media['media_path'];
         $media_host = $peer['screen_private_ip'];
         break;
@@ -160,39 +166,42 @@ foreach ($my_media as $i=>$media) {
     }
 
     $url = 'http://' . $config['master_server'] . '/photo-display/php/send_media.php?media_path=' . urlencode($media['media_path']);
+    if ($debug) {echo "Calling: $url\n";}
     set_time_limit(0);
     $fp = fopen ($filepath, 'w+');
     $ch = curl_init($url);
-    curl_setopt($ch, CURLOPT_TIMEOUT, 50);
+    curl_setopt($ch, CURLOPT_TIMEOUT, 600);
     curl_setopt($ch, CURLOPT_FILE, $fp); 
     curl_setopt($ch, CURLOPT_FOLLOWLOCATION, true);
-    curl_setopt($ch, CURLOPT_CONNECTTIMEOUT ,4); 
-    curl_setopt($ch, CURLOPT_TIMEOUT, 5); //timeout in seconds
     curl_exec($ch); 
-    curl_close($ch);
-    fclose($fp);
     if(curl_errno($ch)) {
+      fclose($fp);
       echo 'error:' . curl_error($ch);
+      unlink($filepath);
     } else {
       $confirm_reg[] = $media['media_path'];
       $media_host = 'localhost';    
     }
+    curl_close($ch);
+    fclose($fp);
+
   }
   
   if ($media_host != '') {
-    $isql .= "INSERT INTO my_media (media_path, media_type, media_size, media_host) VALUES ("
+    $isql[] = "INSERT INTO my_media (media_path, media_type, media_size, media_host, media_order) VALUES ("
           . sqlq($media['media_path'], 0) . ','
           . sqlq($media['media_type'], 0) . ','
-          . sqlq($media['media_size'], 1) . ','
-          . sqlq($media_host, 0) . '); ';
+          . sqlq(filesize($filepath), 1) . ','
+          . sqlq($media_host, 0) . ', (FLOOR( 1 + RAND( ) *6000000 ))); ';
   }
 }
 
 // Finally commit what we are going to show to the database and register it with the main host
-$post_data = "medialist=" & urlencode(json_encode($confirm_reg));
+$post_data = "medialist=" . urlencode(json_encode($confirm_reg));
 $url = 'http://' . $config['master_server'] . '/photo-display/php/confirm_media_queue.php?'
   . '&screen_id=' . $config['screen_id'] 
   . '&region=' . $config['region'];
+if ($debug) {echo "Calling: $url\n";}
 $ch = curl_init();
 curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
 curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
@@ -206,11 +215,14 @@ $result=curl_exec($ch);
 if(curl_errno($ch)) {
   echo 'error will not update local database:' . curl_error($ch);
 } else {
-  if (!$mysqli->query($isql)) {die("Insert Failed: (" . $mysqli->errno . ") " . $mysqli->error);}
+  foreach ($isql as $sql) {
+  	if ($debug) {echo "Running: $sql\n";}
+  	if (!$mysqli->query($sql)) {die("Insert Failed: (" . $mysqli->errno . ") " . $mysqli->error);}
+  }
 }
 
 // Close MySQL Connection
-mysql_close($mysqli);
+mysqli_close($mysqli);
 
 
 // CURL Functions
