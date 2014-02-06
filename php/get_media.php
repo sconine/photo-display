@@ -44,25 +44,25 @@ $sql = "SELECT screen_private_ip , screen_id , screen_region_name, screen_public
 $known_peers = query_to_array($sql, &$mysqli);
 
 foreach ($my_peers as $i=>$peer) {
-  //if ($debug) {echo "Checking: " . $peer['screen_id'] . " " . $peer['screen_region_name'] . "\n";}
-
-  // do we know about this peer (yea loop within a loop... not expecting more than 100 peers)
-  $known_peer = false;
-  foreach ($known_peers as $j=>$k_peer) {
-    //if ($debug) {echo "Found: " . $k_peer['screen_id'] . " " . $k_peer['screen_region_name'] . "\n";}
-    if ($peer['screen_region_name'] == $k_peer['screen_region_name'] && $peer['screen_id'] == $k_peer['screen_id']){
-      $known_peer = true;
-      
-      // Did other info change, if so update in the local database
-      if ($peer['screen_private_ip'] != $k_peer['screen_private_ip'] || $peer['screen_public_ip'] != $k_peer['screen_public_ip']) {
-          $sql = "UPDATE my_peers SET screen_private_ip =" . sqlq($peer['screen_private_ip'], 0) 
-		. ", screen_public_ip =" . sqlq($peer['screen_public_ip'], 0) . " WHERE screen_id = " 
-		. sqlq($peer['screen_id'], 0) . " AND screen_region_name = " . sqlq($peer['screen_region_name'], 0);
-	  if ($debug) {echo "Running: $sql\n";}
-	  if (!$mysqli->query($sql)) {die("Update Failed: (" . $mysqli->errno . ") " . $mysqli->error);}
-      }
-    }
-   }
+	//if ($debug) {echo "Checking: " . $peer['screen_id'] . " " . $peer['screen_region_name'] . "\n";}
+	
+	// do we know about this peer (yea loop within a loop... not expecting more than 100 peers)
+	$known_peer = false;
+	foreach ($known_peers as $j=>$k_peer) {
+		//if ($debug) {echo "Found: " . $k_peer['screen_id'] . " " . $k_peer['screen_region_name'] . "\n";}
+		if ($peer['screen_region_name'] == $k_peer['screen_region_name'] && $peer['screen_id'] == $k_peer['screen_id']){
+			$known_peer = true;
+			
+			// Did other info change, if so update in the local database
+			if ($peer['screen_private_ip'] != $k_peer['screen_private_ip'] || $peer['screen_public_ip'] != $k_peer['screen_public_ip']) {
+				$sql = "UPDATE my_peers SET screen_private_ip =" . sqlq($peer['screen_private_ip'], 0) 
+				. ", screen_public_ip =" . sqlq($peer['screen_public_ip'], 0) . " WHERE screen_id = " 
+				. sqlq($peer['screen_id'], 0) . " AND screen_region_name = " . sqlq($peer['screen_region_name'], 0);
+				if ($debug) {echo "Running: $sql\n";}
+				if (!$mysqli->query($sql)) {die("Update Failed: (" . $mysqli->errno . ") " . $mysqli->error);}
+			}
+		}
+	}
 	// If a new peer add them to the local db
 	if (!$known_peer) {
 		$sql = "INSERT INTO my_peers (screen_private_ip , screen_id , screen_region_name, screen_public_ip) VALUES (";
@@ -98,22 +98,20 @@ if (!$mysqli->query($sql)) {die("Table creation failed: (" . $mysqli->errno . ")
 
 // Do a little disk space management (if < 100MB)
 if (disk_free_space($config['media_folder']) < (1024 * 1024 * 100)) {
-  //remove most recently displayed files
-  $sql = "SELECT display_order, media_path, media_size FROM my_media WHERE displayed is not null AND media_host = 'localhost' ORDER BY displayed desc limit 200";
-  $remove_files = query_to_array($sql, &$mysqli);
-  
-  $tot_size = 0;
-  foreach ($remove_files as $i=>$row) {
-    if ($tot_size > 1024 * 1024 * 100) {
-      break;
-    } 
-    unlink($config['media_folder'] . $row['media_path']);
-    // not going to do this for now, as it will be interesting to keep 
-    // an ongoing log of what was shown when
-    // $sql = "DELETE FROM my_media WHERE display_order=" . sqlq($row['display_order']), 1);
-    // $dsql = query_to_array($sql, &$mysqli);
-    $tot_size = $tot_size + $row['media_size'];
-  }
+	//remove most recently displayed files
+	$sql = "SELECT display_order, media_path, media_size FROM my_media WHERE displayed is not null AND media_host = 'localhost' ORDER BY displayed desc limit 200";
+	$remove_files = query_to_array($sql, &$mysqli);
+	
+	$tot_size = 0;
+	foreach ($remove_files as $i=>$row) {
+		if ($tot_size > 1024 * 1024 * 100) {break;} 
+		unlink($config['media_folder'] . $row['media_path']);
+		// not going to do this for now, as it will be interesting to keep 
+		// an ongoing log of what was shown when
+		// $sql = "DELETE FROM my_media WHERE display_order=" . sqlq($row['display_order']), 1);
+		// $dsql = query_to_array($sql, &$mysqli);
+		$tot_size = $tot_size + $row['media_size'];
+	}
   
 }
 
@@ -128,72 +126,72 @@ $isql = array();
 $my_media = curl_get_array($url, 20);
 var_dump($my_media);
 foreach ($my_media as $i=>$media) {
-  // see if we have this locally
-  $media_host = '';
-  $filepath = $config['media_folder'] . $media['media_path'];
-  $is_local = false;
-  if (file_exists($filepath)) {
-    if (filesize($filepath) > 4000) {
-      $confirm_reg[] = $media['media_path'];
-      $media_host = 'localhost';
-      $is_local = true; 
-    } else {
-      if ($debug) {echo "$filepath exists but it too small getting again!\n";}
-    }
-  } 
-  if (!$is_local) {
-    // see if a local peer has it
-    foreach ($local_peers as $j => $peer) {
-      $url = 'http://' . $peer['screen_private_ip'] . ':8080/find_media?media_path=' . urlencode($media['media_path']);
-      $peer_media = curl_get_array($url, 4);
-      if ($peer_media['found']) {
-        $confirm_reg[] = $media['media_path'];
-        $media_host = $peer['screen_private_ip'];
-        break;
-      }
-    }
-  }
-  
-  // Did we find locally or do we need to retreive it
-  if ($media_host == '') {
-    //TODO: add disk space checks/cleanup and check file size prior to downloading
-
-    // Make sure the folder structure exists
-    $dirpath = $config['media_folder'] . dirname($media['media_path']);
-    if (! is_dir($dirpath)) {
-      mkdir($dirpath, 0777, true);
-      if ($debug) {echo "Made Directory $dirpath\n";}
-    }
-
-    $url = 'http://' . $config['master_server'] . '/photo-display/php/send_media.php?media_path=' . urlencode($media['media_path']);
-    if ($debug) {echo "Calling: $url\n";}
-    set_time_limit(0);
-    $fp = fopen ($filepath, 'w+');
-    $ch = curl_init($url);
-    curl_setopt($ch, CURLOPT_TIMEOUT, 600);
-    curl_setopt($ch, CURLOPT_FILE, $fp); 
-    curl_setopt($ch, CURLOPT_FOLLOWLOCATION, true);
-    curl_exec($ch); 
-    if(curl_errno($ch)) {
-      fclose($fp);
-      echo 'error:' . curl_error($ch);
-      unlink($filepath);
-    } else {
-      $confirm_reg[] = $media['media_path'];
-      $media_host = 'localhost';    
-    }
-    curl_close($ch);
-    fclose($fp);
-
-  }
-  
-  if ($media_host != '') {
-    $isql[] = "INSERT INTO my_media (media_path, media_type, media_size, media_host, media_order) VALUES ("
-          . sqlq($media['media_path'], 0) . ','
-          . sqlq($media['media_type'], 0) . ','
-          . sqlq(filesize($filepath), 1) . ','
-          . sqlq($media_host, 0) . ', (FLOOR( 1 + RAND( ) *6000000 ))); ';
-  }
+	// see if we have this locally
+	$media_host = '';
+	$filepath = $config['media_folder'] . $media['media_path'];
+	$is_local = false;
+	if (file_exists($filepath)) {
+		if (filesize($filepath) > 4000) {
+			$confirm_reg[] = $media['media_path'];
+			$media_host = 'localhost';
+			$is_local = true; 
+		} else {
+			if ($debug) {echo "$filepath exists but it too small getting again!\n";}
+		}
+	} 
+	if (!$is_local) {
+		// see if a local peer has it
+		foreach ($local_peers as $j => $peer) {
+			$url = 'http://' . $peer['screen_private_ip'] . ':8080/find_media?media_path=' . urlencode($media['media_path']);
+			$peer_media = curl_get_array($url, 4);
+			if ($peer_media['found']) {
+				$confirm_reg[] = $media['media_path'];
+				$media_host = $peer['screen_private_ip'];
+				break;
+			}
+		}
+	}
+	
+	// Did we find locally or do we need to retreive it
+	if ($media_host == '') {
+		//TODO: add disk space checks/cleanup and check file size prior to downloading
+		
+		// Make sure the folder structure exists
+		$dirpath = $config['media_folder'] . dirname($media['media_path']);
+		if (! is_dir($dirpath)) {
+			mkdir($dirpath, 0777, true);
+			if ($debug) {echo "Made Directory $dirpath\n";}
+		}
+		
+		$url = 'http://' . $config['master_server'] . '/photo-display/php/send_media.php?media_path=' . urlencode($media['media_path']);
+		if ($debug) {echo "Calling: $url\n";}
+		set_time_limit(0);
+		$fp = fopen ($filepath, 'w+');
+		$ch = curl_init($url);
+		curl_setopt($ch, CURLOPT_TIMEOUT, 600);
+		curl_setopt($ch, CURLOPT_FILE, $fp); 
+		curl_setopt($ch, CURLOPT_FOLLOWLOCATION, true);
+		curl_exec($ch); 
+		if(curl_errno($ch)) {
+			fclose($fp);
+			echo 'error:' . curl_error($ch);
+			unlink($filepath);
+		} else {
+			$confirm_reg[] = $media['media_path'];
+			$media_host = 'localhost';    
+		}
+		curl_close($ch);
+		fclose($fp);
+	
+	}
+	
+	if ($media_host != '') {
+		$isql[] = "INSERT INTO my_media (media_path, media_type, media_size, media_host, media_order) VALUES ("
+		. sqlq($media['media_path'], 0) . ','
+		. sqlq($media['media_type'], 0) . ','
+		. sqlq(filesize($filepath), 1) . ','
+		. sqlq($media_host, 0) . ', (FLOOR( 1 + RAND( ) *6000000 ))); ';
+	}
 }
 
 // Finally commit what we are going to show to the database and register it with the main host
@@ -213,12 +211,12 @@ curl_setopt($ch, CURLOPT_CONNECTTIMEOUT ,4);
 curl_setopt($ch, CURLOPT_TIMEOUT, 5); //timeout in seconds
 $result=curl_exec($ch);
 if(curl_errno($ch)) {
-  echo 'error will not update local database:' . curl_error($ch);
+	echo 'error will not update local database:' . curl_error($ch);
 } else {
-  foreach ($isql as $sql) {
-  	if ($debug) {echo "Running: $sql\n";}
-  	if (!$mysqli->query($sql)) {die("Insert Failed: (" . $mysqli->errno . ") " . $mysqli->error);}
-  }
+	foreach ($isql as $sql) {
+		if ($debug) {echo "Running: $sql\n";}
+		if (!$mysqli->query($sql)) {die("Insert Failed: (" . $mysqli->errno . ") " . $mysqli->error);}
+	}
 }
 
 // Close MySQL Connection
