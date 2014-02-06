@@ -74,7 +74,7 @@ foreach ($media_iterator as $s3_item) {
 	
 	if ($file_path != '') {
 		$media_type = "image/jpeg";
-		if ($debug) {echo "Extension: " . substr($file_path, -3 . "\n";}
+		if ($debug) {echo "Extension: " . substr($file_path, -3) . "\n";}
 		if (substr($file_path, -3) == 'gif') {
 			$media_type = "image/gif";
 		} elseif (substr($file_path, -3) == 'mov') {
