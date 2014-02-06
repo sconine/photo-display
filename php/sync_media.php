@@ -8,7 +8,7 @@ if (!isset($_SERVER['HTTP_HOST'])) {
     if (isset($_REQUEST['debug'])) {$debug = true;}
 }
 // Load my configuration
-$datastring = file_get_contents('../config.json');
+$datastring = file_get_contents('../master_config.json');
 $config = json_decode($datastring, true);
 
 if ($debug) {echo "datastring: $datastring\n";}
@@ -20,7 +20,7 @@ include 'my_sql.php';
 // You'll need to edit this with your config
 require '../vendor/autoload.php';
 use Aws\Common\Aws;
-$aws = Aws::factory('/usr/www/html/photo-display/php/amz_config.json');
+$aws = Aws::factory('/usr/www/html/photo-display/php/amazon_config.json');
 
 // Build the media_files table schema on the fly
 // id = increment column for joins if need be in the future
