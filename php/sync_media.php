@@ -30,6 +30,7 @@ $aws = Aws::factory('/usr/www/html/photo-display/php/amazon_config.json');
 $sql = 'CREATE TABLE IF NOT EXISTS media_files ('
 . ' id INTEGER AUTO_INCREMENT UNIQUE KEY, '
 . ' media_path varchar(767) NOT NULL, '
+. ' media_type varchar(32) NOT NULL, '
 . ' rnd_id int NULL, '
 . ' shown int NOT NULL, '
 . ' PRIMARY KEY (media_path), '
@@ -72,8 +73,24 @@ foreach ($media_iterator as $s3_item) {
 	if (substr($file_path, -1) == '/') {$file_path = '';}
 	
 	if ($file_path != '') {
-		$sql = 'INSERT IGNORE INTO media_files (media_path, rnd_id, shown) VALUES ('
+		$media_type = "image/jpeg";
+		$f_ext = strtolower(substr($file_path, -3));
+		if ($debug) {echo "Extension: " . $f_ext . "\n";}
+		if ($f_ext == 'gif') {
+			$media_type = "image/gif";
+		} elseif ($f_ext == 'mov') {
+			$media_type = "image/quicktime";
+		} elseif ($f_ext == 'peg') {
+			$media_type = "image/mpeg";
+		} elseif ($f_ext == 'mp4') {
+			$media_type = "image/mp4";
+		} elseif ($f_ext == 'cmf') {
+			$media_type = "application/screen.comopound.movie";
+		}
+		
+		$sql = 'INSERT IGNORE INTO media_files (media_path, media_type, rnd_id, shown) VALUES ('
 			. sqlq($s3_item['Key'],0) . ','
+			. sqlq($media_type,0) . ','
 			. '(FLOOR( 1 + RAND( ) *60 )), 0)';
 		if ($debug) {echo "Running: $sql\n";}
 		if (!$mysqli->query($sql)) {die("Insert Failed: (" . $mysqli->errno . ") " . $mysqli->error);}
