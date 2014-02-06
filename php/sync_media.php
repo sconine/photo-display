@@ -44,7 +44,7 @@ $shown_all = query_to_array($sql, $mysqli);
 if (count($shown_all) < 50) {
 	// We've pretty much shown everything to re-randomize and reset (expecting 100,000 files typically)
 	$sql = 'UPDATE media_files '
-		. ' SET rnd_id=(FLOOR( 1 + RAND( ) *60 )), shown=0;';
+		. ' SET rnd_id=(FLOOR( 1 + RAND( ) *6000000 )), shown=0;';
 	if ($debug) {echo "Running: $sql\n";}
 	if (!$mysqli->query($sql)) {die("Insert Failed: (" . $mysqli->errno . ") " . $mysqli->error);}
 }
@@ -91,7 +91,7 @@ foreach ($media_iterator as $s3_item) {
 		$sql = 'INSERT IGNORE INTO media_files (media_path, media_type, rnd_id, shown) VALUES ('
 			. sqlq($s3_item['Key'],0) . ','
 			. sqlq($media_type,0) . ','
-			. '(FLOOR( 1 + RAND( ) *60 )), 0)';
+			. '(FLOOR( 1 + RAND( ) *6000000 )), 0)';
 		if ($debug) {echo "Running: $sql\n";}
 		if (!$mysqli->query($sql)) {die("Insert Failed: (" . $mysqli->errno . ") " . $mysqli->error);}
 	}
