@@ -69,6 +69,7 @@ $media_iterator = $s3_client->getIterator('ListObjects', array(
 // Loop through files and add to our local index
 // TODO: DELETE files that no longer exist
 // TODO: Don't load non-image or video files
+// TODO: Ignore extremely large files
 foreach ($media_iterator as $s3_item) {
 	$file_path = trim($s3_item['Key']);
 	// don't bother storing folder names
