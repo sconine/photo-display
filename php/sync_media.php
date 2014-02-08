@@ -71,11 +71,12 @@ $media_iterator = $s3_client->getIterator('ListObjects', array(
 // TODO: Don't load non-image or video files
 // TODO: Ignore extremely large files (25MB+)
 foreach ($media_iterator as $s3_item) {
+	if ($debug) {echo "File: $s3_item['Key']) Size: $s3_item['Size'])\n";}
 	$file_path = trim($s3_item['Key']);
 	// don't bother storing folder names
 	if (substr($file_path, -1) == '/') {$file_path = '';}
 	
-	if ($file_path != '') {
+	if ($file_path != '' && 0==1) {
 		$media_type = "image/jpeg";
 		$f_ext = strtolower(substr($file_path, -3));
 		if ($debug) {echo "Extension: " . $f_ext . "\n";}
