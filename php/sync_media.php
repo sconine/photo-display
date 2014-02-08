@@ -98,7 +98,7 @@ foreach ($media_iterator as $s3_item) {
 				$media_type = "image/png";
 			}
 			
-			$sql = 'INSERT IGNORE INTO media_files (media_path, media_type last_sync, rnd_id,, shown) VALUES ('
+			$sql = 'INSERT IGNORE INTO media_files (media_path, media_type, last_sync, rnd_id, shown) VALUES ('
 				. sqlq($s3_item['Key'],0) . ','
 				. sqlq($media_type,0) . ','
 				. sqlq($time,0) . ','
