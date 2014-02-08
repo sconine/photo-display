@@ -156,6 +156,7 @@ foreach ($my_media as $i=>$media) {
 	// Did we find locally or do we need to retreive it
 	if ($media_host == '') {
 		//TODO: add disk space checks/cleanup and check file size prior to downloading
+		// media_size is returned from send_media_queue.php which can be used
 		
 		// Make sure the folder structure exists
 		$dirpath = $config['media_folder'] . dirname($media['media_path']);
