@@ -32,6 +32,7 @@ $sql = 'CREATE TABLE IF NOT EXISTS media_files ('
 . ' media_path varchar(767) NOT NULL, '
 . ' media_type varchar(32) NOT NULL, '
 . ' rnd_id int NULL, '
+. ' last_sync DATETIME NOT NULL, '
 . ' shown int NOT NULL, '
 . ' PRIMARY KEY (media_path), '
 . ' INDEX(id), INDEX(shown));';
@@ -68,36 +69,46 @@ $media_iterator = $s3_client->getIterator('ListObjects', array(
 
 // Loop through files and add to our local index
 // TODO: DELETE files that no longer exist
-// TODO: Don't load non-image or video files
-// TODO: Ignore extremely large files (25MB+)
+$time = time();
 foreach ($media_iterator as $s3_item) {
-	if ($debug) {echo "File: " . $s3_item['Key'] . " Size: " . $s3_item['Size'] . "\n";}
-	$file_path = trim($s3_item['Key']);
-	// don't bother storing folder names
-	if (substr($file_path, -1) == '/') {$file_path = '';}
-	
-	if ($file_path != '' && 0==1) {
-		$media_type = "image/jpeg";
-		$f_ext = strtolower(substr($file_path, -3));
-		if ($debug) {echo "Extension: " . $f_ext . "\n";}
-		if ($f_ext == 'gif') {
-			$media_type = "image/gif";
-		} elseif ($f_ext == 'mov') {
-			$media_type = "image/quicktime";
-		} elseif ($f_ext == 'peg') {
-			$media_type = "image/mpeg";
-		} elseif ($f_ext == 'mp4') {
-			$media_type = "image/mp4";
-		} elseif ($f_ext == 'cmf') {
-			$media_type = "application/screen.comopound.movie";
-		}
+	// Don't load anything larger than 1GB
+	if ($s3_item['Size'] < 1000000000) {
+		$file_path = trim($s3_item['Key']);
+		// don't bother storing folder names
+		if (substr($file_path, -1) == '/') {$file_path = '';}
 		
-		$sql = 'INSERT IGNORE INTO media_files (media_path, media_type, rnd_id, shown) VALUES ('
-			. sqlq($s3_item['Key'],0) . ','
-			. sqlq($media_type,0) . ','
-			. '(FLOOR( 1 + RAND( ) *6000000 )), 0)';
-		if ($debug) {echo "Running: $sql\n";}
-		if (!$mysqli->query($sql)) {die("Insert Failed: (" . $mysqli->errno . ") " . $mysqli->error);}
+		if ($file_path != '') {
+			$media_type = "";
+			$f_ext = strtolower(substr($file_path, -3));
+			$f_ext_4 = strtolower(substr($file_path, -4));
+			if ($debug) {echo "Extension: " . $f_ext . "\n";}
+			if ($f_ext == 'gif') {
+				$media_type = "image/gif";
+			} elseif ($f_ext == 'jpg' || $f_ext_4 == 'jpeg') {
+				$media_type = "image/jpeg";
+			} elseif ($f_ext == 'mov') {
+				$media_type = "image/quicktime";
+			} elseif ($f_ext_4 == 'mpeg') {
+				$media_type = "image/mpeg";
+			} elseif ($f_ext == 'mp4') {
+				$media_type = "image/mp4";
+			} elseif ($f_ext == 'cmf') {
+				$media_type = "application/screen.comopound.movie";
+			} elseif ($f_ext == 'png') {
+				$media_type = "image/png";
+			}
+			
+			$sql = 'INSERT IGNORE INTO media_files (media_path, media_type last_sync, rnd_id,, shown) VALUES ('
+				. sqlq($s3_item['Key'],0) . ','
+				. sqlq($media_type,0) . ','
+				. sqlq($time,0) . ','
+				. '(FLOOR( 1 + RAND( ) *6000000 )), 0) ON DUPLICATE KEY UPDATE last_sync=' . $time . ';';
+			if ($debug) {echo "Running: $sql\n";}
+			if (!$mysqli->query($sql)) {die("Insert Failed: (" . $mysqli->errno . ") " . $mysqli->error);}
+		}
+	} else {
+		if ($debug) {echo "File > 1GB: " . $s3_item['Key'] . " Size: " . $s3_item['Size'] . "\n";}
+		
 	}
 }
 
