@@ -31,6 +31,7 @@ $sql = 'CREATE TABLE IF NOT EXISTS media_files ('
 . ' id INTEGER AUTO_INCREMENT UNIQUE KEY, '
 . ' media_path varchar(767) NOT NULL, '
 . ' media_type varchar(32) NOT NULL, '
+. ' media_size BIGINT NOT NULL, '
 . ' rnd_id int NULL, '
 . ' last_sync BIGINT NOT NULL, '
 . ' shown int NOT NULL, '
@@ -100,9 +101,10 @@ foreach ($media_iterator as $s3_item) {
 			
 			// only store the files we care about
 			if ($media_type != '') {
-				$sql = 'INSERT IGNORE INTO media_files (media_path, media_type, last_sync, rnd_id, shown) VALUES ('
+				$sql = 'INSERT IGNORE INTO media_files (media_path, media_type, media_size, last_sync, rnd_id, shown) VALUES ('
 					. sqlq($s3_item['Key'],0) . ','
 					. sqlq($media_type,0) . ','
+					. sqlq($s3_item['Size'],0) . ','
 					. sqlq($time,1) . ','
 					. '(FLOOR( 1 + RAND( ) *6000000 )), 0) ON DUPLICATE KEY UPDATE last_sync=' . sqlq($time,1) . ';';
 				if ($debug) {echo "Running: $sql\n";}
