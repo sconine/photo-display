@@ -91,7 +91,7 @@ $sql = 'CREATE TABLE IF NOT EXISTS  my_media ('
 	. ' media_size int NOT NULL,'
 	. ' media_type VARCHAR(32) NOT NULL,'
 	. ' media_host VARCHAR(256) NULL,'
-	. ' media_displayed DATE NULL,'
+	. ' media_displayed DATETIME NULL,'
 	. ' media_order INT);';
 if ($debug) {echo "Running $sql\n";}
 if (!$mysqli->query($sql)) {die("Table creation failed: (" . $mysqli->errno . ") " . $mysqli->error);}
@@ -119,6 +119,7 @@ if (disk_free_space($config['media_folder']) < (1024 * 1024 * 100)) {
 // This returns the next 'X' files that this screen will display
 $url = 'http://' . $config['master_server'] . '/photo-display/php/send_media_queue.php?'
   . '&screen_id=' . $config['screen_id'] 
+  . '&length=5'
   . '&region=' . $config['region'];
 
 $confirm_reg = array();

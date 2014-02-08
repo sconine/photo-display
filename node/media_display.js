@@ -55,16 +55,26 @@ app.get('/get_media', function (req, res) {
 	
 	// Get the next item to display
 	// you might need to run get_media.php first to build this table
-	connection.query('SELECT media_path, media_type, media_host FROM my_media WHERE media_displayed is NULL ORDER BY media_order LIMIT 1', function(err, rows, fields) {
+	// order by media_id if you want the order sent by the server, media_order if you want random from client
+	connection.query('SELECT media_path, media_type, media_host, media_id FROM my_media WHERE media_displayed is NULL ORDER BY media_id LIMIT 1', function(err, rows, fields) {
+	var media_id = 0;	
 	  if (err) { res.json({ media_type: 'text', media_url: err});}
 	  else {
 		if (rows.length > 0) {
 		  	res.json({ media_path: rows[0].media_path, media_type: rows[0].media_type, media_host: rows[0].media_host });
+			media_id = rows[0].media_id
+			connection.query('UPDATE my_media SET media_displayed=NOW() WHERE media_id=' + media_id, function(err, rows, fields) {
+		  	if (err) { console.log({ media_type: 'text', media_url: err});}
+		  	else {
+				console.log('media_id ' + media_id + ' marked as displayed');
+		  	}
+			});
 		} else {
 			res.json({ media_type: 'text', media_url: 'no rows returned'});
 		}
 	  }	
-	});	
+	});
+	
 });
 
 
