@@ -67,7 +67,7 @@ $media_iterator = $s3_client->getIterator('ListObjects', array(
     //,'Prefix' => 'Dec-2005'  // this will filter to specific matches
 ));
 
-// Loop through files and add to our local index
+// Loop through files and sync to our local index
 $time = time();
 $cnt = 0;
 foreach ($media_iterator as $s3_item) {
@@ -98,14 +98,16 @@ foreach ($media_iterator as $s3_item) {
 				$media_type = "image/png";
 			}
 			
-			$sql = 'INSERT IGNORE INTO media_files (media_path, media_type, last_sync, rnd_id, shown) VALUES ('
-				. sqlq($s3_item['Key'],0) . ','
-				. sqlq($media_type,0) . ','
-				. sqlq($time,1) . ','
-				. '(FLOOR( 1 + RAND( ) *6000000 )), 0) ON DUPLICATE KEY UPDATE last_sync=' . sqlq($time,1) . ';';
-			if ($debug) {echo "Running: $sql\n";}
-			if (!$mysqli->query($sql)) {die("Insert Failed: (" . $mysqli->errno . ") " . $mysqli->error);}
-			$cnt = $cnt + 1;
+			if ($media_type != '') {
+				$sql = 'INSERT IGNORE INTO media_files (media_path, media_type, last_sync, rnd_id, shown) VALUES ('
+					. sqlq($s3_item['Key'],0) . ','
+					. sqlq($media_type,0) . ','
+					. sqlq($time,1) . ','
+					. '(FLOOR( 1 + RAND( ) *6000000 )), 0) ON DUPLICATE KEY UPDATE last_sync=' . sqlq($time,1) . ';';
+				if ($debug) {echo "Running: $sql\n";}
+				if (!$mysqli->query($sql)) {die("Insert Failed: (" . $mysqli->errno . ") " . $mysqli->error);}
+				$cnt = $cnt + 1;
+			}
 		}
 	} else {
 		if ($debug) {echo "File > 1GB: " . $s3_item['Key'] . " Size: " . $s3_item['Size'] . "\n";}
