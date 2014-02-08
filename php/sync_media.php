@@ -32,7 +32,7 @@ $sql = 'CREATE TABLE IF NOT EXISTS media_files ('
 . ' media_path varchar(767) NOT NULL, '
 . ' media_type varchar(32) NOT NULL, '
 . ' rnd_id int NULL, '
-. ' last_sync DATETIME NOT NULL, '
+. ' last_sync BIGINT NOT NULL, '
 . ' shown int NOT NULL, '
 . ' PRIMARY KEY (media_path), '
 . ' INDEX(id), INDEX(shown));';
@@ -70,6 +70,7 @@ $media_iterator = $s3_client->getIterator('ListObjects', array(
 // Loop through files and add to our local index
 // TODO: DELETE files that no longer exist
 $time = time();
+$cnt = 0;
 foreach ($media_iterator as $s3_item) {
 	// Don't load anything larger than 1GB
 	if ($s3_item['Size'] < 1000000000) {
@@ -105,11 +106,20 @@ foreach ($media_iterator as $s3_item) {
 				. '(FLOOR( 1 + RAND( ) *6000000 )), 0) ON DUPLICATE KEY UPDATE last_sync=' . $time . ';';
 			if ($debug) {echo "Running: $sql\n";}
 			if (!$mysqli->query($sql)) {die("Insert Failed: (" . $mysqli->errno . ") " . $mysqli->error);}
+			$cnt = $cnt + 1;
 		}
 	} else {
 		if ($debug) {echo "File > 1GB: " . $s3_item['Key'] . " Size: " . $s3_item['Size'] . "\n";}
 		
 	}
 }
+
+// Now cleanup provided we did find some files
+if ($cnt > 100) {
+	
+	
+	
+}
+
 
 ?>
