@@ -68,7 +68,6 @@ $media_iterator = $s3_client->getIterator('ListObjects', array(
 ));
 
 // Loop through files and add to our local index
-// TODO: DELETE files that no longer exist
 $time = time();
 $cnt = 0;
 foreach ($media_iterator as $s3_item) {
@@ -103,7 +102,7 @@ foreach ($media_iterator as $s3_item) {
 				. sqlq($s3_item['Key'],0) . ','
 				. sqlq($media_type,0) . ','
 				. sqlq($time,1) . ','
-				. '(FLOOR( 1 + RAND( ) *6000000 )), 0) ON DUPLICATE KEY UPDATE last_sync=' . $time . ';';
+				. '(FLOOR( 1 + RAND( ) *6000000 )), 0) ON DUPLICATE KEY UPDATE last_sync=' . sqlq($time,1) . ';';
 			if ($debug) {echo "Running: $sql\n";}
 			if (!$mysqli->query($sql)) {die("Insert Failed: (" . $mysqli->errno . ") " . $mysqli->error);}
 			$cnt = $cnt + 1;
@@ -116,9 +115,10 @@ foreach ($media_iterator as $s3_item) {
 
 // Now cleanup provided we did find some files
 if ($cnt > 100) {
-	
-	
-	
+	$sql = 'DELETE FROM media_files WHERE last_sync <> ' . sqlq($time,1) . ';'
+	if ($debug) {echo "Running: $sql\n";}
+	if (!$mysqli->query($sql)) {die("Delete Failed: (" . $mysqli->errno . ") " . $mysqli->error);}
+
 }
 
 
