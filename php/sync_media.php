@@ -102,7 +102,7 @@ foreach ($media_iterator as $s3_item) {
 			$sql = 'INSERT IGNORE INTO media_files (media_path, media_type, last_sync, rnd_id, shown) VALUES ('
 				. sqlq($s3_item['Key'],0) . ','
 				. sqlq($media_type,0) . ','
-				. sqlq($time,0) . ','
+				. sqlq($time,1) . ','
 				. '(FLOOR( 1 + RAND( ) *6000000 )), 0) ON DUPLICATE KEY UPDATE last_sync=' . $time . ';';
 			if ($debug) {echo "Running: $sql\n";}
 			if (!$mysqli->query($sql)) {die("Insert Failed: (" . $mysqli->errno . ") " . $mysqli->error);}
