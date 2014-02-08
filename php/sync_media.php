@@ -115,7 +115,7 @@ foreach ($media_iterator as $s3_item) {
 
 // Now cleanup provided we did find some files
 if ($cnt > 100) {
-	$sql = 'DELETE FROM media_files WHERE last_sync <> ' . sqlq($time,1) . ';'
+	$sql = 'DELETE FROM media_files WHERE last_sync <> ' . sqlq($time,1) . ';';
 	if ($debug) {echo "Running: $sql\n";}
 	if (!$mysqli->query($sql)) {die("Delete Failed: (" . $mysqli->errno . ") " . $mysqli->error);}
 
