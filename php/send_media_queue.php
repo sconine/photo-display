@@ -41,7 +41,7 @@ $send_media = query_to_array($sql, $mysqli);
 
 // If we didn't get anything just return 25 - sync_media.php needs to run to reset
 if (count($send_media) == 0) {
-	$sql = "SELECT media_path, media_type FROM media_files ORDER BY rnd_id LIMIT " . $queue_length . ;";
+	$sql = "SELECT media_path, media_type FROM media_files ORDER BY rnd_id LIMIT " . $queue_length . ";";
 	$send_media = query_to_array($sql, $mysqli);
 }
 
