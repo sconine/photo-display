@@ -1,79 +1,137 @@
 <html>
 <head><Title>Media Display Screen</title>
-<script src="//code.jquery.com/jquery-1.10.2.min.js"></script>
+<script src="//code.jquery.com/jquery-1.10.2.min.js" type="text/javascript"></script>
+
+<style>
+	body{
+	margin: 0; 
+	padding: 0; 
+	padding-top: 0px;
+	text-align: center;}
+
+	#main {
+	height: 100%;
+	width: 100%;
+	position: absolute;
+	border: 0px;
+	padding: 0;
+	margin: 0 auto;}
+
+	#content{
+	height: 100%;
+	width: 100%;
+	margin-top: 0px;
+	margin-right:0px;}
+
+
+</style>
+
+
 </head>
 <body>
-<div id="my_media"></div>
+<div id="main">
+	<div id="content">
+		<div id="image_container"></div>
+	</div>
+	<div id="filename"></div>
+</div>
+
 <div id="log"></div>
 
-
-<script>
-
+<script type="text/javascript">
+//alert('hi');
 // Function to change the media
 function change_media(cnt, duration) {
 
- // Make a call to the server to get what we should show
- var request = $.ajax({
-  url: "http://localhost:8080/get_media",
-  type: "GET",
-  datatype: 'json',
-  data: { cnt: cnt, duration: duration },
- });
+	// Make a call to the server to get what we should show
+	var request = $.ajax({
+		url: "http://localhost:8080/get_media",
+		type: "GET",
+		datatype: 'json',
+		data: { cnt: cnt, duration: duration },
+	});
 
- // Deal with Response
- request.done(function( data ) {
-   var obj = jQuery.parseJSON( data );
-   var embed_html = '';
-   var media_url = false;
-   var media_type = false;
+	 // Deal with Response
+	 request.done(function( obj ) {
+		var embed_html = '';
+		var media_path = false;
+		var media_type = false;
+		var media_host = false;
 
-   // start with a clean log element
-   $( "#log" ).html( "" );
+		// start with a clean log element
+		$( "#log" ).html( "" );
 
-   
-   $.each( obj, function( key, value ) {
-    if (key = 'media_url') {media_url = true;}
-    if (key = 'media_type') {media_type = true;}
-   });
-   
-   if (media_url && media_type) {
-    if (obj['media_type'] == 'image') {
-     embed_html = '<img src="' +  obj['media_url'] + '"'>';
-    } else if (obj['media_type'] == 'quicktime_movie') {
-     // TODO: get the correct HTML to embedd quicktime movies in Chrome on Linux
-     embed_html = '<movie src="' +  obj['media_url'] + '"'>';
-    } else {
-     $( "#log" ).html( "Media type not handled: " + obj['media_type'] );
-    }
-    
-    
-   } else {
-     $( "#log" ).html( "Media type or url not found in: " + data );
-   }
-   
-   $( "#my_media" ).html( data );
+		// Make sure the key's we expect are there
+		$.each( obj, function( key, value ) {
+			if (key = 'media_path') {media_url = true;}
+			if (key = 'media_type') {media_type = true;}
+			if (key = 'media_host') {media_host = true;}
+		});
 
-  
- });
- 
- // Deal with Failure 
- request.fail(function( jqXHR, textStatus ) {
-   alert( "Request failed: " + textStatus );
- });
- 
- 
- 
+		//TODO: clean up how the URL is built
+		if (media_url && media_type && media_host) {
+			if (obj['media_type'] == 'image/jpeg') {
+				embed_html = '<img id="my_image" src="http://' +  obj['media_host'] + ':8080/images/' +  obj['media_path'] + '">';
+			} else if (obj['media_type'] == 'movie/quicktime') {
+				// TODO: get the correct HTML to embedd quicktime movies in Chrome on Linux
+				embed_html = '<movie src="' +  obj['media_path'] + '">';
+			} else {
+				$("#log").html("Media type not handled: " + obj['media_type']);
+			}
 
- // last thing it does is set itself up to be called again
- cnt++;
- duration = duration + 50;
-  setTimeout(function(){change_media(cnt, duration);}, duration);
- return true;
+			// Display file name if configured for that
+			$("#filename").html(obj['media_path']);
+		} else {
+			$("#log").html("Media type or url not found in: " + obj );
+		}
+
+		// Resize content to main size with a boarder at bottom to show image path
+		$("#content").css({"height" : ($("#main").height()-20) + "px", "width" : $("#main").width() + "px"});
+		
+		// Load the image into the page
+		$("#image_container").html( embed_html );   
+		$("#my_image").css({"display" : "none"});
+
+		// Once loaded resize so that it fits in the screen correctly
+		$("#my_image").load(function(){
+			var mheight = $("#content").height();
+			var mwidth = $("#content").width();
+			var iheight = $(this).height();
+			var iwidth = $(this).width();
+			for (var i=100;i>0;i--) { 
+				var h = iheight * (i/100);
+				var w = iwidth * (i/100);
+				// Debug: alert(i + " h" + h + " w" + w + " vs h " + mheight + " w"  + mwidth);
+				if (h < mheight && w > mwidth) {
+					$(this).css({"width": "100%"});
+					break;
+				}
+				if (w < mwidth && h > mheight) {
+					$(this).css({"height": "100%"});
+					break;
+				}
+			}
+			$("#my_image").css({"display" : "inline"});
+		});
+
+	});
+
+	// Deal with Failure 
+	request.fail(function( jqXHR, textStatus ) {
+	//alert( "Request failed: " + textStatus );
+	$("#log").html("Request failed: " + textStatus);
+	});
+
+	// last thing it does is set itself up to be called again
+	cnt++;
+	duration = 1000;
+	//setTimeout(function(){change_media(cnt, duration);}, duration);
+	return true;
 }
 
 
 // Start the whole thing running
-change_media(0, 50);
+change_media(0, 1000);
 
 </script>
 </body>

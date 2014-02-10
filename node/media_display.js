@@ -43,7 +43,7 @@ connection.connect();
 
 //Routes
 // default page is the slideshow screen driver
-app.get('/', function (req, res) {
+app.get('/slides', function (req, res) {
 	res.sendfile(__dirname + '/public/slideshow.html');
 });
 
@@ -56,23 +56,35 @@ app.get('/get_media', function (req, res) {
 	// Get the next item to display
 	// you might need to run get_media.php first to build this table
 	// order by media_id if you want the order sent by the server, media_order if you want random from client
-	connection.query('SELECT media_path, media_type, media_host, media_id FROM my_media WHERE media_displayed is NULL ORDER BY media_id LIMIT 1', function(err, rows, fields) {
-	var media_id = 0;	
-	  if (err) { res.json({ media_type: 'text', media_url: err});}
-	  else {
-		if (rows.length > 0) {
-		  	res.json({ media_path: rows[0].media_path, media_type: rows[0].media_type, media_host: rows[0].media_host });
-			media_id = rows[0].media_id
-			connection.query('UPDATE my_media SET media_displayed=NOW() WHERE media_id=' + media_id, function(err, rows, fields) {
-		  	if (err) { console.log({ media_type: 'text', media_url: err});}
-		  	else {
-				console.log('media_id ' + media_id + ' marked as displayed');
-		  	}
-			});
+	connection.query('SELECT media_path, media_type, media_host, media_id FROM my_media WHERE media_displayed is NULL ORDER BY media_id LIMIT 1', 		function(err, rows, fields) {
+		var media_id = 0;	
+		if (err) {
+			res.json({ media_type: 'text', media_url: err});
 		} else {
-			res.json({ media_type: 'text', media_url: 'no rows returned'});
-		}
-	  }	
+			if (rows.length > 0) {
+			  	res.json({ media_path: rows[0].media_path, media_type: rows[0].media_type, media_host: rows[0].media_host });
+				media_id = rows[0].media_id;
+				// Uncomment to get new files
+				connection.query('UPDATE my_media SET media_displayed=NOW() WHERE media_id=' + media_id, function(err, rows, fields) {
+				  	if (err) {
+						console.log({ media_type: 'text', media_url: err});
+				  	} else {
+						console.log('media_id ' + media_id + ' marked as displayed');
+				  	}
+				});
+			} else {
+				res.json({ media_type: 'reset', media_url: 'no rows returned, will re-display last 100'});
+				// Reset cache so we redisplay the last 100
+				connection.query('UPDATE my_media SET media_displayed=NULL ORDER BY media_id DESC LIMIT 100', function(err, rows, fields) {
+				  	if (err) { 
+						console.log({ media_type: 'text', media_url: err});
+				  	} else {
+						console.log('media_id ' + media_id + ' marked as displayed');
+				  	}
+				});
+
+			}
+		}	
 	});
 	
 });
@@ -81,17 +93,17 @@ app.get('/get_media', function (req, res) {
 // check if a media file exists locally
 app.get('/find_media', function (req, res) {
 	res.set('Content-Type', 'application/json');
-	
+
 	var fs = require('fs');
 	// TODO: check if config.media_folder ends with a slash or not
 	var file_path = config.media_folder + req.query.media_path;
 	fs.exists(file_path, function(exists) {
-	  // might do something with in the future 
-	  if (exists) {
-	    res.json({ found: true, disk_remaining: 0, file_path: file_path});
-	  } else {
-	    res.json({ found: false, disk_remaining: 0, file_path: file_path});
-	  }
+		// might do something with in the future 
+		if (exists) {
+			res.json({ found: true, disk_remaining: 0, file_path: file_path});
+		} else {
+			res.json({ found: false, disk_remaining: 0, file_path: file_path});
+		}
 	});
 });
 

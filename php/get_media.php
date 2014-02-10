@@ -144,7 +144,7 @@ foreach ($my_media as $i=>$media) {
 		// see if a local peer has it
 		foreach ($local_peers as $j => $peer) {
 			$url = 'http://' . $peer['screen_private_ip'] . ':8080/find_media?media_path=' . urlencode($media['media_path']);
-			$peer_media = curl_get_array($url, 4);
+			$peer_media = curl_get_array($url, 1);
 			if ($peer_media['found']) {
 				$confirm_reg[] = $media['media_path'];
 				$media_host = $peer['screen_private_ip'];
