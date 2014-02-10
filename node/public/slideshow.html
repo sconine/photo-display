@@ -71,9 +71,11 @@ function change_media(cnt, duration) {
 		//TODO: clean up how the URL is built
 		if (media_url && media_type && media_host) {
 			if (obj['media_type'] == 'image/jpeg') {
+				//embed_html = '<img id="my_image" src="http://192.168.2.102:8080/images/' +  obj['media_path'] + '">';
 				embed_html = '<img id="my_image" src="http://' +  obj['media_host'] + ':8080/images/' +  obj['media_path'] + '">';
 			} else if (obj['media_type'] == 'movie/quicktime') {
 				// TODO: get the correct HTML to embedd quicktime movies in Chrome on Linux
+				// TODO: look for mp4, mov and maybe avi
 				embed_html = '<movie src="' +  obj['media_path'] + '">';
 			} else {
 				$("#log").html("Media type not handled: " + obj['media_type']);
@@ -124,14 +126,14 @@ function change_media(cnt, duration) {
 
 	// last thing it does is set itself up to be called again
 	cnt++;
-	duration = 1000;
-	//setTimeout(function(){change_media(cnt, duration);}, duration);
+	duration = 3000;
+	setTimeout(function(){change_media(cnt, duration);}, duration);
 	return true;
 }
 
 
 // Start the whole thing running
-change_media(0, 1000);
+change_media(0, 3000);
 
 </script>
 </body>
