@@ -69,6 +69,8 @@ $media_iterator = $s3_client->getIterator('ListObjects', array(
 ));
 
 // Loop through files and sync to our local index
+// TODO: Would be awesome if we could store checksums on each file, then path would not matter...
+//       might have to do that as we are sending files since we don't have them now, but something to look into
 $time = time();
 $cnt = 0;
 foreach ($media_iterator as $s3_item) {
