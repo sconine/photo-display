@@ -77,6 +77,10 @@ function change_media(cnt, duration) {
 				// TODO: get the correct HTML to embedd quicktime movies in Chrome on Linux
 				// TODO: look for mp4, mov and maybe avi
 				embed_html = '<movie src="' +  obj['media_path'] + '">';
+			} else if (obj['media_type'] == 'movie/mp4') {
+				embed_html = '<video width="320" height="240" controls>';
+				embed_html = embed_html + '<source src="movie.mp4" type="video/mp4">';
+				embed_html = embed_html + '</video>';
 			} else {
 				$("#log").html("Media type not handled: " + obj['media_type']);
 			}
