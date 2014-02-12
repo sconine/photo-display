@@ -36,7 +36,9 @@ if (isset($_REQUEST['media_path'])) {
         $f_ext = strtolower(substr($_REQUEST['media_path'], -3));
         if ($f_ext == 'mov') {
             header('Content-type: video/quicktime');
-        } elseif ($f_ext == 'gif') {
+        } elseif ($f_ext == 'mp4') {
+            header('Content-type: video/mp4');
+       } elseif ($f_ext == 'gif') {
             header('Content-type: image/gif');
         } else {
             header('Content-type: image/jpg');
