@@ -91,11 +91,11 @@ foreach ($media_iterator as $s3_item) {
 			} elseif ($f_ext == 'jpg' || $f_ext_4 == 'jpeg') {
 				$media_type = "image/jpeg";
 			} elseif ($f_ext == 'mov') {
-				$media_type = "image/quicktime";
+				$media_type = "movie/quicktime";
 			} elseif ($f_ext_4 == 'mpeg') {
-				$media_type = "image/mpeg";
+				$media_type = "movie/mpeg";
 			} elseif ($f_ext == 'mp4') {
-				$media_type = "image/mp4";
+				$media_type = "movie/mp4";
 			} elseif ($f_ext == 'cmf') {
 				$media_type = "application/screen.comopound.movie";
 			} elseif ($f_ext == 'png') {
