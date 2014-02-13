@@ -75,8 +75,19 @@ function change_media(cnt, duration) {
 				embed_html = '<img id="my_image" src="http://' +  obj['media_host'] + ':8080/images/' +  obj['media_path'] + '">';
 			} else if (obj['media_type'] == 'movie/quicktime') {
 				// TODO: get the correct HTML to embedd quicktime movies in Chrome on Linux
-				// TODO: look for mp4, mov and maybe avi
-				embed_html = '<movie src="' +  obj['media_path'] + '">';
+				// TODO: mov and maybe avi
+				// TODO: figure out why my .mov files look like text
+				embed_html = '<object classid="clsid:02BF25D5-8C17-4B23-BC80-D3488ABDDC6B" ';
+				embed_html = embed_html + 'codebase="http://www.apple.com/qtactivex/qtplugin.cab" width="320" height="260">';
+				embed_html = embed_html + '<param name="src" value="myvid.mov" />';
+				embed_html = embed_html + '<param name="controller" value="true" />';
+				embed_html = embed_html + '<object type="video/quicktime" data="';
+				embed_html = embed_html + 'http://' +  obj['media_host'] + ':8080/images/' +  obj['media_path'];
+				embed_html = embed_html + '" width="320" height="260" class="mov">';
+				embed_html = embed_html + '<param name="controller" value="true" />';
+				embed_html = embed_html + '</object>';
+				embed_html = embed_html + '</object>';
+
 			} else if (obj['media_type'] == 'movie/mp4') {
 				embed_html = '<video width="320" height="240" controls>';
 				embed_html = embed_html + '<source src="movie.mp4" type="video/mp4">';
@@ -130,8 +141,8 @@ function change_media(cnt, duration) {
 
 	// last thing it does is set itself up to be called again
 	cnt++;
-	duration = 3000;
-	setTimeout(function(){change_media(cnt, duration);}, duration);
+	duration = 10000;
+	//setTimeout(function(){change_media(cnt, duration);}, duration);
 	return true;
 }
 

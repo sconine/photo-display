@@ -56,7 +56,8 @@ app.get('/get_media', function (req, res) {
 	// Get the next item to display
 	// you might need to run get_media.php first to build this table
 	// order by media_id if you want the order sent by the server, media_order if you want random from client
-	connection.query('SELECT media_path, media_type, media_host, media_id FROM my_media WHERE media_displayed is NULL ORDER BY media_id LIMIT 1', 		function(err, rows, fields) {
+	// TODO: remove movie/quicktime clause after debugging
+	connection.query("SELECT media_path, media_type, media_host, media_id FROM my_media WHERE media_type='movie/quicktime' AND media_displayed is NULL ORDER BY media_id LIMIT 1", 		function(err, rows, fields) {
 		var media_id = 0;	
 		if (err) {
 			res.json({ media_type: 'text', media_url: err});
@@ -73,13 +74,13 @@ app.get('/get_media', function (req, res) {
 				  	}
 				});
 			} else {
-				res.json({ media_type: 'reset', media_url: 'no rows returned, will re-display last 100'});
+				res.json({ media_type: 'reset', media_url: 'no rows returned, will re-display last 200'});
 				// Reset cache so we redisplay the last 100
-				connection.query('UPDATE my_media SET media_displayed=NULL ORDER BY media_id DESC LIMIT 100', function(err, rows, fields) {
+				connection.query('UPDATE my_media SET media_displayed=NULL ORDER BY media_id DESC LIMIT 200', function(err, rows, fields) {
 				  	if (err) { 
 						console.log({ media_type: 'text', media_url: err});
 				  	} else {
-						console.log('media_id ' + media_id + ' marked as displayed');
+						console.log('media_id reset');
 				  	}
 				});
 

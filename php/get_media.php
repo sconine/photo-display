@@ -119,7 +119,7 @@ if (disk_free_space($config['media_folder']) < (1024 * 1024 * 100)) {
 // This returns the next 'X' files that this screen will display
 $url = 'http://' . $config['master_server'] . '/photo-display/php/send_media_queue.php?'
   . '&screen_id=' . $config['screen_id'] 
-  . '&length=5'
+  . '&length=55'
   . '&region=' . $config['region'];
 
 $confirm_reg = array();
@@ -156,6 +156,7 @@ foreach ($my_media as $i=>$media) {
 	// Did we find locally or do we need to retreive it
 	if ($media_host == '') {
 		//TODO: add disk space checks/cleanup and check file size prior to downloading
+		//TODO: Make sure we didn't just get junk data from an nginx error
 		// media_size is returned from send_media_queue.php which can be used
 		
 		// Make sure the folder structure exists
