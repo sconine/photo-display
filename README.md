@@ -56,4 +56,5 @@ b) With the JSON data it will know the URL of the media to show next and display
 <br><br>
 <h1>Other Thoughts</h1>
 Could add functionality so that there was a key screens used to verify they were legit before media was send.<br>
+Need to figure out a way to synchronize video files across several screens 
 
