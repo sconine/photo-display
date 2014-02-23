@@ -77,13 +77,16 @@ function change_media(cnt, duration) {
 				// TODO: get the correct HTML to embedd quicktime movies in Chrome on Linux
 				// TODO: mov and maybe avi
 				// TODO: figure out why my .mov files look like text
+				// SEE: https://github.com/malsup/media/tree/master
+			//	embed_html = '<a class="media" href="http://' +  obj['media_host'] + ':8080/images/' +  obj['media_path'] + '">qtMovie</a>';
+
 				embed_html = '<object classid="clsid:02BF25D5-8C17-4B23-BC80-D3488ABDDC6B" ';
-				embed_html = embed_html + 'codebase="http://www.apple.com/qtactivex/qtplugin.cab" width="320" height="260">';
+				embed_html = embed_html + 'codebase="http://www.apple.com/qtactivex/qtplugin.cab" width="95%" height="95%">';
 				embed_html = embed_html + '<param name="src" value="myvid.mov" />';
 				embed_html = embed_html + '<param name="controller" value="true" />';
-				embed_html = embed_html + '<object type="video/quicktime" data="';
+				embed_html = embed_html + '<object id="my_image" type="video/quicktime" data="';
 				embed_html = embed_html + 'http://' +  obj['media_host'] + ':8080/images/' +  obj['media_path'];
-				embed_html = embed_html + '" width="320" height="260" class="mov">';
+				embed_html = embed_html + '" width="95%" height="95%" class="mov">';
 				embed_html = embed_html + '<param name="controller" value="true" />';
 				embed_html = embed_html + '</object>';
 				embed_html = embed_html + '</object>';
@@ -104,13 +107,15 @@ function change_media(cnt, duration) {
 
 		// Resize content to main size with a boarder at bottom to show image path
 		$("#content").css({"height" : ($("#main").height()-20) + "px", "width" : $("#main").width() + "px"});
-		
+
 		// Load the image into the page
 		$("#image_container").html( embed_html );   
+
 		$("#my_image").css({"display" : "none"});
 
 		// Once loaded resize so that it fits in the screen correctly
-		$("#my_image").load(function(){
+		//$("#my_image").load(function(){
+		$("#my_image").ready(function(){
 			var mheight = $("#content").height();
 			var mwidth = $("#content").width();
 			var iheight = $(this).height();
