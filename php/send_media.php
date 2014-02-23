@@ -14,6 +14,9 @@ $config = json_decode($datastring, true);
 if ($debug) {echo "datastring: $datastring\n";}
 if ($debug) {var_dump($config);}
 
+// Set an unlimited memory limit so that big files can be sent
+ini_set('memory_limit', '-1');
+
 // Connect to amazon storage
 require '../vendor/autoload.php';
 use Aws\Common\Aws;
@@ -30,22 +33,27 @@ if (isset($_REQUEST['media_path'])) {
         'Bucket' => $bucket,
         'Key'    => $_REQUEST['media_path']
     ));
-
-    // Deal with consol calls vs calls through a web server
-    if (isset($_SERVER['HTTP_HOST'])) {
-        $f_ext = strtolower(substr($_REQUEST['media_path'], -3));
-        if ($f_ext == 'mov') {
-            header('Content-type: video/quicktime');
-        } elseif ($f_ext == 'mp4') {
-            header('Content-type: video/mp4');
-       } elseif ($f_ext == 'gif') {
-            header('Content-type: image/gif');
+    
+    // Enforce a 1GB limit here too
+    if ($result['Size'] < 1000000000) {
+        // Deal with consol calls vs calls through a web server
+        if (isset($_SERVER['HTTP_HOST'])) {
+            $f_ext = strtolower(substr($_REQUEST['media_path'], -3));
+            if ($f_ext == 'mov') {
+                header('Content-type: video/quicktime');
+            } elseif ($f_ext == 'mp4') {
+                header('Content-type: video/mp4');
+           } elseif ($f_ext == 'gif') {
+                header('Content-type: image/gif');
+            } else {
+                header('Content-type: image/jpg');
+            }
+            echo $result['Body'];
         } else {
-            header('Content-type: image/jpg');
+            echo "Got the body, but did not stream to concole\n";
         }
-        echo $result['Body'];
     } else {
-        echo "Got the body, but did not stream to concole\n";
+        header("HTTP/1.1 500 Internal Server Error");
     }
 }
 
