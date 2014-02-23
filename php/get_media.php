@@ -21,6 +21,7 @@ $my_ip =  gethostbyname(trim(`hostname --all-ip-addresses`));
 
 //Use MY SQL - this include assumes that $config has been loaded 
 include 'my_sql.php';
+include 'curl_functions.php';
 
 
 /////////////////////////////////////////////////
@@ -119,7 +120,7 @@ if (disk_free_space($config['media_folder']) < (1024 * 1024 * 100)) {
 // This returns the next 'X' files that this screen will display
 $url = 'http://' . $config['master_server'] . '/photo-display/php/send_media_queue.php?'
   . '&screen_id=' . $config['screen_id'] 
-  . '&length=55'
+  . '&length=5'
   . '&region=' . $config['region'];
 
 $confirm_reg = array();
@@ -145,7 +146,7 @@ foreach ($my_media as $i=>$media) {
 		foreach ($local_peers as $j => $peer) {
 			$url = 'http://' . $peer['screen_private_ip'] . ':8080/find_media?media_path=' . urlencode($media['media_path']);
 			$peer_media = curl_get_array($url, 1);
-			if ($peer_media['found']) {
+			if (isset($peer_media['found']) && $peer_media['found']) {
 				$confirm_reg[] = $media['media_path'];
 				$media_host = $peer['screen_private_ip'];
 				break;
@@ -168,24 +169,11 @@ foreach ($my_media as $i=>$media) {
 		
 		$url = 'http://' . $config['master_server'] . '/photo-display/php/send_media.php?media_path=' . urlencode($media['media_path']);
 		if ($debug) {echo "Calling: $url\n";}
-		set_time_limit(0);
-		$fp = fopen ($filepath, 'w+');
-		$ch = curl_init($url);
-		curl_setopt($ch, CURLOPT_TIMEOUT, 600);
-		curl_setopt($ch, CURLOPT_FILE, $fp); 
-		curl_setopt($ch, CURLOPT_FOLLOWLOCATION, true);
-		curl_exec($ch); 
-		if(curl_errno($ch)) {
-			fclose($fp);
-			echo 'error:' . curl_error($ch);
-			unlink($filepath);
-		} else {
+		if (curl_write_file($url, $filepath)) {
 			$confirm_reg[] = $media['media_path'];
-			$media_host = 'localhost';    
+			$media_host = 'localhost';
 		}
-		curl_close($ch);
-		fclose($fp);
-	
+
 	}
 	
 	if ($media_host != '') {
@@ -203,46 +191,19 @@ $url = 'http://' . $config['master_server'] . '/photo-display/php/confirm_media_
   . '&screen_id=' . $config['screen_id'] 
   . '&region=' . $config['region'];
 if ($debug) {echo "Calling: $url\n";}
-$ch = curl_init();
-curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
-curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-curl_setopt($ch, CURLOPT_URL,$url);
-curl_setopt($ch, CURLOPT_POSTFIELDS,  $post_data);
-curl_setopt($ch, CURLOPT_HEADER, 0);
-curl_setopt($ch, CURLOPT_POST, 1);
-curl_setopt($ch, CURLOPT_CONNECTTIMEOUT ,4); 
-curl_setopt($ch, CURLOPT_TIMEOUT, 5); //timeout in seconds
-$result=curl_exec($ch);
-if(curl_errno($ch)) {
-	echo 'error will not update local database:' . curl_error($ch);
-} else {
+if (curl_post_data($url, $post_data)) {
 	foreach ($isql as $sql) {
 		if ($debug) {echo "Running: $sql\n";}
 		if (!$mysqli->query($sql)) {die("Insert Failed: (" . $mysqli->errno . ") " . $mysqli->error);}
 	}
+} else {
+	if ($debug) {echo "Error will not update local database\n";}
 }
 
 // Close MySQL Connection
 mysqli_close($mysqli);
 
 
-// CURL Functions
-function curl_get_array($url, $timeout) {
-  global $debug;
-  if ($debug) {echo "Calling: $url \n";}
-  $ch = curl_init();
-  curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
-  curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-  curl_setopt($ch, CURLOPT_URL,$url);
-  curl_setopt($ch, CURLOPT_CONNECTTIMEOUT ,$timeout); 
-  curl_setopt($ch, CURLOPT_TIMEOUT, $timeout); //timeout in seconds
-  $result=curl_exec($ch);
-  if(curl_errno($ch)) {
-    echo 'error:' . curl_error($ch);
-  } else {
-    return json_decode($result, true);
-  }
-  return array();
-}
+
 
 ?>
