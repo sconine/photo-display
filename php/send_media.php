@@ -26,6 +26,9 @@ $aws = Aws::factory('/usr/www/html/photo-display/php/amazon_config.json');
 $client = $aws->get('s3');
 
 // Set the bucket for where media is stored
+//TODO: Figure out how to get large movie files as the
+// approach below doesn't work and gives this error in /var/log/nginx/error.log
+// *1953 recv() failed (104: Connection reset by peer) while reading response header from upstream, client: 24.147.168.202,
 $bucket = $config['ec2_image_bucket'];
 if (isset($_REQUEST['media_path'])) {
     // Get an object using the getObject operation
