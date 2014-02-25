@@ -52,7 +52,7 @@ if (count($shown_all) < 50) {
 }
 
 // Always reset things that were sent but not congfirmed
-$sql = 'UPDATE media_files SET shown=0 WHERE shown=3;';
+$sql = 'UPDATE media_files SET shown=0 WHERE shown=2;';
 if ($debug) {echo "Running: $sql\n";}
 if (!$mysqli->query($sql)) {die("Insert Failed: (" . $mysqli->errno . ") " . $mysqli->error);}
 
