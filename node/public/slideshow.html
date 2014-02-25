@@ -8,6 +8,7 @@
 	padding: 0; 
 	background-color: #000000;
 	padding-top: 0px;
+	overflow:hidden;
 	text-align: center;}
 
 	#main {
@@ -189,23 +190,14 @@ function load_media(media_type, embed_html) {
 function resize_media() {
 	var mheight = $("#content").height();
 	var mwidth = $("#content").width();
-	var iheight = $(this).height();
-	var iwidth = $(this).width();
-	var i;
-	for (i=1000;i>0;i--) { 
-		var h = iheight * (i/1000);
-		var w = iwidth * (i/1000);
-		if (h < mheight && w >= mwidth) {
-			// Debug: alert(i + " A h" + h + " w" + w + " vs h " + mheight + " w"  + mwidth);
-			$("#my_image").css({"width": "100%"});
-			break;
-		}
-		if (w < mwidth && h >= mheight) {
-			// Debug: alert(i + " B h" + h + " w" + w + " vs h " + mheight + " w"  + mwidth);
+	var iheight = $("#my_image").height();
+	var iwidth = $("#my_image").width();
+	if (iwidth > mwidth || iheight > mheight) {
+		if ((mwidth/mheight) > (iwidth/iheight)) { 
 			$("#my_image").css({"height": "100%"});
-			break;
+		} else {
+			$("#my_image").css({"width": "100%"});
 		}
-
 	}
 	$("#my_image").css({"display" : "inline"});
 }
