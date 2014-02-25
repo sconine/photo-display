@@ -3,16 +3,19 @@
 // retreive media to the local network and enqueue media for display. 
 
 // Load my configuration
-$datastring = file_get_contents('../master_config.json');
+$datastring = file_get_contents('/usr/www/html/photo-display/master_config.json');
 $config = json_decode($datastring, true);
 $debug = true;
+$file_batch_size = 25;
 
 // Die if already running
 $my_name = $_SERVER['SCRIPT_NAME'];
-exec("ps -C $my_name -o pid=",$pids);
+$cmd = 'ps -C "php ' . $my_name . '" -o pid=';
+if ($debug) {echo "$cmd\n";}
+exec($cmd,$pids);
+if ($debug) {var_dump($pids); echo "\n";}
 if (count($pids) > 1) {
-  echo "Already Running $my_name:";
-  var_dump($pids);
+  echo "Already Running $my_name\n";
   exit();
 }
 
@@ -20,8 +23,8 @@ if (count($pids) > 1) {
 $my_ip =  gethostbyname(trim(`hostname --all-ip-addresses`)); 
 
 //Use MY SQL - this include assumes that $config has been loaded 
-include 'my_sql.php';
-include 'curl_functions.php';
+include '/usr/www/html/photo-display/php/my_sql.php';
+include '/usr/www/html/photo-display/php/curl_functions.php';
 
 
 /////////////////////////////////////////////////
@@ -120,7 +123,7 @@ if (disk_free_space($config['media_folder']) < (1024 * 1024 * 100)) {
 // This returns the next 'X' files that this screen will display
 $url = 'http://' . $config['master_server'] . '/photo-display/php/send_media_queue.php?'
   . '&screen_id=' . $config['screen_id'] 
-  . '&length=5'
+  . '&length=' . $file_batch_size
   . '&region=' . $config['region'];
 
 $confirm_reg = array();
