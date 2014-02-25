@@ -1,11 +1,12 @@
 <html>
 <head><Title>Media Display Screen</title>
 <script src="//code.jquery.com/jquery-1.10.2.min.js" type="text/javascript"></script>
-
+<script src="ac_quicktime.js"></script>
 <style>
 	body{
 	margin: 0; 
 	padding: 0; 
+	background-color: #000000;
 	padding-top: 0px;
 	text-align: center;}
 
@@ -23,6 +24,9 @@
 	margin-top: 0px;
 	margin-right:0px;}
 
+	#filename{
+	color: #dddddd;}
+
 
 </style>
 
@@ -31,129 +35,209 @@
 <body>
 <div id="main">
 	<div id="content">
-		<div id="image_container"></div>
+		<div id="media_container"></div>
 	</div>
 	<div id="filename"></div>
+	<div id="debug"></div>
 </div>
 
 <div id="log"></div>
 
 <script type="text/javascript">
-//alert('hi');
 // Function to change the media
-function change_media(cnt, duration) {
+// For Quicktime player reference see:
+// https://developer.apple.com/library/safari/documentation/QuickTime/Conceptual/QTScripting_JavaScript/bQTScripting_JavaScri_Document/QuickTimeandJavaScri.html#//apple_ref/doc/uid/TP40001526-CH001-DontLinkElementID_16
 
+// Variable to keep track of if we've set the call-back to keep this running
+var call_set = false;
+var duration = 0;
+
+function change_media() {
 	// Make a call to the server to get what we should show
 	var request = $.ajax({
 		url: "http://localhost:8080/get_media",
 		type: "GET",
 		datatype: 'json',
-		data: { cnt: cnt, duration: duration },
+		data: { cnt: 0, duration: 0 },
 	});
 
 	 // Deal with Response
 	 request.done(function( obj ) {
 		var embed_html = '';
+		var media_url = '';
 		var media_path = false;
 		var media_type = false;
 		var media_host = false;
 
 		// start with a clean log element
 		$( "#log" ).html( "" );
+		// Resize content to main size with a boarder at bottom to show image path
+		$("#content").css({"height" : ($("#main").height()-20) + "px", "width" : $("#main").width() + "px"});
 
 		// Make sure the key's we expect are there
+		// TODO: add duration in the future to a parameter returned
 		$.each( obj, function( key, value ) {
 			if (key = 'media_path') {media_url = true;}
 			if (key = 'media_type') {media_type = true;}
 			if (key = 'media_host') {media_host = true;}
 		});
 
-		//TODO: clean up how the URL is built
+		// See what we got an insert it into the page
 		if (media_url && media_type && media_host) {
-			if (obj['media_type'] == 'image/jpeg') {
-				//embed_html = '<img id="my_image" src="http://192.168.2.102:8080/images/' +  obj['media_path'] + '">';
-				embed_html = '<img id="my_image" src="http://' +  obj['media_host'] + ':8080/images/' +  obj['media_path'] + '">';
-			} else if (obj['media_type'] == 'movie/quicktime') {
-				// TODO: get the correct HTML to embedd quicktime movies in Chrome on Linux
-				// TODO: mov and maybe avi
-				// TODO: figure out why my .mov files look like text
-				// SEE: https://github.com/malsup/media/tree/master
-			//	embed_html = '<a class="media" href="http://' +  obj['media_host'] + ':8080/images/' +  obj['media_path'] + '">qtMovie</a>';
-
-				embed_html = '<object classid="clsid:02BF25D5-8C17-4B23-BC80-D3488ABDDC6B" ';
-				embed_html = embed_html + 'codebase="http://www.apple.com/qtactivex/qtplugin.cab" width="95%" height="95%">';
-				embed_html = embed_html + '<param name="src" value="myvid.mov" />';
-				embed_html = embed_html + '<param name="controller" value="true" />';
-				embed_html = embed_html + '<object id="my_image" type="video/quicktime" data="';
-				embed_html = embed_html + 'http://' +  obj['media_host'] + ':8080/images/' +  obj['media_path'];
-				embed_html = embed_html + '" width="95%" height="95%" class="mov">';
-				embed_html = embed_html + '<param name="controller" value="true" />';
-				embed_html = embed_html + '</object>';
-				embed_html = embed_html + '</object>';
-
-			} else if (obj['media_type'] == 'movie/mp4') {
-				embed_html = '<video width="320" height="240" controls>';
-				embed_html = embed_html + '<source src="movie.mp4" type="video/mp4">';
-				embed_html = embed_html + '</video>';
+			media_url = 'http://' +  obj['media_host'] + ':8080/images/' +  obj['media_path'];
+			if (obj['media_type'] == 'image/jpeg' || obj['media_type'] == 'image/jpg' 
+			 || obj['media_type'] == 'image/gif' || obj['media_type'] == 'image/png') {				
+				embed_html = '<img id="my_image" src="' +  media_url + '">';
+				load_media('image', embed_html);
+			} else if (obj['media_type'] == 'movie/quicktime' || obj['media_type'] == 'movie/mp4') {
+				embed_html = _QTGenerate("QT_WriteOBJECT", false, Array(media_url ,'50%', '50%', '', 'EnableJavaScript', 'True', 'postdomevents', 'True', 'emb#NAME' , 'my_image_id', 'obj#id' , 'my_image_id', 'AUTOPLAY' , 'True','emb#id', 'my_image', 'CONTROLLER', 'False')) ;
+				load_media('movie', embed_html);
 			} else {
 				$("#log").html("Media type not handled: " + obj['media_type']);
+				call_set = true;
+				duration = 100;
 			}
 
 			// Display file name if configured for that
 			$("#filename").html(obj['media_path']);
 		} else {
 			$("#log").html("Media type or url not found in: " + obj );
+			call_set = true;
+			duration = 100;
 		}
-
-		// Resize content to main size with a boarder at bottom to show image path
-		$("#content").css({"height" : ($("#main").height()-20) + "px", "width" : $("#main").width() + "px"});
-
-		// Load the image into the page
-		$("#image_container").html( embed_html );   
-
-		$("#my_image").css({"display" : "none"});
-
-		// Once loaded resize so that it fits in the screen correctly
-		//$("#my_image").load(function(){
-		$("#my_image").ready(function(){
-			var mheight = $("#content").height();
-			var mwidth = $("#content").width();
-			var iheight = $(this).height();
-			var iwidth = $(this).width();
-			for (var i=100;i>0;i--) { 
-				var h = iheight * (i/100);
-				var w = iwidth * (i/100);
-				// Debug: alert(i + " h" + h + " w" + w + " vs h " + mheight + " w"  + mwidth);
-				if (h < mheight && w > mwidth) {
-					$(this).css({"width": "100%"});
-					break;
-				}
-				if (w < mwidth && h > mheight) {
-					$(this).css({"height": "100%"});
-					break;
-				}
-			}
-			$("#my_image").css({"display" : "inline"});
-		});
-
 	});
-
 	// Deal with Failure 
 	request.fail(function( jqXHR, textStatus ) {
-	//alert( "Request failed: " + textStatus );
-	$("#log").html("Request failed: " + textStatus);
+		//alert( "Request failed: " + textStatus );
+		$("#log").html("Request failed: " + textStatus);
+		call_set = true;
+		duration = 100;
 	});
 
-	// last thing it does is set itself up to be called again
-	cnt++;
-	duration = 10000;
-	//setTimeout(function(){change_media(cnt, duration);}, duration);
+	// last thing it does is set itself up to be called again once it makes sure
+	// everything has loaded
+	call_self(0);
+
 	return true;
 }
 
+// Call yourself again to keep the slideshow going
+function call_self(cnt) {
+	if (call_set) {
+		$("#filename").html($("#filename").html() + '  (' + duration/1000 + ' sec)');
+		call_set = false;
+		setTimeout(function(){change_media(false);}, duration);
+	} else {
+		// Don't wait forever, at some point just call again
+		if (cnt > 500) {
+			duration = 100;
+			call_set = true;
+			call_self(cnt);
+		} else {
+			// Wait 10 ms and try again
+			cnt = cnt + 1;
+			setTimeout(function(){call_self(cnt);}, 10);
+			$("#filename").html('Waiting for duration: ' + cnt);
+		}
+	}
+}
 
-// Start the whole thing running
-change_media(0, 3000);
+// Function to insert media and wait for load
+function load_media(media_type, embed_html) {
+	// Load the media into the page
+	$("#media_container").html( embed_html );   
+
+	// Once loaded resize so that it fits in the screen correctly
+	if (media_type == 'image') {
+		// Don't display until loaded to resizing doesn't cause flicker
+		$("#my_image").css({"display" : "none"});
+
+		// images get a load listener
+		$("#my_image").load(function(){resize_media();});
+
+		// indicate that we've loaded the image and can set the re-call
+		duration = 4000;
+		call_set = true;
+	} else {
+		// movies get a ready listener
+		$("#my_image").ready(function(){
+			// Videos just always get full screen sizing they scale smartly themselves
+			$("#my_image").css({"width": "100%", "height": "100%"});
+
+			// Event listeners doesn't seem to work at all...
+			// RegisterListener('qt_pause', 'mymedia', 'mymedia_embed', function movieLoaded() {alert('loaded');});
+			// So here's another less elegant approach to wait till it is loaded up to 10 seconds...
+			var i = 0;
+			while (i < 100 && document.my_image_id.GetTime() <= 0) {sleep(100);i++;}
+			//alert(document.my_image_id.GetDuration() + '-' + document.my_image_id.GetPluginStatus() + '-' + document.my_image_id.GetTime() );
+			// indicate that we've loaded the image and can set the re-call
+			if (document.my_image_id.GetPluginStatus().search("Error") >= 0) {
+				// If error move on quicker
+				duration = 100;
+				call_set = true;
+			} else {
+				duration = document.my_image_id.GetDuration();
+				call_set = true;
+			}
+		});
+	}
+}
+
+
+
+// Function to size the media to fit the screen
+function resize_media() {
+	var mheight = $("#content").height();
+	var mwidth = $("#content").width();
+	var iheight = $(this).height();
+	var iwidth = $(this).width();
+	var i;
+	for (i=1000;i>0;i--) { 
+		var h = iheight * (i/1000);
+		var w = iwidth * (i/1000);
+		if (h < mheight && w >= mwidth) {
+			// Debug: alert(i + " A h" + h + " w" + w + " vs h " + mheight + " w"  + mwidth);
+			$("#my_image").css({"width": "100%"});
+			break;
+		}
+		if (w < mwidth && h >= mheight) {
+			// Debug: alert(i + " B h" + h + " w" + w + " vs h " + mheight + " w"  + mwidth);
+			$("#my_image").css({"height": "100%"});
+			break;
+		}
+
+	}
+	$("#my_image").css({"display" : "inline"});
+}
+
+// These get called but there are no events emitted
+/* define function that adds another function as a DOM event listener */
+function myAddListener(obj, evt, handler, captures) {
+	if ( document.addEventListener ) {
+		obj.addEventListener(evt, handler, captures);}
+	else
+		// IE
+		obj.attachEvent('on' + evt, handler);
+}
+ 
+/* define functions that register each listener */
+function RegisterListener(eventName, objID, embedID, listenerFcn) {
+	var obj = document.getElementById(objID);
+	if ( !obj ) {
+		obj = document.getElementById(embedID);}
+	if ( obj ){
+		myAddListener(obj, eventName, listenerFcn, false);}
+}
+
+// A function to just wait, using this to pause for movie loading
+function sleep(ms) {
+  var start = new Date().getTime(), expire = start + ms;
+  while (new Date().getTime() < expire) { }
+  return;
+}
+
+// Start the whole thing running with 3 second refresh default
+change_media();
 
 </script>
 </body>
