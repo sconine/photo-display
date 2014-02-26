@@ -66,11 +66,11 @@ foreach ($media_iterator as $s3_item) {
 			// only store the files we care about
 			if ($media_type != '') {
 				$sql = 'INSERT IGNORE INTO media_files (media_path, media_type, media_size, last_sync, rnd_id, shown) VALUES ('
-					. sqlq($s3_item['Key'],0) . ','
-					. sqlq($media_type,0) . ','
-					. sqlq($s3_item['Size'],0) . ','
-					. sqlq($time,1) . ','
-					. '(FLOOR( 1 + RAND( ) *6000000 )), 0) ON DUPLICATE KEY UPDATE last_sync=' . sqlq($time,1) . ';';
+					. $s3_item['Key'] . ','
+					. $media_type . ','
+					. $s3_item['Size'] . ','
+					. $time . ','
+					. '(FLOOR( 1 + RAND( ) *6000000 )), 0) ON DUPLICATE KEY UPDATE last_sync=' . $time . ';';
 				if ($debug) {echo "Running: $sql\n";}
 				$cnt = $cnt + 1;
 			}
