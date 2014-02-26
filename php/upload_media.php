@@ -72,7 +72,6 @@ foreach ($media_iterator as $s3_item) {
 					. sqlq($time,1) . ','
 					. '(FLOOR( 1 + RAND( ) *6000000 )), 0) ON DUPLICATE KEY UPDATE last_sync=' . sqlq($time,1) . ';';
 				if ($debug) {echo "Running: $sql\n";}
-				if (!$mysqli->query($sql)) {die("Insert Failed: (" . $mysqli->errno . ") " . $mysqli->error);}
 				$cnt = $cnt + 1;
 			}
 		}
