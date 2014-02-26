@@ -12,6 +12,10 @@ $localpath = "/Volumes/My Pictures/"; // modify with your local folder
 $datastring = file_get_contents('/usr/www/html/photo-display/master_config.json');
 $config = json_decode($datastring, true);
 
+$local_files = find_all_files($dir);
+var_dump($local_files);
+exit;
+
 if ($debug) {echo "datastring: $datastring\n";}
 if ($debug) {var_dump($config);}
 
@@ -81,6 +85,24 @@ foreach ($media_iterator as $s3_item) {
 	}
 }
 
-
+// helper functions
+function find_all_files($dir) 
+{ 
+    $root = scandir($dir); 
+    foreach($root as $value) 
+    { 
+        if($value === '.' || $value === '..') {continue;} 
+        if(is_file("$dir/$value")) {$result["$dir/$value"]=1;continue;} 
+        
+        $flist = find_all_files("$dir/$value");
+        if (!empty($flist)) {
+        	foreach($flist as $value) 
+        	{ 
+           	 	$result[$value]=1; 
+        	} 
+        }
+    } 
+    return $result; 
+} 
 
 ?>
