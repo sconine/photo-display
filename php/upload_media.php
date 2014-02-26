@@ -91,13 +91,11 @@ foreach ($local_files as $file_path => $i) {
 // helper functions
 function find_all_files($dir) 
 { 
-    //$result = array();
-    if ($dir == '/Volumes/My Pictures/complete') {return array();}
+    $result = array();
+    if ($dir == '/Volumes/My Pictures/complete') {return $result;}
     $root = scandir($dir); 
-    $i = 0;
     foreach($root as $value) 
     { 
-    	echo "$dir/$value\n";
         if($value === '.' || $value === '..') {continue;} 
         if(is_file("$dir/$value")) {$result["$dir/$value"]=1;continue;} 
         
@@ -108,8 +106,6 @@ function find_all_files($dir)
            	 	$result[$value]=1; 
         	} 
         }
-        if ($i > 1) {break;}
-        $i++;
     } 
     return $result; 
 } 
