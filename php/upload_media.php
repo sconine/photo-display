@@ -79,6 +79,11 @@ foreach ($local_files as $file_path => $i) {
 				$remote_path = str_replace($localpath . "/", "", $file_path);
 				if (!isset($remote_files[$remote_path])) {
 					echo "store: $file_path\n";
+					
+					// When we upload these we also want to store the MD5 and SHA
+					// hash of the file for comparison in the future
+					echo 'MD5 file hash of ' . $file_path . ': ' . md5_file($file_path);
+					
 				}
 				
 				$cnt = $cnt + 1;
