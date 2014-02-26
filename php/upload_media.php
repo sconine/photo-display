@@ -91,7 +91,7 @@ foreach ($local_files as $file_path => $i) {
 // helper functions
 function find_all_files($dir) 
 { 
-    $result = array();
+    //$result = array();
     if ($dir == '/Volumes/My Pictures/complete') {return $result;}
     $root = scandir($dir); 
     $i = 0;
@@ -108,7 +108,7 @@ function find_all_files($dir)
            	 	$result[$value]=1; 
         	} 
         }
-        if ($i > 10) {break;}
+        if ($i > 1) {break;}
     } 
     return $result; 
 } 
