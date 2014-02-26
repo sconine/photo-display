@@ -45,12 +45,10 @@ foreach ($media_iterator as $s3_item) {
 	$remote_files[trim($s3_item['Key'])] = 1;
 }
 
-foreach ($media_iterator as $s3_item) {
+foreach ($local_files as $file_path => $i) {
 	// Don't load anything larger than 1GB
-	if ($s3_item['Size'] < 1000000000) {
+	if (filesize($file_path) < 1000000000) {
 		$file_path = trim($s3_item['Key']);
-		// don't bother storing folder names
-		if (substr($file_path, -1) == '/') {$file_path = '';}
 
 		if ($file_path != '') {
 			$media_type = "";
@@ -75,7 +73,12 @@ foreach ($media_iterator as $s3_item) {
 
 			// only store the files we care about
 			if ($media_type != '') {
-				// This is a file we'd like to store see
+				// This is a file we'd like to store see if we have already
+				$remote_path = str_replace($file_path, $localpath , '')
+				if ($remote_files[] <> 1) {
+					echo "store: $file_path\n";
+				}
+				
 				$cnt = $cnt + 1;
 			}
 		}
@@ -91,8 +94,10 @@ function find_all_files($dir)
     $result = array();
     if ($dir == '/Volumes/My Pictures/complete') {return $result;}
     $root = scandir($dir); 
+    $i = 0;
     foreach($root as $value) 
     { 
+    	echo "$dir/$value\n"
         if($value === '.' || $value === '..') {continue;} 
         if(is_file("$dir/$value")) {$result["$dir/$value"]=1;continue;} 
         
@@ -103,6 +108,7 @@ function find_all_files($dir)
            	 	$result[$value]=1; 
         	} 
         }
+        if ($i > 10) {break;}
     } 
     return $result; 
 } 
