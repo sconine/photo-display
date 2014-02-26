@@ -92,7 +92,7 @@ foreach ($local_files as $file_path => $i) {
 function find_all_files($dir) 
 { 
     //$result = array();
-    if ($dir == '/Volumes/My Pictures/complete') {return $result;}
+    if ($dir == '/Volumes/My Pictures/complete') {return array();}
     $root = scandir($dir); 
     $i = 0;
     foreach($root as $value) 
@@ -103,7 +103,7 @@ function find_all_files($dir)
         
         $flist = find_all_files("$dir/$value");
         if (!empty($flist)) {
-        	foreach($flist as $value) 
+        	foreach($flist as $value => $j) 
         	{ 
            	 	$result[$value]=1; 
         	} 
