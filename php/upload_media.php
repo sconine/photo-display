@@ -94,9 +94,9 @@ function find_all_files($dir)
     foreach($root as $value) 
     { 
         if($value === '.' || $value === '..') {continue;} 
-        if(is_file("$dir$value")) {$result["$dir$value"]=1;continue;} 
+        if(is_file("$dir/$value")) {$result["$dir/$value"]=1;continue;} 
         
-        $flist = find_all_files("$dir$value");
+        $flist = find_all_files("$dir/$value");
         if (!empty($flist)) {
         	foreach($flist as $value) 
         	{ 
