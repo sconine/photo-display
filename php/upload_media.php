@@ -8,7 +8,7 @@ if (!isset($_SERVER['HTTP_HOST'])) {
     if (isset($_REQUEST['debug'])) {$debug = true;}
 }
 // Load my configuration
-$localpath = "/Volumes/My Pictures/"; // modify with your local folder
+$localpath = "/Volumes/My Pictures"; // modify with your local folder
 $datastring = file_get_contents('/usr/www/html/photo-display/master_config.json');
 $config = json_decode($datastring, true);
 
