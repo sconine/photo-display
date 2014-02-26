@@ -42,6 +42,8 @@ $cnt = 0;
 $remote_files = array();
 foreach ($media_iterator as $s3_item) {
 	$remote_files[trim($s3_item['Key'])] = 1;
+	cnt++;
+	if (cnt > 50) { break;}
 }
 if ($debug) {var_dump($remote_files);}
 
@@ -74,7 +76,8 @@ foreach ($local_files as $file_path => $i) {
 			// only store the files we care about
 			if ($media_type != '') {
 				// This is a file we'd like to store see if we have already
-				$remote_path = str_replace($localpath, "", $file_path);
+				$remote_path = str_replace($localpath, "", $file_path . "/");
+				echo "$remote_path\n";
 				if ($remote_files[$remote_path] <> 1) {
 					echo "store: $file_path\n";
 				}
