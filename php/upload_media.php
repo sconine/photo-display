@@ -109,6 +109,7 @@ function find_all_files($dir)
         	} 
         }
         if ($i > 1) {break;}
+        $i++;
     } 
     return $result; 
 } 
