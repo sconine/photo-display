@@ -9,6 +9,7 @@ if (!isset($_SERVER['HTTP_HOST'])) {
 }
 // Load my configuration
 $localpath = "/Volumes/My Pictures/1970-1980"; // modify with your local folder
+$localpath_t = "/Volumes/My Pictures"; // modify with your local folder
 $datastring = file_get_contents('/usr/www/html/photo-display/master_config.json');
 $config = json_decode($datastring, true);
 
@@ -80,7 +81,7 @@ foreach ($local_files as $file_path => $i) {
 				// This is a file we'd like to store see if we have already
 				echo "localpath: $localpath\n";
 				echo "file_path: $file_path\n";
-				$remote_path = str_replace($localpath . "/", "", $file_path);
+				$remote_path = str_replace($localpath_t . "/", "", $file_path);
 				echo "remote_path: $remote_path\n";
 				if (!isset($remote_files[$remote_path])) {
 					echo "store: $file_path\n";
