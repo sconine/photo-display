@@ -54,8 +54,6 @@ foreach ($local_files as $file_path => $i) {
 	echo "considering: $file_path i: $i \n";
 	// Don't load anything larger than 1GB
 	if (filesize($file_path) < 1000000000) {
-		$file_path = trim($s3_item['Key']);
-
 		if ($file_path != '') {
 			$media_type = "";
 			$f_ext = strtolower(substr($file_path, -3));
@@ -92,7 +90,7 @@ foreach ($local_files as $file_path => $i) {
 			}
 		}
 	} else {
-		if ($debug) {echo "File > 1GB: " . $s3_item['Key'] . " Size: " . $s3_item['Size'] . "\n";}
+		if ($debug) {echo "File > 1GB: " . $file_path . "\n";}
 
 	}
 }
