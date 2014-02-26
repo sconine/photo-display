@@ -1,15 +1,15 @@
 <?php
 // A script to compare what we have in a local directory
 // with what is up on Amazon EC2
-$debug = false; 
 if (!isset($_SERVER['HTTP_HOST'])) {
     $debug = true; 
 } else {
     if (isset($_REQUEST['debug'])) {$debug = true;}
 }
+$debug = false; 
+
 // Load my configuration
-$localpath = "/Volumes/My Pictures/1970-1980"; // modify with your local folder
-$localpath_t = "/Volumes/My Pictures"; // modify with your local folder
+$localpath = "/Volumes/My Pictures"; // modify with your local folder
 $datastring = file_get_contents('/usr/www/html/photo-display/master_config.json');
 $config = json_decode($datastring, true);
 
@@ -52,7 +52,6 @@ if ($debug) {echo "EC2 remote files----------\n";}
 if ($debug) {var_dump($remote_files);}
 
 foreach ($local_files as $file_path => $i) {
-	echo "considering: $file_path i: $i \n";
 	// Don't load anything larger than 1GB
 	if (filesize($file_path) < 1000000000) {
 		if ($file_path != '') {
@@ -79,10 +78,7 @@ foreach ($local_files as $file_path => $i) {
 			// only store the files we care about
 			if ($media_type != '') {
 				// This is a file we'd like to store see if we have already
-				echo "localpath: $localpath\n";
-				echo "file_path: $file_path\n";
 				$remote_path = str_replace($localpath_t . "/", "", $file_path);
-				echo "remote_path: $remote_path\n";
 				if (!isset($remote_files[$remote_path])) {
 					echo "store: $file_path\n";
 				}
