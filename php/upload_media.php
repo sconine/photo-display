@@ -42,8 +42,8 @@ $cnt = 0;
 $remote_files = array();
 foreach ($media_iterator as $s3_item) {
 	$remote_files[trim($s3_item['Key'])] = 1;
-	cnt++;
-	if (cnt > 50) { break;}
+	$cnt++;
+	if ($cnt > 50) { break;}
 }
 if ($debug) {var_dump($remote_files);}
 
