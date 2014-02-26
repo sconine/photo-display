@@ -51,6 +51,7 @@ if ($debug) {echo "EC2 remote files----------\n";}
 if ($debug) {var_dump($remote_files);}
 
 foreach ($local_files as $file_path => $i) {
+	echo "considering: $file_path i: $i \n";
 	// Don't load anything larger than 1GB
 	if (filesize($file_path) < 1000000000) {
 		$file_path = trim($s3_item['Key']);
