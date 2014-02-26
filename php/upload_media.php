@@ -97,7 +97,7 @@ function find_all_files($dir)
     $i = 0;
     foreach($root as $value) 
     { 
-    	echo "$dir/$value\n"
+    	echo "$dir/$value\n";
         if($value === '.' || $value === '..') {continue;} 
         if(is_file("$dir/$value")) {$result["$dir/$value"]=1;continue;} 
         
