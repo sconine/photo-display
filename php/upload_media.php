@@ -16,7 +16,9 @@ $config = json_decode($datastring, true);
 $local_files = find_all_files($localpath);
 
 if ($debug) {echo "datastring: $datastring\n";}
+if ($debug) {echo "Local files----------\n";}
 if ($debug) {var_dump($local_files);}
+if ($debug) {echo "Config----------\n";}
 if ($debug) {var_dump($config);}
 
 // You'll need to edit this with your config
@@ -45,6 +47,7 @@ foreach ($media_iterator as $s3_item) {
 	$cnt++;
 	if ($cnt > 50) { break;}
 }
+if ($debug) {echo "EC2 remote files----------\n";}
 if ($debug) {var_dump($remote_files);}
 
 foreach ($local_files as $file_path => $i) {
@@ -77,7 +80,7 @@ foreach ($local_files as $file_path => $i) {
 			if ($media_type != '') {
 				// This is a file we'd like to store see if we have already
 				$remote_path = str_replace($localpath . "/", "", $file_path);
-				echo "$remote_path\n";
+				echo "remote_path: $remote_path\n";
 				if (isset($remote_files[$remote_path])) {
 					echo "store: $file_path\n";
 				}
