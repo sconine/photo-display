@@ -80,9 +80,9 @@ foreach ($local_files as $file_path => $i) {
 				// This is a file we'd like to store see if we have already
 				echo "localpath: $localpath\n";
 				echo "file_path: $file_path\n";
-				echo "remote_path: $remote_path\n";
 				$remote_path = str_replace($localpath . "/", "", $file_path);
-				if (isset($remote_files[$remote_path])) {
+				echo "remote_path: $remote_path\n";
+				if (!isset($remote_files[$remote_path])) {
 					echo "store: $file_path\n";
 				}
 				
