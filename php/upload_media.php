@@ -88,6 +88,7 @@ foreach ($media_iterator as $s3_item) {
 // helper functions
 function find_all_files($dir) 
 { 
+    $result = array();
     $root = scandir($dir); 
     foreach($root as $value) 
     { 
