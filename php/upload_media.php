@@ -12,12 +12,13 @@ $localpath = "/Volumes/My Pictures/"; // modify with your local folder
 $datastring = file_get_contents('/usr/www/html/photo-display/master_config.json');
 $config = json_decode($datastring, true);
 
+// Get all the files we have locally and load into a dictionary in memory
 $local_files = find_all_files($localpath);
-var_dump($local_files);
-exit;
 
 if ($debug) {echo "datastring: $datastring\n";}
+if ($debug) {var_dump($local_files);}
 if ($debug) {var_dump($config);}
+exit;
 
 // You'll need to edit this with your config
 require '/usr/www/html/photo-display/vendor/autoload.php';
@@ -36,9 +37,14 @@ $media_iterator = $s3_client->getIterator('ListObjects', array(
     //,'Prefix' => 'Dec-2005'  // this will filter to specific matches
 ));
 
-// Loop through files and sync to our local index
+// Loop through files on EC2 and build a list of what we have
 $time = time();
 $cnt = 0;
+$remote_files = array();
+foreach ($media_iterator as $s3_item) {
+	$remote_files[trim($s3_item['Key'])] = 1;
+}
+
 foreach ($media_iterator as $s3_item) {
 	// Don't load anything larger than 1GB
 	if ($s3_item['Size'] < 1000000000) {
@@ -69,13 +75,7 @@ foreach ($media_iterator as $s3_item) {
 
 			// only store the files we care about
 			if ($media_type != '') {
-				$sql = 'INSERT IGNORE INTO media_files (media_path, media_type, media_size, last_sync, rnd_id, shown) VALUES ('
-					. $s3_item['Key'] . ','
-					. $media_type . ','
-					. $s3_item['Size'] . ','
-					. $time . ','
-					. '(FLOOR( 1 + RAND( ) *6000000 )), 0) ON DUPLICATE KEY UPDATE last_sync=' . $time . ';';
-				if ($debug) {echo "Running: $sql\n";}
+				// This is a file we'd like to store see
 				$cnt = $cnt + 1;
 			}
 		}
@@ -89,13 +89,14 @@ foreach ($media_iterator as $s3_item) {
 function find_all_files($dir) 
 { 
     $result = array();
+    if ($dir == '/Volumes/My Pictures/complete') {return $result;}
     $root = scandir($dir); 
     foreach($root as $value) 
     { 
         if($value === '.' || $value === '..') {continue;} 
-        if(is_file("$dir/$value")) {$result["$dir/$value"]=1;continue;} 
+        if(is_file("$dir$value")) {$result["$dir$value"]=1;continue;} 
         
-        $flist = find_all_files("$dir/$value");
+        $flist = find_all_files("$dir$value");
         if (!empty($flist)) {
         	foreach($flist as $value) 
         	{ 
