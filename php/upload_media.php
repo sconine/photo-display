@@ -76,9 +76,9 @@ foreach ($local_files as $file_path => $i) {
 			// only store the files we care about
 			if ($media_type != '') {
 				// This is a file we'd like to store see if we have already
-				$remote_path = str_replace($localpath, "", $file_path . "/");
+				$remote_path = str_replace($localpath . "/", "", $file_path);
 				echo "$remote_path\n";
-				if ($remote_files[$remote_path] <> 1) {
+				if (isset($remote_files[$remote_path])) {
 					echo "store: $file_path\n";
 				}
 				
