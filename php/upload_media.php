@@ -10,11 +10,12 @@ $debug = false;
 
 // Load my configuration
 $localpath = "/Volumes/My Pictures"; // modify with your local folder
+$subpath = "/xmas"; // modify with your local folder
 $datastring = file_get_contents('/usr/www/html/photo-display/master_config.json');
 $config = json_decode($datastring, true);
 
 // Get all the files we have locally and load into a dictionary in memory
-$local_files = find_all_files($localpath);
+$local_files = find_all_files($localpath . $subpath);
 
 if ($debug) {echo "datastring: $datastring\n";}
 if ($debug) {echo "Local files----------\n";}
