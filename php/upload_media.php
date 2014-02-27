@@ -82,6 +82,7 @@ foreach ($local_files as $file_path => $i) {
 					
 					// When we upload these we also want to store the MD5 and SHA
 					// hash of the file for comparison in the future
+					// doing both give options
 					echo 'MD5 file hash of ' . $file_path . ': ' . md5_file($file_path);
 					echo 'SHA1 file hash of ' . $file_path . ': ' . sha1_file($file_path);
 
