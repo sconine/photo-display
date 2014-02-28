@@ -101,7 +101,9 @@ if ($debug) {echo "Running $sql\n";}
 if (!$mysqli->query($sql)) {die("Table creation failed: (" . $mysqli->errno . ") " . $mysqli->error);}
 
 // Do a little disk space management (if < 100MB)
-if (disk_free_space($config['media_folder']) < (1024 * 1024 * 100)) {
+$disk_free = disk_free_space($config['media_folder']);
+if ($disk_free < (1024 * 1024 * 100)) {
+	if ($debug) {echo "Low Disk Space ($disk_free) Doing Cleanup!\n";}	
 	//remove most recently displayed files
 	$sql = "SELECT display_order, media_path, media_size FROM my_media WHERE displayed is not null AND media_host = 'localhost' ORDER BY displayed desc limit 200";
 	$remove_files = query_to_array($sql, &$mysqli);
