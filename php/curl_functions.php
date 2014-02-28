@@ -36,7 +36,7 @@ function curl_write_file($url, $filepath) {
 	curl_exec($ch); 
 	fclose($fp);
 	if(curl_errno($ch)) {
-		if ($debug) {echo 'error:' . curl_error($ch) . "\n";}
+		if ($debug) {echo 'Curl error:' . curl_error($ch) . "\n";}
 		unlink($filepath);
 	} else {
 		if (curl_status_200(curl_getinfo($ch))) {

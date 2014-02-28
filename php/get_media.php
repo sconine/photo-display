@@ -105,12 +105,13 @@ $disk_free = disk_free_space($config['media_folder']);
 if ($disk_free < (1024 * 1024 * 100)) {
 	if ($debug) {echo "Low Disk Space ($disk_free) Doing Cleanup!\n";}	
 	//remove most recently displayed files
-	$sql = "SELECT display_order, media_path, media_size FROM my_media WHERE displayed is not null AND media_host = 'localhost' ORDER BY displayed desc limit 200";
+	$sql = "SELECT media_order, media_path, media_size FROM my_media WHERE media_displayed is not null AND media_host = 'localhost' ORDER BY media_displayed desc limit 200";
 	$remove_files = query_to_array($sql, &$mysqli);
 	
 	$tot_size = 0;
 	foreach ($remove_files as $i=>$row) {
 		if ($tot_size > 1024 * 1024 * 100) {break;} 
+		if ($debug) {echo "Deleting:" . $config['media_folder'] . $row['media_path'] . "\n";}
 		unlink($config['media_folder'] . $row['media_path']);
 		// not going to do this for now, as it will be interesting to keep 
 		// an ongoing log of what was shown when
@@ -161,8 +162,6 @@ foreach ($my_media as $i=>$media) {
 	
 	// Did we find locally or do we need to retreive it
 	if ($media_host == '') {
-		//TODO: add disk space checks/cleanup and check file size prior to downloading
-		//TODO: Make sure we didn't just get junk data from an nginx error
 		// media_size is returned from send_media_queue.php which can be used
 		
 		// Make sure the folder structure exists
