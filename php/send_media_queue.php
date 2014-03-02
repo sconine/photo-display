@@ -35,7 +35,7 @@ include 'my_sql.php';
 // Future functionality:
 // 	See if there are filters for this region/screen
 // 	See if this is video media that needs to be synchronized
-$send_media = get_screen_media($mysqli);
+$send_media = get_screen_media($mysqli, $queue_length);
 
 // If we didn't get anything just return 25 - sync_media.php needs to run to reset
 if (count($send_media) == 0) {
@@ -45,7 +45,7 @@ if (count($send_media) == 0) {
 	if ($debug) {echo "Running: $sql\n";}
 	if (!$mysqli->query($sql)) {die("Update Failed: (" . $mysqli->errno . ") " . $mysqli->error);}
 
-	$send_media = get_screen_media($mysqli);
+	$send_media = get_screen_media($mysqli, $queue_length);
 }
 
 $usql = '';
@@ -65,7 +65,7 @@ if ($usql != '') {
 echo json_encode($send_media);
 
 
-function get_screen_media($mysqli) {
+function get_screen_media($mysqli, $queue_length) {
 	$sql = "SELECT media_path, media_type, media_size FROM media_files WHERE shown=0 ORDER BY rnd_id LIMIT " . $queue_length . ";";
 	return query_to_array($sql, $mysqli);
 }
