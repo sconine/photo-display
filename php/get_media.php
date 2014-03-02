@@ -34,7 +34,6 @@ $sql = 'CREATE TABLE IF NOT EXISTS my_peers (screen_region_name varchar(128) NOT
 if (!$mysqli->query($sql)) {die("Table creation failed: (" . $mysqli->errno . ") " . $mysqli->error);}
 if ($debug) {echo 'my_peers table Exists'. "\n";}
 
-//TODO: don't call yourself as a local peer
 // Call the central public registration server
 $url = 'http://' . $config['master_server'] . '/photo-display/php/find_peers.php?screen_private_ip=' . $my_ip
   . '&screen_id=' . $config['screen_id'] 
@@ -120,6 +119,15 @@ if ($disk_free < (1024 * 1024 * 100)) {
 		$tot_size = $tot_size + $row['media_size'];
 	}
   
+}
+
+// If we already have more than $file_batch_size in queue don't bother calling again 
+// since we're calling faster than we're displaying
+$sql = "SELECT media_id FROM my_media WHERE media_displayed is null LIMIT " . sqlq($file_batch_size, 1);
+$in_queue = query_to_array($sql, &$mysqli);
+if (count($in_queue) == $file_batch_size) { 
+	if ($debug) {echo "Have more than $file_batch_size in queue wil not calling for more\n";}	
+	exit;
 }
 
 
