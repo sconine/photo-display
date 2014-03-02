@@ -112,8 +112,8 @@ if (isset($_REQUEST['screen_region_name'])) {$region_name = $_REQUEST['screen_re
 if ($region_name == '') {$region_name = 'Default Region';}
 if (isset($_REQUEST['screen_id'])) {$screen_id = $_REQUEST['screen_id'];}
 if ($screen_id == '') {$screen_id = 'Default Screen';}
-if (isset($_REQUEST['screen_private_ip'])) {$screen_private_ip = $_REQUEST['private_ip'];}
-if (isset($_REQUEST['screen_public_ip'])) {$screen_public_ip = $_REQUEST['public_ip'];}
+if (isset($_REQUEST['screen_private_ip'])) {$screen_private_ip = $_REQUEST['screen_private_ip'];}
+if (isset($_REQUEST['screen_public_ip'])) {$screen_public_ip = $_REQUEST['screen_public_ip'];}
 $time = time();
 
 // have we seen this region
