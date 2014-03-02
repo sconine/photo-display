@@ -46,13 +46,11 @@ $my_peers = curl_get_array($url, 20);
 $sql = "SELECT screen_private_ip , screen_id , screen_region_name, screen_public_ip FROM my_peers;";
 $known_peers = query_to_array($sql, &$mysqli);
 
-foreach ($my_peers as $i=>$peer) {
-	//if ($debug) {echo "Checking: " . $peer['screen_id'] . " " . $peer['screen_region_name'] . "\n";}
-	
+$known_check = array();
+foreach ($my_peers as $i=>$peer) {	
 	// do we know about this peer (yea loop within a loop... not expecting more than 100 peers)
 	$known_peer = false;
 	foreach ($known_peers as $j=>$k_peer) {
-		//if ($debug) {echo "Found: " . $k_peer['screen_id'] . " " . $k_peer['screen_region_name'] . "\n";}
 		if ($peer['screen_region_name'] == $k_peer['screen_region_name'] && $peer['screen_id'] == $k_peer['screen_id']){
 			$known_peer = true;
 			
@@ -64,6 +62,10 @@ foreach ($my_peers as $i=>$peer) {
 				if ($debug) {echo "Running: $sql\n";}
 				if (!$mysqli->query($sql)) {die("Update Failed: (" . $mysqli->errno . ") " . $mysqli->error);}
 			}
+			$known_check[$k_peer['screen_region_name'] . ':~:' . $k_peer['screen_id']] = true;
+		}
+		if (! isset($known_check[$k_peer['screen_region_name'] . ':~:' . $k_peer['screen_id']])) {
+			$known_check[$k_peer['screen_region_name'] . ':~:' . $k_peer['screen_id']] = false;
 		}
 	}
 	// If a new peer add them to the local db
@@ -77,6 +79,17 @@ foreach ($my_peers as $i=>$peer) {
 		if (!$mysqli->query($sql)) {die("Insert Failed: (" . $mysqli->errno . ") " . $mysqli->error);}
 	}
 }
+
+//Delete any peers that have gone away
+foreach ($known_check as $k=>$v) {
+	if (! $v) {
+		$name_id = explode(':~:', $k);
+		$sql = "DELETE FROM my_peers WHERE screen_id = " . sqlq($name_id[1], 0) . " AND screen_region_name = " . sqlq($name_id[0], 0);
+		if ($debug) {echo "Running: $sql\n";}
+		if (!$mysqli->query($sql)) {die("Insert Failed: (" . $mysqli->errno . ") " . $mysqli->error);}		
+	}
+}
+
 
 // Finally pull back peers in same region
 $sql = "SELECT DISTINCT screen_private_ip FROM my_peers WHERE  screen_private_ip <> " . sqlq($my_ip,0) . " AND screen_region_name=" . sqlq($config['region'], 0);
