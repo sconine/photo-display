@@ -45,6 +45,7 @@ $time = time();
 $cnt = 0;
 $remote_files = array();
 foreach ($media_iterator as $s3_item) {
+	var_dump($s3_item);
 	$remote_files[trim($s3_item['Key'])] = 1;
 }
 if ($debug) {echo "EC2 remote files----------\n";}
@@ -111,7 +112,7 @@ foreach ($local_files as $file_path => $i) {
 
 echo count($local_files) . " are local\n";
 echo count($remote_files) . " are on EC2\n";
-echo "$cnt files need to be uploaded to by in sync\n";
+echo "$cnt files need to be uploaded to by in sync (certain file types are never uploaded)\n";
 
 
 // helper functions
