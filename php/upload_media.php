@@ -10,6 +10,7 @@ $debug = false;
 
 // Load my configuration
 $localpath = "/Volumes/My Pictures"; // modify with your local folder
+$subpath = '';
 //$subpath = "/xmas"; // modify with your local folder
 $datastring = file_get_contents('/usr/www/html/photo-display/master_config.json');
 $config = json_decode($datastring, true);
