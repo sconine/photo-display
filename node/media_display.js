@@ -107,7 +107,7 @@ app.get('/find_media', function (req, res) {
 				} else {
 					res.json({ found: true, disk_remaining: 0, file_path: file_path, file_size: stats.size});
 				}
-			}
+			});
 		} else {
 			res.json({ found: false, disk_remaining: 0, file_path: file_path, file_size: 0});
 		}
