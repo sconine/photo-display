@@ -35,14 +35,17 @@ include 'my_sql.php';
 // Future functionality:
 // 	See if there are filters for this region/screen
 // 	See if this is video media that needs to be synchronized
-
-$sql = "SELECT media_path, media_type, media_size FROM media_files WHERE shown=0 ORDER BY rnd_id LIMIT " . $queue_length . ";";
-$send_media = query_to_array($sql, $mysqli);
+$send_media = get_screen_media($mysqli);
 
 // If we didn't get anything just return 25 - sync_media.php needs to run to reset
 if (count($send_media) == 0) {
-	$sql = "SELECT media_path, media_type, media_size FROM media_files ORDER BY rnd_id LIMIT " . $queue_length . ";";
-	$send_media = query_to_array($sql, $mysqli);
+	// We've shown everything so re-randomize and reset (expecting 100,000 files typically)
+	$sql = 'UPDATE media_files '
+		. ' SET rnd_id=(FLOOR( 1 + RAND( ) *6000000 )), shown=0;';
+	if ($debug) {echo "Running: $sql\n";}
+	if (!$mysqli->query($sql)) {die("Update Failed: (" . $mysqli->errno . ") " . $mysqli->error);}
+
+	$send_media = get_screen_media($mysqli);
 }
 
 $usql = '';
@@ -60,6 +63,12 @@ if ($usql != '') {
 
 //Send this list of files to the caller
 echo json_encode($send_media);
+
+
+function get_screen_media($mysqli) {
+	$sql = "SELECT media_path, media_type, media_size FROM media_files WHERE shown=0 ORDER BY rnd_id LIMIT " . $queue_length . ";";
+	return query_to_array($sql, $mysqli);
+}
 
 
 
