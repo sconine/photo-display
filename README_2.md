@@ -1,3 +1,5 @@
+Some Step by Steps in case helpful<br><br>
+
 Buy a small PC<br>
 ----------------------------------<br>
 These work great for like $500: Intel-D34010WYK (hit CTRL F10 for boot screen)<br>
