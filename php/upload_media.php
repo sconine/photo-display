@@ -118,7 +118,14 @@ echo "$cnt files need to be uploaded to by in sync\n";
 function find_all_files($dir) 
 { 
     $result = array();
+    // This makes it so these folders are not sync'd
     if ($dir == '/Volumes/My Pictures/complete') {return $result;}
+    if ($dir == '/Volumes/My Pictures/editing') {return $result;}
+    if ($dir == '/Volumes/My Pictures/Frames') {return $result;}
+    if ($dir == '/Volumes/My Pictures/Meekins') {return $result;}
+    if ($dir == '/Volumes/My Pictures/other') {return $result;}
+    if ($dir == '/Volumes/My Pictures/Sarah') {return $result;}
+    if ($dir == '/Volumes/My Pictures/Sarah Wedding') {return $result;}
     $root = scandir($dir); 
     foreach($root as $value) 
     { 
