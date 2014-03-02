@@ -147,7 +147,7 @@ function get_media(req, res, sql, cnt) {
 				  	if (err) {
 						console.log({ media_type: 'text', media_url: err});
 				  	} else {
-						console.log('media_id ' + media_id + ' marked as displayed');
+						console.log('media_id ' + media_id + ' marked as displayed cnt: ' + cnt);
 				  	}
 				});
 			} else {
