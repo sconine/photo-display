@@ -34,7 +34,7 @@ $sql = 'CREATE TABLE IF NOT EXISTS my_peers (screen_region_name varchar(128) NOT
 if (!$mysqli->query($sql)) {die("Table creation failed: (" . $mysqli->errno . ") " . $mysqli->error);}
 if ($debug) {echo 'my_peers table Exists'. "\n";}
 
-
+//TODO: don't call yourself as a local peer
 // Call the central public registration server
 $url = 'http://' . $config['master_server'] . '/photo-display/php/find_peers.php?screen_private_ip=' . $my_ip
   . '&screen_id=' . $config['screen_id'] 
@@ -80,7 +80,7 @@ foreach ($my_peers as $i=>$peer) {
 }
 
 // Finally pull back peers in same region
-$sql = "SELECT DISTINCT screen_private_ip FROM my_peers WHERE screen_region_name=" . sqlq($config['region'], 0);
+$sql = "SELECT DISTINCT screen_private_ip FROM my_peers WHERE  screen_private_ip <> " . sqlq($my_ip,0) . " AND screen_region_name=" . sqlq($config['region'], 0);
 $local_peers = query_to_array($sql, &$mysqli);
 if ($debug) {echo var_dump($local_peers) . "\n";}
 // End Self registration and awareness
@@ -143,6 +143,7 @@ foreach ($my_media as $i=>$media) {
 			$confirm_reg[] = $media['media_path'];
 			$media_host = 'localhost';
 			$is_local = true; 
+			$media_size = filesize($filepath);
 		} else {
 			if ($debug) {echo "$filepath exists but it too small getting again!\n";}
 		}
@@ -155,6 +156,7 @@ foreach ($my_media as $i=>$media) {
 			if (isset($peer_media['found']) && $peer_media['found']) {
 				$confirm_reg[] = $media['media_path'];
 				$media_host = $peer['screen_private_ip'];
+				$media_size = $peer['file_size'];
 				break;
 			}
 		}
@@ -176,15 +178,17 @@ foreach ($my_media as $i=>$media) {
 		if (curl_write_file($url, $filepath)) {
 			$confirm_reg[] = $media['media_path'];
 			$media_host = 'localhost';
+			$media_size = filesize($filepath);
 		}
 
 	}
 	
+
 	if ($media_host != '') {
 		$isql[] = "INSERT INTO my_media (media_path, media_type, media_size, media_host, media_order) VALUES ("
 		. sqlq($media['media_path'], 0) . ','
 		. sqlq($media['media_type'], 0) . ','
-		. sqlq(filesize($filepath), 1) . ','
+		. sqlq($media_size, 1) . ','
 		. sqlq($media_host, 0) . ', (FLOOR( 1 + RAND( ) *6000000 ))); ';
 	}
 }
