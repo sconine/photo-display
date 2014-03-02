@@ -140,6 +140,7 @@ foreach ($my_media as $i=>$media) {
 	$is_local = false;
 	if (file_exists($filepath)) {
 		if (filesize($filepath) > 4000) {
+			if ($debug) {echo "$filepath found locally\n";}
 			$confirm_reg[] = $media['media_path'];
 			$media_host = 'localhost';
 			$is_local = true; 
@@ -156,7 +157,7 @@ foreach ($my_media as $i=>$media) {
 			if (isset($peer_media['found']) && $peer_media['found']) {
 				$confirm_reg[] = $media['media_path'];
 				$media_host = $peer['screen_private_ip'];
-				$media_size = $peer['file_size'];
+				$media_size = $peer_media['file_size'];
 				break;
 			}
 		}
