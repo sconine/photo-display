@@ -46,6 +46,7 @@ $my_peers = curl_get_array($url, 20);
 $sql = "SELECT screen_private_ip , screen_id , screen_region_name, screen_public_ip FROM my_peers;";
 $known_peers = query_to_array($sql, &$mysqli);
 
+//TODO: delete peers who have not check in, in over a week
 $known_check = array();
 foreach ($my_peers as $i=>$peer) {	
 	// do we know about this peer (yea loop within a loop... not expecting more than 100 peers)
