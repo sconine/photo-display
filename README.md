@@ -1,7 +1,7 @@
 <h1>photo-display</h1>
 A system which will display photos and videos (media) on remote screens via a browser.  
 
-Will work like this:<br>
+Will work like this (see README_2 for install specifics):<br>
 1) Put all your personal servers on a cloud storage solution like S3<br>
 2) Provision a Dynamo database on AWS database<br>
 3) Provision in mini server in the cloud: <b>EC2 public instance</b><br> 
