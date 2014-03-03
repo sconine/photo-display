@@ -79,9 +79,6 @@ foreach ($local_files as $file_path => $i) {
 			// only store the files we care about
 			if ($media_type != '') {
 				$remote_path = str_replace($localpath . "/", "", $file_path);
-				// This is a file we'd like to store see if we have already
-				$md5 = md5_file($file_path);
-				$sha1 = sha1_file($file_path);
 				
 				// see if this was previously uploaded but meta data changed
 				// if so change the name
@@ -91,6 +88,9 @@ foreach ($local_files as $file_path => $i) {
 				
 				if (!isset($remote_files[$remote_path])) {
 					echo "Upoading: $file_path\n";
+					// These hash's coule be useful in the future to see if file names change
+					$md5 = md5_file($file_path);
+					$sha1 = sha1_file($file_path);
 					
 					// When we upload these we also want to store the MD5 and SHA
 					// hash of the file for comparison in the future
