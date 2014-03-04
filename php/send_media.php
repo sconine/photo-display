@@ -37,6 +37,7 @@ if (isset($_REQUEST['media_path'])) {
         'Key'    => $_REQUEST['media_path']
     ));
     
+    //TODO: Get the md5 and sha1 meta data and send that back for comparison and storage
     // Enforce a 1GB limit here too
     if ($result['Size'] < 1000000000) {
         // Deal with consol calls vs calls through a web server
