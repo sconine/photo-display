@@ -202,6 +202,7 @@ foreach ($my_media as $i=>$media) {
 			$confirm_reg[] = $media['media_path'];
 			$media_host = 'localhost';
 			$media_size = filesize($filepath);
+			//TODO: Verify the checksum and store in my_media database
 		}
 
 	}
