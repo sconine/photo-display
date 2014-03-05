@@ -8,7 +8,7 @@ function curl_get_array($url, $timeout) {
 	$ch = curl_init();
 	curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
 	curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-	curl_setopt($ch, CURLOPT_URL,$url);
+	curl_setopt($ch, CURLOPT_URL,add_token($url));
 	curl_setopt($ch, CURLOPT_CONNECTTIMEOUT ,$timeout); 
 	curl_setopt($ch, CURLOPT_TIMEOUT, $timeout); //timeout in seconds
 	$result=curl_exec($ch);
@@ -29,7 +29,7 @@ function curl_write_file($url, $filepath) {
 	// Since downloads can take a while set the timeout to long 
 	set_time_limit(0);
 	$fp = fopen ($filepath, 'w+');
-	$ch = curl_init($url);
+	$ch = curl_init(add_token($url));
 	curl_setopt($ch, CURLOPT_TIMEOUT, 600);
 	curl_setopt($ch, CURLOPT_FILE, $fp); 
 	curl_setopt($ch, CURLOPT_FOLLOWLOCATION, true);
@@ -61,7 +61,7 @@ function curl_post_data($url, $post_data) {
 	$ch = curl_init();
 	curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
 	curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-	curl_setopt($ch, CURLOPT_URL,$url);
+	curl_setopt($ch, CURLOPT_URL,add_token($url));
 	curl_setopt($ch, CURLOPT_POSTFIELDS,  $post_data);
 	curl_setopt($ch, CURLOPT_HEADER, 0);
 	curl_setopt($ch, CURLOPT_POST, 1);
@@ -92,5 +92,21 @@ function curl_status_200($info) {
 	}  
 }
 
+// add a token for verification check
+function add_token($url) {
+	// Only works if $config is loaded
+	if  (isset($config['my_key'])) {
+		$time = time();
+		$enc = md5($time . ':' . $config['my_key']);
+		if (!strpos($url, '?')) {
+			$url = $url . '?';
+		} else {
+			$url = $url . '&';
+		}
+		$url = $url . 'enc=' . urlencode($time . ":" . $enc);
+		
+	}
+	return $url;
+}
 
 ?>
