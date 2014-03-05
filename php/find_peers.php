@@ -168,7 +168,11 @@ if (!isset($result['Item']['screen_id']['S'])) {
             'screen_private_ip'    => $screen_private_ip,
             'screen_public_ip'    => $screen_public_ip,
             'screen_last_checkin'    => $time,
-            'screen_active'    => true
+            'screen_active'    => true,
+            'screen_settings'    => array(
+                    'change_speed' = 5,
+                    'movie_override_speed' = true
+                )
         )),
         'ReturnConsumedCapacity' => 'TOTAL'
     ));
@@ -220,6 +224,7 @@ foreach ($iterator as $item) {
     $ta['screen_private_ip'] = $item['screen_private_ip']['S'];
     $ta['screen_public_ip'] = $item['screen_public_ip']['S'];
     $ta['screen_active'] = $item['screen_active']['N'];
+    $ta['screen_settings'] = $item['screen_settings']['SS'];
     $to_ret[] = $ta;
 }
 
