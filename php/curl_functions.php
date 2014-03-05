@@ -97,6 +97,9 @@ function curl_status_200($info) {
 
 // add a token for verification check
 function add_token($url) {
+	global $debug;
+	global $config;
+
 	// Only works if $config is loaded
 	if  (isset($config['my_key'])) {
 		$time = time();
