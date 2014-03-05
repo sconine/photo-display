@@ -2,6 +2,7 @@
     "screen_id": "1",
     "region": "Boston",
     "public_ip": "99.99.99.99",
+    "my_key" : "put a string you want to use for token verification here, should be long and unique",
     "media_folder": "/usr/www/html/photo-display/node/public/images/",
     "ec2_image_bucket": "BucketName",
     "master_server": "amazon_url_goes_here",
