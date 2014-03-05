@@ -29,6 +29,11 @@ include '/usr/www/html/photo-display/php/curl_functions.php';
 
 /////////////////////////////////////////////////
 // Register yourself and learn about local peers
+// Build the my_settings table schema on the fly
+$sql = 'CREATE TABLE IF NOT EXISTS my_settings (setting_name varchar(128) NOT NULL, setting_value varchar(128) NOT NULL, PRIMARY KEY (setting_name));';
+if (!$mysqli->query($sql)) {die("Table creation failed: (" . $mysqli->errno . ") " . $mysqli->error);}
+if ($debug) {echo 'my_settings table Exists'. "\n";}
+
 // Build the my_peers table schema on the fly
 $sql = 'CREATE TABLE IF NOT EXISTS my_peers (screen_region_name varchar(128) NOT NULL, screen_id varchar(128) NOT NULL, screen_private_ip varchar(32) NOT NULL, screen_public_ip varchar(32) NOT NULL, PRIMARY KEY (screen_region_name, screen_id));';
 if (!$mysqli->query($sql)) {die("Table creation failed: (" . $mysqli->errno . ") " . $mysqli->error);}
@@ -49,6 +54,19 @@ $known_peers = query_to_array($sql, &$mysqli);
 //TODO: delete peers who have not check in, in over a week
 $known_check = array();
 foreach ($my_peers as $i=>$peer) {	
+	// Is this peer "me"?  If so save config in settings
+	if ($peer['screen_region_name'] == $config['region'] && $peer['screen_id'] == $config['screen_id']){
+		//TODO: save settings
+		if (isset($peer['screen_settings'])) {
+			if (isset($peer['screen_settings']['change_speed'])) {
+				save_setting('change_speed', $peer['screen_settings']['change_speed']);
+			}
+			if (isset($peer['screen_settings']['movie_override_speed'])) {
+				save_setting('movie_override_speed', $peer['screen_settings']['movie_override_speed']);
+			}
+		}
+	}
+	
 	// do we know about this peer (yea loop within a loop... not expecting more than 100 peers)
 	$known_peer = false;
 	foreach ($known_peers as $j=>$k_peer) {
@@ -236,6 +254,10 @@ if (curl_post_data($url, $post_data)) {
 mysqli_close($mysqli);
 
 
-
+function save_setting($name, $value, $mysqli) {
+	$sql = "INSERT INTO my_settings (setting_name, setting_value) VALUES ("
+	$sql = $sql . sqlq($name,0) . ',' . sqlq($value,0) . ');';
+	if (!$mysqli->query($sql)) {die("Table creation failed: (" . $mysqli->errno . ") " . $mysqli->error);}
+}
 
 ?>
