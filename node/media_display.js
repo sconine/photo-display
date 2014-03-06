@@ -52,12 +52,30 @@ app.get('/slides', function (req, res) {
 // get_media function
 app.get('/get_media', function (req, res) {
 	res.set('Content-Type', 'application/json');
-	// Get the next item to display
-	// you might need to run get_media.php first to build this table
-	// order by media_id if you want the order sent by the server, media_order if you want random from client
-	// TODO: remove movie/quicktime clause after debugging media_type IN ('movie/quicktime', 'movie/mp4') AND
-	var sql = "SELECT media_path, media_type, media_host, media_id FROM my_media WHERE media_displayed is NULL ORDER BY media_id LIMIT 1";	
-	get_media(req, res, sql, 0);
+	// Check Local Screen settings
+	var sql = "SELECT setting_name, setting_value FROM my_settings";
+	connection.query(sql, function(err, rows, fields) {
+		var media_id = 0;
+		var settings = new Array();
+		if (err) {
+			res.json({ media_type: 'get_settings_error', media_url: err});
+		} else {
+			if (rows.length > 0) {
+				// Get settings to sent back
+				for (var i=0;i<rows.length;i++) {
+					settings[rows[i]['setting_name']] = rows[i]['setting_value'];
+				}
+				
+			}
+	
+			// Get the next item to display
+			// you might need to run get_media.php first to build this table
+			// order by media_id if you want the order sent by the server, media_order if you want random from client
+			// TODO: remove movie/quicktime clause after debugging media_type IN ('movie/quicktime', 'movie/mp4') AND
+			var sql = "SELECT media_path, media_type, media_host, media_id FROM my_media WHERE media_displayed is NULL ORDER BY media_id LIMIT 1";	
+			get_media(req, res, sql, 0, settings);
+		}
+	}
 
 });
 
@@ -134,14 +152,14 @@ io.sockets.on('connection', function (socket) {
 });
 
 // Function to get media to display from the database
-function get_media(req, res, sql, cnt) {
+function get_media(req, res, sql, cnt, settings) {
 	connection.query(sql, function(err, rows, fields) {
 		var media_id = 0;	
 		if (err) {
 			res.json({ media_type: 'text', media_url: err});
 		} else {
 			if (rows.length > 0) {
-			  	res.json({ media_path: rows[0].media_path, media_type: rows[0].media_type, media_host: rows[0].media_host });
+			  	res.json({ media_path: rows[0].media_path, media_type: rows[0].media_type, media_host: rows[0].media_host, media_settings: settings });
 				media_id = rows[0].media_id;
 				connection.query('UPDATE my_media SET media_displayed=NOW() WHERE media_id=' + media_id, function(err, rows, fields) {
 				  	if (err) {
@@ -153,7 +171,7 @@ function get_media(req, res, sql, cnt) {
 			} else {
 				if (cnt == 0) {
 					// Try calling again and just getting the oldest image
-					get_media(req, res, "SELECT media_path, media_type, media_host, media_id FROM my_media ORDER BY media_displayed LIMIT 1", 1);
+					get_media(req, res, "SELECT media_path, media_type, media_host, media_id FROM my_media ORDER BY media_displayed LIMIT 1", 1, settings);
 				} else {
 					res.json({ media_type: 'text', media_url: 'could not redisplay oldest'});
 				}
