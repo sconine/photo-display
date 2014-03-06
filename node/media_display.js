@@ -56,16 +56,15 @@ app.get('/get_media', function (req, res) {
 	var sql = "SELECT setting_name, setting_value FROM my_settings";
 	connection.query(sql, function(err, rows, fields) {
 		var media_id = 0;
-		var settings = new Array();
+		var msettings = {};
 		if (err) {
 			res.json({ media_type: 'get_settings_error', media_url: err});
 		} else {
 			if (rows.length > 0) {
 				// Get settings to sent back
 				for (var i=0;i<rows.length;i++) {
-					settings[rows[i]['setting_name']] = rows[i]['setting_value'];
-				}
-				
+					msettings[rows[i]['setting_name']] = rows[i]['setting_value'];
+				}	
 			}
 	
 			// Get the next item to display
@@ -73,9 +72,9 @@ app.get('/get_media', function (req, res) {
 			// order by media_id if you want the order sent by the server, media_order if you want random from client
 			// TODO: remove movie/quicktime clause after debugging media_type IN ('movie/quicktime', 'movie/mp4') AND
 			var sql = "SELECT media_path, media_type, media_host, media_id FROM my_media WHERE media_displayed is NULL ORDER BY media_id LIMIT 1";	
-			get_media(req, res, sql, 0, settings);
+			get_media(req, res, sql, 0, msettings);
 		}
-	}
+	});
 
 });
 

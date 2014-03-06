@@ -77,16 +77,15 @@ function change_media() {
 		$("#content").css({"height" : ($("#main").height()-20) + "px", "width" : $("#main").width() + "px"});
 
 		// Make sure the key's we expect are there
-		// TODO: add duration in the future to a parameter returned
 		$.each( obj, function( key, value ) {
-			if (key = 'media_path') {media_url = true;}
-			if (key = 'media_type') {media_type = true;}
-			if (key = 'media_host') {media_host = true;}
-			if (key = 'settings') {
+			if (key == 'media_path') {media_url = true;}
+			if (key == 'media_type') {media_type = true;}
+			if (key == 'media_host') {media_host = true;}
+			if (key == 'media_settings') {
 				$.each( value, function( key, value ) {
-					if (key = 'change_speed') { duration = value * 1000;}
-					if (key = 'movie_override_speed') { movie_override_speed = value;}
-				}
+					if (key == 'change_speed') { duration = value * 1000;}
+					if (key == 'movie_override_speed') { movie_override_speed = value;}
+				});
 			}
 		});
 

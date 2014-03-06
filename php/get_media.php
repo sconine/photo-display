@@ -59,14 +59,14 @@ foreach ($my_peers as $i=>$peer) {
 		//TODO: save settings
 		if (isset($peer['screen_settings'])) {
 			if (isset($peer['screen_settings']['change_speed'])) {
-				save_setting('change_speed', $peer['screen_settings']['change_speed']);
+				save_setting('change_speed', $peer['screen_settings']['change_speed'], $mysqli);
 			} else {
-				save_setting('change_speed', 8);
+				save_setting('change_speed', 8, $mysqli);
 			}
 			if (isset($peer['screen_settings']['movie_override_speed'])) {
-				save_setting('movie_override_speed', $peer['screen_settings']['movie_override_speed']);
+				save_setting('movie_override_speed', $peer['screen_settings']['movie_override_speed'], $mysqli);
 			} else {
-				save_setting('movie_override_speed', true);
+				save_setting('movie_override_speed', true, $mysqli);
 			}
 		}
 	}
@@ -259,9 +259,11 @@ mysqli_close($mysqli);
 
 
 function save_setting($name, $value, $mysqli) {
-	$sql = "INSERT INTO my_settings (setting_name, setting_value) VALUES ("
-	$sql = $sql . sqlq($name,0) . ',' . sqlq($value,0) . ');';
-	if (!$mysqli->query($sql)) {die("Table creation failed: (" . $mysqli->errno . ") " . $mysqli->error);}
+	global $debug;
+	$sql = "INSERT INTO my_settings (setting_name, setting_value) VALUES (";
+	$sql = $sql . sqlq($name,0) . ',' . sqlq($value,0) . ') on duplicate key update setting_value=' . sqlq($value,0);
+	if ($debug) {echo "Running $sql\n";}
+	if (!$mysqli->query($sql)) {die("Insert failed: (" . $mysqli->errno . ") " . $mysqli->error);}
 }
 
 ?>
