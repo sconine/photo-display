@@ -60,9 +60,13 @@ foreach ($my_peers as $i=>$peer) {
 		if (isset($peer['screen_settings'])) {
 			if (isset($peer['screen_settings']['change_speed'])) {
 				save_setting('change_speed', $peer['screen_settings']['change_speed']);
+			} else {
+				save_setting('change_speed', 8);
 			}
 			if (isset($peer['screen_settings']['movie_override_speed'])) {
 				save_setting('movie_override_speed', $peer['screen_settings']['movie_override_speed']);
+			} else {
+				save_setting('movie_override_speed', true);
 			}
 		}
 	}
