@@ -20,9 +20,10 @@ $local_files = find_all_files($localpath . $subpath);
 
 if ($debug) {echo "datastring: $datastring\n";}
 if ($debug) {echo "Local files----------\n";}
-if ($debug) {var_dump($local_files);}
+//if ($debug) {var_dump($local_files);}
 if ($debug) {echo "Config----------\n";}
-if ($debug) {var_dump($config);}
+//if ($debug) {var_dump($config);}
+
 
 // You'll need to edit this with your config
 require '/usr/www/html/photo-display/vendor/autoload.php';
@@ -46,11 +47,10 @@ $time = time();
 $cnt = 0;
 $remote_files = array();
 foreach ($media_iterator as $s3_item) {
-	var_dump($s3_item);
 	$remote_files[trim($s3_item['Key'])] = 1;
 }
 if ($debug) {echo "EC2 remote files----------\n";}
-if ($debug) {var_dump($remote_files);}
+//if ($debug) {var_dump($remote_files);}
 
 foreach ($local_files as $file_path => $i) {
 	// Don't load anything larger than 1GB
@@ -79,6 +79,7 @@ foreach ($local_files as $file_path => $i) {
 			// only store the files we care about
 			if ($media_type != '') {
 				$remote_path = str_replace($localpath . "/", "", $file_path);
+				if ($debug) {echo "Considering: $remote_path \n";}
 				
 				// see if this was previously uploaded but meta data changed
 				// if so change the name
