@@ -52,6 +52,7 @@
 // Variable to keep track of if we've set the call-back to keep this running
 var call_set = false;
 var duration = 0;
+var movie_override_speed = true;
 
 function change_media() {
 	// Make a call to the server to get what we should show
@@ -81,6 +82,12 @@ function change_media() {
 			if (key = 'media_path') {media_url = true;}
 			if (key = 'media_type') {media_type = true;}
 			if (key = 'media_host') {media_host = true;}
+			if (key = 'settings') {
+				$.each( value, function( key, value ) {
+					if (key = 'change_speed') { duration = value * 1000;}
+					if (key = 'movie_override_speed') { movie_override_speed = value;}
+				}
+			}
 		});
 
 		// See what we got an insert it into the page
@@ -157,7 +164,7 @@ function load_media(media_type, embed_html) {
 		$("#my_image").load(function(){resize_media();});
 
 		// indicate that we've loaded the image and can set the re-call
-		duration = 4000;
+		if (duration == 0) {duration = 4000;}
 		call_set = true;
 	} else {
 		// movies get a ready listener
@@ -177,7 +184,11 @@ function load_media(media_type, embed_html) {
 				duration = 100;
 				call_set = true;
 			} else {
-				duration = document.my_image_id.GetDuration();
+				if (movie_override_speed) {
+					duration = document.my_image_id.GetDuration();
+				} else {
+					if (duration == 0) {duration = 4000;}
+				}
 				call_set = true;
 			}
 		});
