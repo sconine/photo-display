@@ -56,7 +56,6 @@ $known_check = array();
 foreach ($my_peers as $i=>$peer) {	
 	// Is this peer "me"?  If so save config in settings
 	if ($peer['screen_region_name'] == $config['region'] && $peer['screen_id'] == $config['screen_id']){
-		//TODO: save settings
 		if (isset($peer['screen_settings'])) {
 			if (isset($peer['screen_settings']['change_speed'])) {
 				save_setting('change_speed', $peer['screen_settings']['change_speed'], $mysqli);
@@ -194,6 +193,7 @@ foreach ($my_media as $i=>$media) {
 		}
 	} 
 	if (!$is_local) {
+		//TODO: Dedup - if peers are off at times when other are on you can get reduntant data that could be cleaned up
 		// see if a local peer has it
 		foreach ($local_peers as $j => $peer) {
 			$url = 'http://' . $peer['screen_private_ip'] . ':8080/find_media?media_path=' . urlencode($media['media_path']);
