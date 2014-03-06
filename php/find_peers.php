@@ -170,8 +170,8 @@ if (!isset($result['Item']['screen_id']['S'])) {
             'screen_last_checkin'    => $time,
             'screen_active'    => true,
             'screen_settings'    => array(
-                    'change_speed' = 5,
-                    'movie_override_speed' = true
+                    'change_speed' => 5,
+                    'movie_override_speed' => true
                 )
         )),
         'ReturnConsumedCapacity' => 'TOTAL'
