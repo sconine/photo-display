@@ -159,7 +159,7 @@ function check_token($token, $mysqli) {
 	if (!$mysqli->query($sql)) {die("Table creation failed: (" . $mysqli->errno . ") " . $mysqli->error);}
 
 	$sql = "SELECT time FROM my_tokens WHERE time = " . sqlq($time, 0) . " AND screen_id=" . sqlq($screen_id, 0) . ";";
-	$tokens = query_to_array($sql, &$mysqli);
+	$tokens = query_to_array($sql, $mysqli);
 	if (count($tokens) > 0) {
 		echo 'Token already used';
 		return false;
