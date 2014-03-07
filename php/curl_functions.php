@@ -102,7 +102,7 @@ function add_token($url) {
 
 	// Only works if $config is loaded
 	if  (isset($config['my_key'])) {
-		$time = time();
+		$time = microtime();
 		$enc = md5($time . $config['screen_id'] . ':' . $config['my_key']);
 		if (!strpos($url, '?')) {
 			$url = $url . '?';
@@ -133,9 +133,9 @@ function check_token($token, $mysqli) {
 		return false;
 	}
 	
-	$cur_time = time();
-	$four_hr = 60*60*4;
-	$clean_time = $cur_time - (60*60*24);
+	$cur_time = microtime();
+	$four_hr = 60*60*4*1000000;
+	$clean_time = $cur_time - (60*60*24*1000000);
 	$time = $parts[0];
 	$compare = $parts[1];
 	$screen_id = $parts[2];
