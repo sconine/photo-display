@@ -11,9 +11,11 @@ if (!isset($_SERVER['HTTP_HOST'])) {
 $datastring = file_get_contents('../master_config.json');
 $config = json_decode($datastring, true);
 include '/usr/www/html/photo-display/php/curl_functions.php';
+//Use MY SQL - this include assumes that $config has been loaded 
+include 'my_sql.php';
 
 // Check that we've got a valid token
-if (isset($_REQUEST['enc'])) {check_token();}
+if (isset($_REQUEST['enc'])) {check_token($mysqli);}
 else {echo 'no token passed'; exit;}
 
 if ($debug) {echo "datastring: $datastring\n";}
