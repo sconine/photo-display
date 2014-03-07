@@ -139,8 +139,8 @@ function check_token($token, $mysqli) {
 	$four_hr = 60*60*4*1000000;
 	$clean_time = $cur_time - (60*60*24*1000000);
 	$time = $parts[0];
-	$compare = $parts[1];
-	$screen_id = $parts[2];
+	$compare = $parts[2];
+	$screen_id = $parts[1];
 	$compare_with = md5($time . $screen_id . ':' . $config['my_key']);
 	
 	// First make sure the hash matches
