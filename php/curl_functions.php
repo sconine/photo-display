@@ -103,16 +103,80 @@ function add_token($url) {
 	// Only works if $config is loaded
 	if  (isset($config['my_key'])) {
 		$time = time();
-		$enc = md5($time . ':' . $config['my_key']);
+		$enc = md5($time . $config['screen_id'] . ':' . $config['my_key']);
 		if (!strpos($url, '?')) {
 			$url = $url . '?';
 		} else {
 			$url = $url . '&';
 		}
-		$url = $url . 'enc=' . urlencode($time . ":" . $enc);
+		$url = $url . 'enc=' . urlencode($time . ":" . $config['screen_id'] . ":" . $enc);
 		
 	}
 	return $url;
+}
+
+
+// Validate a token that was sent
+function check_token($token, $config, $mysqli) {
+	global $debug;
+	global $config;
+
+	$parts = explode(':', $token);
+	if (count($parts) != 3) {
+		echo 'Mal-formed token';
+		return false;
+	}
+
+	// Only works if $config is loaded
+	if  (! isset($config['my_key'])) {
+		echo 'my_key not configured';
+		return false;
+	}
+	
+	$cur_time = time();
+	$four_hr = 60*60*4;
+	$clean_time = $cur_time - (60*60*24);
+	$time = $parts[0];
+	$compare = $parts[1];
+	$screen_id = $parts[2];
+	$compare_with = md5($time . $screen_id . ':' . $config['my_key']);
+	
+	// First make sure the hash matches
+	if  ($compare != $screen_id) {
+		echo 'Hash does not match';
+		return false;
+	}	
+	
+	// First make sure this time is within 4 hours of now
+	if ($time < ($cur_time - $four_hr) || $time > ($cur_time + $four_hr)) }
+		echo 'Time Stamp Off';
+		return false;
+	}
+	
+	// See if we've already used this timestamp for this screen
+	// Build the  table schema on the fly
+	$sql = 'CREATE TABLE IF NOT EXISTS my_tokens (time varchar(64) NOT NULL, screen_id varchar(128) NOT NULL, PRIMARY KEY (time, screen_id));';
+	if (!$mysqli->query($sql)) {die("Table creation failed: (" . $mysqli->errno . ") " . $mysqli->error);}
+
+	$sql = "SELECT time FROM my_tokens WHERE time = " . sqlq($time, 0) . " AND screen_id=" . sqlq($screen_id, 0) . ";";
+	$tokens = query_to_array($sql, &$mysqli);
+	if (count($tokens) > 0) {
+		echo 'Token already used';
+		return false;
+	}
+	
+	// otherwise insert this token and cleanup old ones
+	$sql = "INSERT INTO my_tokens (time , screen_id) VALUES (";
+	$sql .= sqlq($time, 0) . ',';
+	$sql .= sqlq($screen_id, 0) . ')';
+	if ($debug) {echo "Running: $sql\n";}
+	if (!$mysqli->query($sql)) {die("Insert Failed: (" . $mysqli->errno . ") " . $mysqli->error);}
+
+	$sql = "DELETE FROM my_tokens WHERE time < " .  sqlq($clean_time, 0) . ',';
+	if ($debug) {echo "Running: $sql\n";}
+	if (!$mysqli->query($sql)) {die("Delete Failed: (" . $mysqli->errno . ") " . $mysqli->error);}
+	
+	return true;
 }
 
 ?>
