@@ -148,7 +148,7 @@ function check_token($token, $config, $mysqli) {
 	}	
 	
 	// First make sure this time is within 4 hours of now
-	if ($time < ($cur_time - $four_hr) || $time > ($cur_time + $four_hr)) }
+	if ($time < ($cur_time - $four_hr) || $time > ($cur_time + $four_hr)) {
 		echo 'Time Stamp Off';
 		return false;
 	}
