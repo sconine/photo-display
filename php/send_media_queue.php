@@ -23,7 +23,7 @@ if (isset($_REQUEST['length'])) {$queue_length = $_REQUEST['length'];}
 
 //Use MY SQL - this include assumes that $config has been loaded 
 include 'my_sql.php';
-include 'curk_functions.php';
+include 'curl_functions.php';
 
 // Check that we've got a valid token
 if (isset($_REQUEST['enc'])) {
