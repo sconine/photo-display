@@ -122,7 +122,7 @@ function add_token($url) {
 function check_token($token, $mysqli) {
 	global $debug;
 	global $config;
-
+$debug = true;
 	$parts = explode(':', $token);
 	if (count($parts) != 3) {
 		echo 'Mal-formed token';
@@ -172,7 +172,7 @@ function check_token($token, $mysqli) {
 	$sql .= sqlq($time, 0) . ',';
 	$sql .= sqlq($screen_id, 0) . ')';
 	if ($debug) {echo "Running: $sql\n";}
-	if (!$mysqli->query($sql)) {die("Insert Failed: (" . $mysqli->errno . ") " . $mysqli->error);}
+//	if (!$mysqli->query($sql)) {die("Insert Failed: (" . $mysqli->errno . ") " . $mysqli->error);}
 
 	$sql = "DELETE FROM my_tokens WHERE time < " .  sqlq($clean_time, 0) . ',';
 	if ($debug) {echo "Running: $sql\n";}
