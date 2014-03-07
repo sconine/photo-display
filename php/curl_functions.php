@@ -162,7 +162,7 @@ $debug = true;
 	$sql = 'CREATE TABLE IF NOT EXISTS my_tokens (s_time int NOT NULL, m_time varchar(64) NOT NULL, screen_id varchar(128) NOT NULL, PRIMARY KEY (s_time, m_time, screen_id));';
 	if (!$mysqli->query($sql)) {die("Table creation failed: (" . $mysqli->errno . ") " . $mysqli->error);}
 
-	$sql = "SELECT time FROM my_tokens WHERE s_time = " . sqlq($s_time, 0) . " AND m_time = " . sqlq($m_time, 0) . " AND screen_id=" . sqlq($screen_id, 0) . ";";
+	$sql = "SELECT s_time FROM my_tokens WHERE s_time = " . sqlq($s_time, 0) . " AND m_time = " . sqlq($m_time, 0) . " AND screen_id=" . sqlq($screen_id, 0) . ";";
 	$tokens = query_to_array($sql, $mysqli);
 	if (count($tokens) > 0) {
 		echo 'Token already used';
