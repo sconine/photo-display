@@ -21,14 +21,26 @@ $queue_length = 5;
 if (isset($_REQUEST['length'])) {$queue_length = $_REQUEST['length'];}
 
 
+//Use MY SQL - this include assumes that $config has been loaded 
+include 'my_sql.php';
+
+// Check that we've got a valid token
+if (isset($_REQUEST['enc'])) {
+    if (! check_token($_REQUEST['enc'], $mysqli)) {
+        echo 'bad token passed'; 
+        exit;
+    }
+} else {
+    echo 'no token passed'; 
+    exit;
+}
+
 // You'll need to edit this with your config file
 // make sure you specify the correct region as dynamo is region specific
 use Aws\Common\Aws;
 $aws = Aws::factory('/usr/www/html/photo-display/php/amazon_config.json');
 $client = $aws->get('DynamoDb');
 
-//Use MY SQL - this include assumes that $config has been loaded 
-include 'my_sql.php';
 
 /////////////////////////////////////////////////
 // We should have been sent a screen_id & region request variables
