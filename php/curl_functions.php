@@ -145,7 +145,7 @@ function check_token($token, $mysqli) {
 	
 	// First make sure the hash matches
 	if  ($compare != $compare_with) {
-		echo 'Hash does not match: ' . $compare . ' - ' $compare_with;
+		echo 'Hash does not match: ' . $compare . ' - ' . $compare_with;
 		return false;
 	}	
 	
