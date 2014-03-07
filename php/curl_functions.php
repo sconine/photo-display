@@ -144,8 +144,8 @@ function check_token($token, $mysqli) {
 	$compare_with = md5($time . $screen_id . ':' . $config['my_key']);
 	
 	// First make sure the hash matches
-	if  ($compare != $screen_id) {
-		echo 'Hash does not match';
+	if  ($compare != $compare_with) {
+		echo 'Hash does not match: ' . $time;
 		return false;
 	}	
 	
