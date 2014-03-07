@@ -28,6 +28,7 @@ function curl_write_file($url, $filepath) {
 	global $debug;
 	$url = add_token($url);
 	$to_ret = false;
+	if ($debug) {echo "Calling: $url\n";}
 	// Since downloads can take a while set the timeout to long 
 	set_time_limit(0);
 	$fp = fopen ($filepath, 'w+');
@@ -61,6 +62,7 @@ function curl_post_data($url, $post_data) {
 	global $debug;
 	$url = add_token($url);
 	$to_ret = false;
+	if ($debug) {echo "Calling: $url\n";}
 	$ch = curl_init();
 	curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
 	curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
