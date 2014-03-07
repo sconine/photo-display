@@ -117,7 +117,7 @@ function add_token($url) {
 
 
 // Validate a token that was sent
-function check_token($token, $config, $mysqli) {
+function check_token($token, $mysqli) {
 	global $debug;
 	global $config;
 
