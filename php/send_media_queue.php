@@ -17,7 +17,7 @@ if (!isset($_SERVER['HTTP_HOST'])) {
 }
 
 // How many to queue at a time
-$queue_length = 5;
+$queue_length = 8;
 if (isset($_REQUEST['length'])) {$queue_length = $_REQUEST['length'];}
 
 
