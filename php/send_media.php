@@ -15,7 +15,7 @@ include '/usr/www/html/photo-display/php/curl_functions.php';
 include 'my_sql.php';
 
 // Check that we've got a valid token
-if (isset($_REQUEST['enc'])) {check_token($mysqli);}
+if (isset($_REQUEST['enc'])) {check_token($_REQUEST['enc'], $mysqli);}
 else {echo 'no token passed'; exit;}
 
 if ($debug) {echo "datastring: $datastring\n";}
