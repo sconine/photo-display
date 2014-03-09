@@ -23,16 +23,6 @@ if (isset($_REQUEST['length'])) {$queue_length = $_REQUEST['length'];}
 include 'my_sql.php';
 include 'curl_functions.php';
 
-// Check that we've got a valid token
-if (isset($_REQUEST['enc'])) {
-    if (! check_token($_REQUEST['enc'], $mysqli)) {
-        echo 'bad token passed'; 
-        exit;
-    }
-} else {
-    echo 'no token passed'; 
-    exit;
-}
 
 // You'll need to edit this with your config file
 // make sure you specify the correct region as dynamo is region specific
