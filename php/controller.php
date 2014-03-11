@@ -30,6 +30,6 @@ use Aws\Common\Aws;
 $aws = Aws::factory('/usr/www/html/photo-display/php/amazon_config.json');
 $client = $aws->get('DynamoDb');
 
-
+// Need to display screens and screen groups
 
 ?>
