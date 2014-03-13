@@ -31,5 +31,16 @@ $aws = Aws::factory('/usr/www/html/photo-display/php/amazon_config.json');
 $client = $aws->get('DynamoDb');
 
 // Need to display screens and screen groups
+// Field List: Type, Name, Speed, Show, Screen Group, Last Checkin, Image History, Storage Available, Local IP, Public IP
+
+// Settings panel for a screen should let you modify:
+// Speed
+// Movies Over-ride Speed
+// Show: (o) All Available
+//       (o) This folder and Below [    ] GO
+//       (o) These images [    ] Browse GO
+// Put in Screen Group [         ] GO
+// (this moves control to the screen group level)
+
 
 ?>
