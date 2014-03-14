@@ -59,31 +59,27 @@ foreach ($iterator as $item) {
     echo '<tr><td>';
     echo isset($item['screen_type']['S']) ? $item['screen_type']['S'] : 'Screen';
     echo '</td><td>';
-    echo isset($item['screen_type']['S']) ? $item['screen_type']['S'] : 'Screen';
+    echo isset($item['screen_id']['S']) ? $item['screen_id']['S'] : 'Un-named';
     echo '</td><td>';
-    echo isset($item['screen_type']['S']) ? $item['screen_type']['S'] : 'Screen';
+    echo isset($item['setting_change_speed']['N']) ? $item['setting_change_speed']['N'] : '8';
     echo '</td><td>';
-    echo isset($item['screen_type']['S']) ? $item['screen_type']['S'] : 'Screen';
+    echo isset($item['screen_active']['S']) ? $item['screen_active']['N'] : '1';
     echo '</td><td>';
-    echo isset($item['screen_type']['S']) ? $item['screen_type']['S'] : 'Screen';
+    echo isset($item['screen_group']['S']) ? $item['screen_group']['S'] : '-';
     echo '</td><td>';
-    echo isset($item['screen_type']['S']) ? $item['screen_type']['S'] : 'Screen';
+    echo isset($item['screen_last_checkin']['N']) ? $item['screen_last_checkin']['N'] : 'Screen';
     echo '</td><td>';
-    
-    
-    $ta['screen_id'] = $item['screen_id']['S'];
-    $ta['screen_region_name'] = $item['screen_region_name']['S'];
-    $ta['screen_private_ip'] = $item['screen_private_ip']['S'];
-    $ta['screen_public_ip'] = $item['screen_public_ip']['S'];
-    $ta['screen_active'] = $item['screen_active']['N'];
-    $ta['screen_settings']['change_speed'] = isset($item['setting_change_speed']['N']) ? $item['setting_change_speed']['N'] : 8;
-    $ta['screen_settings']['movie_override_speed'] = isset($item['setting_movie_override_speed']['N']) ? $item['setting_movie_override_speed']['N'] : true;
-    $to_ret[] = $ta;
+    echo 'History Goes Here';
+    echo '</td><td>';
+    echo isset($item['screen_storage']['N']) ? $item['screen_storage']['N'] : 'Unknown';
+    echo '</td><td>';
+    echo isset($item['screen_private_ip']['S']) ? $item['screen_private_ip']['S'] : 'Screen';
+    echo '</td><td>';
+    echo isset($item['screen_public_ip']['S']) ? $item['screen_public_ip']['S'] : 'Screen';
+    echo '</td></tr>';
 }
+echo '</table>';
 
-
-// Need to display screens and screen groups
-// Field List: Type, Name, Speed, Show, Screen Group, Last Checkin, Image History, Storage Available, Local IP, Public IP
 
 // Settings panel for a screen should let you modify:
 // Speed
