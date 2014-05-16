@@ -19,6 +19,7 @@ include 'my_sql.php';
 
 // You'll need to edit this with your config file
 // make sure you specify the correct region as dynamo is region specific
+use Aws\Common\Aws;
 $aws = Aws::factory('/usr/www/html/photo-display/php/amazon_config.json');
 $client = $aws->get('DynamoDb');
 
