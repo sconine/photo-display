@@ -39,16 +39,16 @@ include 'dynamo_tables.php';
 Screens and Screen Groups:<br>
 <table>
 <tr>
-    <td>Type</td>
-    <td>Name</td>
-    <td>Speed</td>
-    <td>Show</td>
-    <td>Screen Group</td>
-    <td>Last Checkin</td>
-    <td>Image History</td>
-    <td>Storage Available</td>
-    <td>Local IP</td>
-    <td>Public IP</td>
+    <th>Type</th>
+    <th>Name</td>
+    <th>Speed</th>
+    <th>Show</th>
+    <th>Screen Group</th>
+    <th>Last Checkin</th>
+    <th>Image History</th>
+    <th>Storage Available</th>
+    <th>Local IP</th>
+    <th>Public IP</th>
 </tr>
 
 <?php
