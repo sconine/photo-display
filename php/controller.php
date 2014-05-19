@@ -36,13 +36,15 @@ include 'dynamo_tables.php';
 <div id="main">
 	<div id="content">
 
-Screens and Screen Groups:<br>
-<table>
+<h1>Screens and Screen Groups</h1>
+<hr>
+<table style="margin-left: 20px;>
 <tr>
     <th>Type</th>
     <th>Name</td>
+    <th>Region</td>
     <th>Speed</th>
-    <th>Show</th>
+    <th>Active</th>
     <th>Screen Group</th>
     <th>Last Checkin</th>
     <th>Image History</th>
@@ -63,13 +65,15 @@ foreach ($iterator as $item) {
     echo '</td><td>';
     echo isset($item['screen_id']['S']) ? $item['screen_id']['S'] : 'Un-named';
     echo '</td><td>';
+    echo isset($item['screen_region_name']['S']) ? $item['screen_region_name']['S'] : 'Unassigned';
+    echo '</td><td>';
     echo isset($item['setting_change_speed']['N']) ? $item['setting_change_speed']['N'] : '8';
     echo '</td><td>';
     echo isset($item['screen_active']['S']) ? $item['screen_active']['N'] : '1';
     echo '</td><td>';
     echo isset($item['screen_group']['S']) ? $item['screen_group']['S'] : '-';
     echo '</td><td>';
-    echo isset($item['screen_last_checkin']['N']) ? $item['screen_last_checkin']['N'] : 'Screen';
+    echo isset($item['screen_last_checkin']['N']) ? date("F j, Y, g:i a", $item['screen_last_checkin']['N']) : 'Unknown';
     echo '</td><td>';
     echo 'History Goes Here';
     echo '</td><td>';
