@@ -30,11 +30,13 @@ $region_name = '';
 $screen_id = '';
 $screen_private_ip = '192.168.1.77';
 $screen_public_ip = '192.168.1.66';
+$screen_storage = 0;
 if (isset($_REQUEST['screen_region_name'])) {$region_name = $_REQUEST['screen_region_name'];}
 if ($region_name == '') {$region_name = 'Default Region';}
 if (isset($_REQUEST['screen_id'])) {$screen_id = $_REQUEST['screen_id'];}
 if ($screen_id == '') {$screen_id = 'Default Screen';}
 if (isset($_REQUEST['screen_private_ip'])) {$screen_private_ip = $_REQUEST['screen_private_ip'];}
+if (isset($_REQUEST['screen_storage'])) {$screen_storage = $_REQUEST['screen_storage'];}
 if (isset($_REQUEST['screen_public_ip'])) {$screen_public_ip = $_REQUEST['screen_public_ip'];}
 $time = time();
 
@@ -92,7 +94,8 @@ if (!isset($result['Item']['screen_id']['S'])) {
             'screen_last_checkin'    => $time,
             'screen_active'    => 1,
             'setting_change_speed' => 5,
-            'setting_movie_override_speed' => 1
+            'setting_movie_override_speed' => 1,
+            'screen_storage' => $screen_storage
         )),
         'ReturnConsumedCapacity' => 'TOTAL'
     ));
@@ -125,7 +128,8 @@ if (!isset($result['Item']['screen_id']['S'])) {
         'AttributeUpdates' => array(
             'screen_private_ip'    =>  array('Action' => 'PUT', 'Value' => array('S' => $screen_private_ip)),
             'screen_public_ip'    =>  array('Action' => 'PUT', 'Value' => array('S' => $screen_public_ip)),
-            'screen_last_checkin'    =>  array('Action' => 'PUT', 'Value' => array('N' => $time))
+            'screen_last_checkin'    =>  array('Action' => 'PUT', 'Value' => array('N' => $time)),
+            'screen_storage'    =>  array('Action' => 'PUT', 'Value' => array('N' => $screen_storage))
         )
     ));    
     if ($debug) {echo "$screen_id in $region_name updated<br>\n";}
@@ -144,6 +148,7 @@ foreach ($iterator as $item) {
     $ta['screen_private_ip'] = $item['screen_private_ip']['S'];
     $ta['screen_public_ip'] = $item['screen_public_ip']['S'];
     $ta['screen_active'] = $item['screen_active']['N'];
+    $ta['screen_storage'] = isset($item['screen_storage']['N']) ? $item['screen_storage']['N'] : 0;
     $ta['screen_settings']['change_speed'] = isset($item['setting_change_speed']['N']) ? $item['setting_change_speed']['N'] : 8;
     $ta['screen_settings']['movie_override_speed'] = isset($item['setting_movie_override_speed']['N']) ? $item['setting_movie_override_speed']['N'] : true;
     $to_ret[] = $ta;
