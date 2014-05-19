@@ -32,7 +32,7 @@ include 'dynamo_tables.php';
 <link rel="stylesheet" type="text/css" href="../node/public/master_style.css">
 
 </head>
-<body>
+<body style="background-color: #FFFFFF;">
 <div id="main">
 	<div id="content">
 
