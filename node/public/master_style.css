@@ -33,17 +33,18 @@
 
 	th {
 	font-size: 1.4em;
-	text-align: left;
-	padding-top: 5px;
-	padding-bottom: 4px;
 	background-color: #A7C942;
-	border: 1px solid #98bf21;
 	color: #fff;
 	}
 
 	td {
 	font-size: 1.2em;
+	}
+
+	td, th {
 	padding: 3px 7px 2px 7px;
+	text-align: left;
+	border: 1px solid #98bf21;
 	}
 
 	tr.alt {
