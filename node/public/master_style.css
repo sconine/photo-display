@@ -26,7 +26,7 @@
 	
 	table {
 	display: table;
-	border-collapse: separate;
+	border-collapse: collapse;
 	border-spacing: 2px;
 	border-color: gray;
 	}
@@ -46,5 +46,8 @@
 	padding: 3px 7px 2px 7px;
 	}
 
-
+	tr.alt {
+	color: #000;
+	background-color: #EAF2D3;
+	}
 
