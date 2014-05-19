@@ -6,6 +6,8 @@ require '../vendor/autoload.php';
 $datastring = file_get_contents('../master_config.json');
 $config = json_decode($datastring, true);
 
+date_default_timezone_set('America/New_York');
+
 // don't want to print debug through web server in general
 $debug = false; 
 if (!isset($_SERVER['HTTP_HOST'])) {
