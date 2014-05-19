@@ -40,7 +40,7 @@ include 'dynamo_tables.php';
 
 <h1>Screens and Screen Groups</h1>
 <hr>
-<table style="margin-left: 20px;>
+<table style="margin-left: 20px;">
 <tr>
     <th>Type</th>
     <th>Name</td>
