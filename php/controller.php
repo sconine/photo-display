@@ -48,7 +48,7 @@ include 'dynamo_tables.php';
     <th>Speed</th>
     <th>Active</th>
     <th>Screen Group</th>
-    <th>Last Checkin</th>
+    <th>Last Checkin (EST)</th>
     <th>Image History</th>
     <th>Storage Available</th>
     <th>Local IP</th>
