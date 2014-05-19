@@ -24,7 +24,7 @@
 	#filename{
 	color: #dddddd;}
 	
-	#table {
+	table {
 	display: table;
 	border-collapse: separate;
 	border-spacing: 2px;
