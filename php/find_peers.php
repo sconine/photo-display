@@ -149,6 +149,7 @@ foreach ($iterator as $item) {
     $ta['screen_public_ip'] = $item['screen_public_ip']['S'];
     $ta['screen_active'] = $item['screen_active']['N'];
     $ta['screen_storage'] = isset($item['screen_storage']['N']) ? $item['screen_storage']['N'] : 0;
+    $ta['screen_group'] = isset($item['screen_group']['S']) ? $item['screen_group']['S'] : '';
     $ta['screen_settings']['change_speed'] = isset($item['setting_change_speed']['N']) ? $item['setting_change_speed']['N'] : 8;
     $ta['screen_settings']['movie_override_speed'] = isset($item['setting_movie_override_speed']['N']) ? $item['setting_movie_override_speed']['N'] : true;
     $to_ret[] = $ta;
