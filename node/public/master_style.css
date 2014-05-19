@@ -29,6 +29,7 @@
 	border-collapse: collapse;
 	border-spacing: 2px;
 	border-color: gray;
+	border: 1px solid #98bf21;
 	}
 
 	th {
@@ -42,7 +43,6 @@
 
 	td {
 	font-size: 1.2em;
-	border: 1px solid #98bf21;
 	padding: 3px 7px 2px 7px;
 	}
 
