@@ -71,6 +71,11 @@ foreach ($my_peers as $i=>$peer) {
 			} else {
 				save_setting('movie_override_speed', true, $mysqli);
 			}
+			if (isset($peer['screen_settings']['screen_group'])) {
+				save_setting('screen_group', $peer['screen_settings']['screen_group'], $mysqli);
+			} else {
+				save_setting('screen_group', true, $mysqli);
+			}
 		}
 	}
 	
