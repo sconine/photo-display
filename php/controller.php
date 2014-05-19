@@ -56,8 +56,9 @@ Screens and Screen Groups:<br>
 // Return every screen we know about in a json object
 $iterator = $client->getIterator('Scan', array('TableName' => 'media_screens'));
 $to_ret = array();
+$alt = '';
 foreach ($iterator as $item) {
-    echo '<tr><td>';
+    echo '<tr ' . $alt . '><td>';
     echo isset($item['screen_type']['S']) ? $item['screen_type']['S'] : 'Screen';
     echo '</td><td>';
     echo isset($item['screen_id']['S']) ? $item['screen_id']['S'] : 'Un-named';
@@ -78,6 +79,10 @@ foreach ($iterator as $item) {
     echo '</td><td>';
     echo isset($item['screen_public_ip']['S']) ? $item['screen_public_ip']['S'] : 'Screen';
     echo '</td></tr>';
+    
+    if ($alt == '') {$alt = ' class="alt" ';} 
+    else {$alt = '';}
+    
 }
 echo '</table>';
 
