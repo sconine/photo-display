@@ -39,10 +39,14 @@ $sql = 'CREATE TABLE IF NOT EXISTS my_peers (screen_region_name varchar(128) NOT
 if (!$mysqli->query($sql)) {die("Table creation failed: (" . $mysqli->errno . ") " . $mysqli->error);}
 if ($debug) {echo 'my_peers table Exists'. "\n";}
 
+// see how much space we have and send that the the central server
+$disk_free = disk_free_space($config['media_folder']);
+
 // Call the central public registration server
 $url = 'http://' . $config['master_server'] . '/photo-display/php/find_peers.php?screen_private_ip=' . $my_ip
   . '&screen_id=' . $config['screen_id'] 
   . '&screen_public_ip=' . $config['public_ip'] 
+  . '&screen_storage=' . $disk_free 
   . '&screen_region_name=' . $config['region'];
 $my_peers = curl_get_array($url, 20);
 //if ($debug) {var_dump($my_peers); echo "\n";}
@@ -135,7 +139,6 @@ if ($debug) {echo "Running $sql\n";}
 if (!$mysqli->query($sql)) {die("Table creation failed: (" . $mysqli->errno . ") " . $mysqli->error);}
 
 // Do a little disk space management (if < 100MB)
-$disk_free = disk_free_space($config['media_folder']);
 if ($disk_free < (1024 * 1024 * 100)) {
 	if ($debug) {echo "Low Disk Space ($disk_free) Doing Cleanup!\n";}	
 	//remove most recently displayed files
