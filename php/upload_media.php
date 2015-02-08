@@ -53,8 +53,8 @@ if ($debug) {echo "EC2 remote files----------\n";}
 //if ($debug) {var_dump($remote_files);}
 
 foreach ($local_files as $file_path => $i) {
-	// Don't load anything larger than 1GB
-	if (filesize($file_path) < 1000000000) {
+	// Don't load anything larger than 2GB
+	if (filesize($file_path) < 2000000000) {
 		if ($file_path != '') {
 			$media_type = "";
 			$f_ext = strtolower(substr($file_path, -3));
@@ -110,6 +110,8 @@ foreach ($local_files as $file_path => $i) {
 				}
 				
 				$cnt = $cnt + 1;
+			} else {
+				if ($debug) {echo "Skipping: " . $file_path . "\n";}
 			}
 		}
 	} else {
@@ -128,13 +130,13 @@ function find_all_files($dir)
 { 
     $result = array();
     // This makes it so these folders are not sync'd
-    if ($dir == '/Volumes/My Pictures/complete') {return $result;}
-    if ($dir == '/Volumes/My Pictures/editing') {return $result;}
-    if ($dir == '/Volumes/My Pictures/Frames') {return $result;}
-    if ($dir == '/Volumes/My Pictures/Meekins') {return $result;}
-    if ($dir == '/Volumes/My Pictures/other') {return $result;}
-    if ($dir == '/Volumes/My Pictures/Sarah') {return $result;}
-    if ($dir == '/Volumes/My Pictures/Sarah Wedding') {return $result;}
+    //if ($dir == '/Volumes/My Pictures/complete') {return $result;}
+    //if ($dir == '/Volumes/My Pictures/editing') {return $result;}
+    //if ($dir == '/Volumes/My Pictures/Frames') {return $result;}
+    //if ($dir == '/Volumes/My Pictures/Meekins') {return $result;}
+    //if ($dir == '/Volumes/My Pictures/other') {return $result;}
+    //if ($dir == '/Volumes/My Pictures/Sarah') {return $result;}
+    //if ($dir == '/Volumes/My Pictures/Sarah Wedding') {return $result;}
     $root = scandir($dir); 
     foreach($root as $value) 
     { 
