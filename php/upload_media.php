@@ -23,6 +23,8 @@ if ($debug) {echo "Local files----------\n";}
 //if ($debug) {var_dump($local_files);}
 if ($debug) {echo "Config----------\n";}
 //if ($debug) {var_dump($config);}
+echo 'hi';
+exit;
 
 
 // You'll need to edit this with your config
