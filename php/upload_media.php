@@ -6,7 +6,7 @@ if (!isset($_SERVER['HTTP_HOST'])) {
 } else {
     if (isset($_REQUEST['debug'])) {$debug = true;}
 }
-$debug = false; 
+$debug = true; 
 
 // Load my configuration
 $localpath = "/Volumes/My Pictures"; // modify with your local folder
