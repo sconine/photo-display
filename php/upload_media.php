@@ -1,4 +1,6 @@
 <?php
+echo 'hi';
+exit;
 // A script to compare what we have in a local directory
 // with what is up on Amazon EC2
 if (!isset($_SERVER['HTTP_HOST'])) {
@@ -23,8 +25,7 @@ if ($debug) {echo "Local files----------\n";}
 //if ($debug) {var_dump($local_files);}
 if ($debug) {echo "Config----------\n";}
 //if ($debug) {var_dump($config);}
-echo 'hi';
-exit;
+
 
 
 // You'll need to edit this with your config
