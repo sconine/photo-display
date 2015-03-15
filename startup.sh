@@ -3,7 +3,7 @@ unclutter -idle 2 -root&
 sed -i 's/exit_type\"\:\ \"Crashed/exit_type\"\:\ \"normal/g' /home/conine/.config/google-chrome/Default/Preferences
 xset s off
 xset -dpms
-sleep 5
+sleep 15
 google-chrome --kiosk http://localhost:8080/slides
 
 
