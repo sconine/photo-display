@@ -143,8 +143,8 @@ $sql = 'CREATE TABLE IF NOT EXISTS  my_media ('
 if ($debug) {echo "Running $sql\n";}
 if (!$mysqli->query($sql)) {die("Table creation failed: (" . $mysqli->errno . ") " . $mysqli->error);}
 
-// Do a little disk space management (if < 100MB)
-if ($disk_free < (1024 * 1024 * 100)) {
+// Do a little disk space management (if < 1000MB)
+if ($disk_free < (1024 * 1024 * 1000)) {
 	if ($debug) {echo "Low Disk Space ($disk_free) Doing Cleanup!\n";}	
 	//remove most recently displayed files
 	$sql = "SELECT media_order, media_path, media_size FROM my_media WHERE media_displayed is not null AND media_host = 'localhost' ORDER BY media_displayed desc limit 200";
