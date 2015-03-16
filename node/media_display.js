@@ -71,7 +71,7 @@ app.get('/get_media', function (req, res) {
 			// you might need to run get_media.php first to build this table
 			// order by media_id if you want the order sent by the server, media_order if you want random from client
 			// TODO: remove movie/quicktime clause after debugging media_type IN ('movie/quicktime', 'movie/mp4') AND
-			var sql = "SELECT media_path, media_type, media_host, media_id FROM my_media WHERE media_displayed is NULL ORDER BY media_id LIMIT 1";	
+			var sql = "SELECT media_path, media_type, media_host, media_id FROM my_media WHERE media_type IN (' image/jpeg', 'image/gif', 'image/png') AND media_displayed is NULL ORDER BY media_id LIMIT 1";	
 			get_media(req, res, sql, 0, msettings);
 		}
 	});
