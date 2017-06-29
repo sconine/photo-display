@@ -54,6 +54,8 @@ b) With the JSON data it will know the URL of the media to show next and display
 
 <b>find_peers.php</b> A script that registers new regions and computers (if it has not seen what is being passed in) and then returns JSON data that is the information for all the peers in the same "region".  Regions and computers will be stored in a SimpleDB table or some other cloud persistent storage.
 <br><br>
+<b>uploaD_media.php</b> A script that syncs images from a computer to S3 storage.  It compares a hash signiature for each file to determine if it has already been uploaded.
+<br><br>
 <h1>Other Thoughts</h1>
 Could add functionality so that there was a key screens used to verify they were legit before media was send.<br>
 Need to figure out a way to synchronize video files across several screens 
